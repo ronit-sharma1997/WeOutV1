@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".MainActivityMyProfileFragment">
+
+    <TextView
+        android:id="@+id/welcomeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="@string/Welcome"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:textSize="40sp"
+        android:background="@drawable/toptitleborder"/>
+
+
+    <FrameLayout
+        android:id="@+id/accountLogoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin40dp"
+        android:layout_marginLeft="@dimen/margin40dp"
+        android:layout_below="@+id/welcomeTitle">
+
+        <ImageView
+            android:layout_width="@dimen/userLogoWidth"
+            android:layout_height="@dimen/userLogoHeight"
+            android:layout_gravity="center"
+            android:src="@drawable/userbox"
+            />
+        <TextView
+            android:id="@+id/userLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R"
+            android:layout_gravity="center"
+            android:textSize="65sp"
+            android:textStyle="bold"
+            android:textColor="@color/lightBlue"
+            />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/fullName"
+        android:layout_marginLeft="@dimen/margin10dp"
+        android:layout_marginTop="@dimen/margin55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rsharma1997"
+        android:autoSizeTextType="uniform"
+        android:maxWidth="@dimen/maxWidthUsername"
+        android:maxHeight="@dimen/maxHeightUsername"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="40sp"
+        android:layout_toRightOf="@+id/accountLogoContainer"
+        android:layout_below="@+id/welcomeTitle"/>
+
+    <TextView
+        android:layout_marginLeft="@dimen/margin55dp"
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rsharma1997"
+        android:autoSizeTextType="uniform"
+        android:maxWidth="@dimen/maxWidthUsername"
+        android:maxHeight="@dimen/maxHeightUsername"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:layout_below="@+id/fullName"
+        android:layout_alignStart="@id/fullName"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/friendToolbar"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accountLogoContainer"
+        android:layout_marginTop="@dimen/margin40dp"
+        android:background="@drawable/friends_tab_layout_background"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:layout_centerHorizontal="true"
+        app:tabTextAppearance="@style/FriendsTabLayoutTextStyle"
+        app:tabTextColor="@color/black"
+        app:tabBackground="@drawable/tab_layout_selector"
+        app:tabIndicatorHeight="@dimen/tabIndicationHeight">
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/myProfilePager"
+        android:layout_width="@dimen/friendTabLayoutWidth"
+        android:layout_marginTop="@dimen/margin10dp"
+        android:layout_height="match_parent"
+        android:layout_below="@id/friendToolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/margin10dp"
+        >
+
+    </androidx.viewpager.widget.ViewPager>
+
+
+</RelativeLayout>

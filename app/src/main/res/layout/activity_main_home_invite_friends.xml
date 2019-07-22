@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivityHomeInviteFriends">
+
+    <TextView
+        android:id="@+id/inviteFriends_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/inviteFriends_Title"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:background="@drawable/toptitleborder"
+        android:layout_alignParentTop="true"
+        android:textSize="40sp"
+        android:fontFamily="monospace"
+        />
+
+    <Button
+        android:id="@+id/inviteFriends_FinishButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/inviteFriends_FinishButton"
+        android:onClick="onClick_Finish"
+        android:layout_alignParentBottom="true"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/friendInviteList"
+        android:name="com.example.sampletoolbar.MainActivityHomeInviteFriends"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        android:layout_below="@+id/inviteFriends_TextView"
+        android:layout_above="@+id/inviteFriends_FinishButton"/>
+
+
+</RelativeLayout>

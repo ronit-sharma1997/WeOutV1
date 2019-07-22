@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="logo_h">100dp</dimen>
+    <dimen name="logo_w">158dp</dimen>
+    <dimen name="friendTabLayoutWidth">350dp</dimen>
+    <dimen name="tabIndicationHeight">0dp</dimen>
+    <dimen name="margin3dp">3dp</dimen>
+    <dimen name="margin16dp">16dp</dimen>
+    <dimen name="margin40dp">40dp</dimen>
+    <dimen name="margin30dp">30dp</dimen>
+    <dimen name="margin10dp">10dp</dimen>
+    <dimen name="margin20dp">20dp</dimen>
+    <dimen name="margin25dp">25dp</dimen>
+    <dimen name="margin4dp">4dp</dimen>
+    <dimen name="margin55dp">55dp</dimen>
+    <dimen name="margin95dp">95dp</dimen>
+    <dimen name="progressBarWidth">30dp</dimen>
+    <dimen name="progressBarHeight">30dp</dimen>
+    <dimen name="tabIndicationHeightSelected">5dp</dimen>
+    <dimen name="eventTitle">301dp</dimen>
+    <dimen name="eventButtonWidth">100dp</dimen>
+    <dimen name="eventButtonHeight">45dp</dimen>
+    <dimen name="userLogoWidth">90dp</dimen>
+    <dimen name="userLogoHeight">90dp</dimen>
+    <dimen name="maxWidthUsername">280dp</dimen>
+    <dimen name="maxHeightUsername">50dp</dimen>
+
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivityHomeFragment">
+
+    <TextView
+        android:id="@+id/home_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textAlignment="center"
+        android:text="@string/home_Title"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:textSize="40sp"
+        android:background="@drawable/toptitleborder"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/eventInvitesHomeFeed"
+        android:name="com.example.sampletoolbar.MainActivityHomeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layoutManager="LinearLayoutManager"
+        android:layout_below="@+id/home_TextView"
+        tools:listitem="@layout/activity_event_invent"
+        android:layoutAnimation="@anim/layoutanimationelementsfalldown"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addEventButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lightBlue"
+        android:src="@drawable/ic_add_black_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin10dp"
+        android:layout_marginBottom="@dimen/margin10dp"
+        />
+
+
+</RelativeLayout>

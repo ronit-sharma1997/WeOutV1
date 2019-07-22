@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardViewEventInvent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="4dp"
+    android:layout_margin="5dp">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/margin25dp"
+    android:layout_marginBottom="@dimen/margin25dp">
+
+    <TextView
+        android:id="@+id/eventInviteHomeFeedTitle"
+        android:layout_width="@dimen/eventTitle"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Watch Spider-Man Movie"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/eventInviteHomeFeedDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/eventInviteHomeFeedTitle"
+        android:layout_centerHorizontal="true"
+        android:text="7/20/2019 10:00 A.M."
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/eventInviteHomeFeedLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/eventInviteHomeFeedDateTime"
+        android:layout_centerHorizontal="true"
+        android:text="AMC Theater"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <FrameLayout
+        android:id="@+id/organizerBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin20dp"
+        android:layout_below="@+id/eventInviteHomeFeedTitle"
+        android:layout_alignParentLeft="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_stat_name"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/organizerbox"
+            android:text="Organizer"
+            android:paddingLeft="@dimen/margin10dp"
+            android:textColor="@color/black"
+            android:textAlignment="center" />
+    </FrameLayout>
+
+
+</RelativeLayout>
+
+</androidx.cardview.widget.CardView>

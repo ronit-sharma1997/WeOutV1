@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/friend_item_border"
+    android:padding="10dp">
+
+    <FrameLayout
+        android:id="@+id/pendingFriendRequestContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/userbox"
+            />
+
+        <TextView
+            android:id="@+id/pendingFriendLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:text="R"
+            android:textColor="@color/lightBlue"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/pendingFriendNameRequest"
+        android:layout_width="301dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/pendingFriendRequestContainer"
+        android:text="rsharma1997"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        />
+
+    <Button
+        android:id="@+id/acceptButton"
+        android:layout_width="85dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/pendingFriendNameRequest"
+        android:layout_marginTop="0dp"
+        android:layout_toRightOf="@id/pendingFriendRequestContainer"
+        android:text="Accept"
+        android:textAllCaps="false"
+        android:textSize="14dp"
+        android:layout_alignStart="@id/pendingFriendNameRequest"/>
+
+    <Button
+        android:id="@+id/rejectButton"
+        android:layout_width="85dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/pendingFriendNameRequest"
+        android:layout_marginTop="0dp"
+        android:layout_toRightOf="@id/acceptButton"
+        android:text="Reject"
+        android:textAllCaps="false"
+        android:textSize="14dp"/>
+
+
+</RelativeLayout>

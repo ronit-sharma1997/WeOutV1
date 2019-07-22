@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 
         auth.signOut();
 
-
         if (auth.getCurrentUser() != null) {
             Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -46,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        inputEmail = (EditText) findViewById(R.id.email);
+        inputEmail = (EditText) findViewById(R.id.username_input);
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnSignup = (Button) findViewById(R.id.btn_signup);
@@ -54,8 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 //        btnReset = (Button) findViewById(R.id.btn_reset_password);
 
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
-
+//        auth = FirebaseAuth.getInstance();
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Show progress of login authentication at bottom of screen
                 progressBar.setVisibility(View.VISIBLE);
 
                 //authenticate user
@@ -107,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
+                                    // TODO: Clean up intent if not sending data (no putExtra)
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();

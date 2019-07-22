@@ -47,6 +47,7 @@
     <string name="title_activity_login">Sign in</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
+    <string name="hint_retype_password">Retype Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">Login</string>
     <string name="btn_link_to_register">Not a member? Get registered now!</string>

@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/lightBlue"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="@dimen/activity_horizontal_margin">
-
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:background="@color/lightBlue"
+    android:gravity="center_horizontal"
+    android:paddingHorizontal="@dimen/margin10dp"
+    >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/margin30dp"
+            android:layout_marginTop="@dimen/margin55dp"
+            android:layout_marginBottom="@dimen/margin16dp"
             android:text="@string/SignUp"
             android:textColor="@color/white"
             android:textSize="50sp" />
@@ -89,7 +86,7 @@
             app:counterMaxLength="15">
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/username_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/emailHint"
@@ -121,6 +118,28 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true">
+
+            <EditText
+                android:id="@+id/retype_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="@string/hint_retype_password"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textCursorDrawable="@null"
+                android:textColor="@color/white"
+                android:layout_marginTop="@dimen/margin10dp"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/sign_up_button"
             style="?android:textAppearanceSmall"
@@ -133,18 +152,6 @@
             android:textColor="@color/white"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/sign_in_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin20dp"
-            android:background="@color/darkBlue"
-            android:text="@string/btn_link_to_login"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
-    </LinearLayout>
-
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="@dimen/progressBarWidth"
@@ -152,4 +159,4 @@
         android:layout_gravity="center|bottom"
         android:layout_marginBottom="@dimen/margin20dp"
         android:visibility="gone" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

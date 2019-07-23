@@ -33,6 +33,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.eventInvite = this.eventsList.get(position);

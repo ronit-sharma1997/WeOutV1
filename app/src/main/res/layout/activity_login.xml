@@ -36,6 +36,8 @@
                 android:layout_marginBottom="@dimen/margin10dp"
                 android:hint="@string/emailHint"
                 android:inputType="text"
+                android:maxLines="1"
+                android:imeOptions="actionDone"
                 style="@style/LoginTextInput"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin10dp"
                 android:hint="@string/hint_password"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 style="@style/LoginTextInput" />
         </com.google.android.material.textfield.TextInputLayout>

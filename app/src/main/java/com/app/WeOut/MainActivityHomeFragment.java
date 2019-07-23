@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.app.WeOut.dummy.DummyContent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,6 +39,7 @@ public class MainActivityHomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private RecyclerView eventInvites;
+    private TextView emptyRecyclerView;
 
     private  ArrayList<Event> eventList = new ArrayList<>();
 
@@ -81,12 +83,12 @@ public class MainActivityHomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        eventList.add(new Event("Spider Man", "7.4.19, 8PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-        eventList.add(new Event("Pho and I", "7.5.19, 1PM", "ronswanson1", "AMC Theater", "Watching Spiderman with the homies"));
-        eventList.add(new Event("Billiards", "7.23.19, 4PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-        eventList.add(new Event("Avengers", "7.25.19, 8PM", "ronswanson2", "AMC Theater", "Watching Spiderman with the homies"));
-        eventList.add(new Event("Amelias", "7.27.19, 1PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-        eventList.add(new Event("Swimming", "7.27.19, 3PM", "ronswanson4", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Spider Man", "7.4.19, 8PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Pho and I", "7.5.19, 1PM", "ronswanson1", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Billiards", "7.23.19, 4PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Avengers", "7.25.19, 8PM", "ronswanson2", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Amelias", "7.27.19, 1PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
+//        eventList.add(new Event("Swimming", "7.27.19, 3PM", "ronswanson4", "AMC Theater", "Watching Spiderman with the homies"));
     }
 
     @Override
@@ -94,8 +96,12 @@ public class MainActivityHomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.mainactivity_fragment_tab1, container, false);
-        eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
+        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
         this.addEventFAB = view.findViewById(R.id.addEventButton);
+        this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
+        if(this.eventList.size() == 0) {
+            this.emptyRecyclerView.setVisibility(View.VISIBLE);
+        }
         this.addEventFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,12 +111,34 @@ public class MainActivityHomeFragment extends Fragment {
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.eventInvitesHomeFeed);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        this.eventInvites = (RecyclerView) view.findViewById(R.id.eventInvitesHomeFeed);
+        this.eventInvites.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layoutanimationelementsfalldown);
 //        recyclerView.setLayoutAnimation(animation);
         this.myAdapter = new EventHomeFeedRecyclerViewAdapter(this.eventList, this.listListener);
-        recyclerView.setAdapter(this.myAdapter);
+        this.myAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                checkEmpty();
+            }
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                checkEmpty();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                checkEmpty();
+            }
+            void checkEmpty() {
+                emptyRecyclerView.setVisibility(myAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
+        this.eventInvites.setAdapter(this.myAdapter);
 
 
         return view;

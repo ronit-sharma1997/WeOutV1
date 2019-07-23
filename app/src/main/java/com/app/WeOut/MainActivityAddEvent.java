@@ -123,15 +123,18 @@ public class MainActivityAddEvent extends AppCompatActivity {
     private String convertTimeToString(int hour, int minute) {
         String returnTimeString = "00:00 AM";
         String amOrPm = "AM";
+        if(hour == 0) {
+            hour = 12;
+        }
 
-        if (hour >= 12) {
+        else if (hour >= 12) {
             amOrPm = "PM";
             if (hour >= 13) {
                 hour = hour - 12;
             }
         }
 
-        returnTimeString = hour + ":" + minute + " " + amOrPm;
+        returnTimeString = String.format("%02d", hour) + ":" + String.format("%02d", minute) + " " + amOrPm;
         return returnTimeString;
     }
 

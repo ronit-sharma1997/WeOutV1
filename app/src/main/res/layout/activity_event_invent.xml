@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/eventInviteHomeFeedTitle"
         android:layout_centerHorizontal="true"
-        android:text="7/20/2019 10:00 A.M."
+        android:text="7-20-2019 10:00 A.M."
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="15sp" />
@@ -52,7 +52,7 @@
         android:id="@+id/organizerBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin20dp"
+        android:layout_marginLeft="@dimen/margin10dp"
         android:layout_below="@+id/eventInviteHomeFeedTitle"
         android:layout_alignParentLeft="true">
 

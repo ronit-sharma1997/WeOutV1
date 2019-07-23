@@ -34,6 +34,17 @@
         tools:listitem="@layout/activity_event_invent"
         android:layoutAnimation="@anim/layoutanimationelementsfalldown"/>
 
+    <TextView
+        android:id="@+id/emptyRecyclerViewEventHomeFeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/emptyViewEventHomeFeed"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addEventButton"
         android:layout_width="wrap_content"

@@ -1,5 +1,5 @@
 package utils;
-public interface EventInviteButtonListener {
+public interface AcceptRejectButtonListener {
         void onAccept(int position);
         void onReject(int position);
 }

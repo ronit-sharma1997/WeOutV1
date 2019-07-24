@@ -95,6 +95,7 @@ public class MyFriendRequestsFragment extends Fragment {
         this.acceptRejectButtonListener = new AcceptRejectButtonListener() {
             @Override
             public void onAccept(int position) {
+
                 WriteBatch stepsToAcceptFriendRequest = db.batch();
                 final String acceptedFriendRequest = pendingFriendRequests.get(position);
                 Log.d(TAG, "User clicked Accepted Button: " + acceptedFriendRequest);
@@ -208,8 +209,6 @@ public class MyFriendRequestsFragment extends Fragment {
         });
 
     }
-
-
 
     @Override
     public void onAttach(Context context) {

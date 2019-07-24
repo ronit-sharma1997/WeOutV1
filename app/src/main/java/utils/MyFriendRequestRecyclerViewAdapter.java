@@ -26,11 +26,7 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
     private final OnListFragmentInteractionListener mListener;
     private AcceptRejectButtonListener acceptRejectButtonListener;
 
-<<<<<<< HEAD
     public MyFriendRequestRecyclerViewAdapter(List<String> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener acceptRejectButtonListener) {
-=======
-    public MyFriendRequestRecyclerViewAdapter(List<Friend> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener acceptRejectButtonListener) {
->>>>>>> master
         this.pendingFriendsList = items;
         this.mListener = listener;
         this.acceptRejectButtonListener = acceptRejectButtonListener;
@@ -69,10 +65,6 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
         public final View mView;
         public final TextView personLogo;
         public final TextView userName;
-<<<<<<< HEAD
-=======
-        public Friend pendingFriend;
->>>>>>> master
         public final Button acceptButton;
         public final Button rejectButton;
 

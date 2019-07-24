@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="@string/Welcome"
+        android:text="@string/profileMainText"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin40dp"
-        android:layout_marginLeft="@dimen/margin40dp"
+        android:layout_marginLeft="@dimen/margin30dp"
         android:layout_below="@+id/welcomeTitle">
 
         <ImageView
@@ -49,8 +49,9 @@
 
     <TextView
         android:id="@+id/fullName"
-        android:layout_marginTop="@dimen/margin55dp"
-        android:layout_marginRight="@dimen/margin30dp"
+        android:layout_marginRight="@dimen/margin20dp"
+        android:layout_marginLeft="@dimen/margin10dp"
+        android:layout_marginTop="@dimen/margin16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ron Sharma"
@@ -62,13 +63,14 @@
         android:textColor="@color/black"
         android:textSize="40sp"
         android:layout_toRightOf="@+id/accountLogoContainer"
-        android:layout_below="@+id/welcomeTitle"/>
+        android:layout_below="@+id/welcomeTitle"
+        android:layout_alignTop="@id/accountLogoContainer"/>
 
     <TextView
         android:id="@+id/userName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/margin30dp"
+        android:layout_marginRight="@dimen/margin20dp"
         android:text="rsharma1997"
         android:autoSizeTextType="uniform"
         android:maxWidth="@dimen/maxWidthUsername"

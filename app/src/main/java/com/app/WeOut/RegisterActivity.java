@@ -65,16 +65,13 @@ public class RegisterActivity extends AppCompatActivity {
         inputRetypePassword = findViewById(R.id.retype_password);
         inputFirstName = findViewById(R.id.firstName);
         inputLastName = findViewById(R.id.lastName);
-        inputEmailAddress = findViewById(R.id.emailInput);
         progressBar = findViewById(R.id.progressBar);
-
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 final String username = inputUsername.getText().toString().trim();
-                final String emailAddress = inputEmailAddress.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String retype_password = inputRetypePassword.getText().toString().trim();
                 final String firstName = inputFirstName.getText().toString().trim();
@@ -99,10 +96,6 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Please enter password!",
                             Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else if (TextUtils.isEmpty(emailAddress) || !ValidEmailAddress(emailAddress)) {
-                    Toast.makeText(getApplicationContext(), "Please enter valid email address!",
-                            Toast.LENGTH_SHORT).show();
                 }
                 else if (username.length() > 15) {
                     Toast.makeText(getApplicationContext(), "Username is too long, " +
@@ -156,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     DocumentReference friendRequests = db.collection("users").document(username).collection("friends").document("received");
                                     createFriendsCollection.set(friendRequests, demoFriend);
                                     DocumentReference currentUser =  db.collection("users").document(username);
-                                    createFriendsCollection.set(currentUser, new User(firstName, lastName, username, emailAddress, new Timestamp(new Date()).toString()));
+                                    createFriendsCollection.set(currentUser, new User(firstName, lastName, username, "fake@gmail.com", new Timestamp(new Date()).toString()));
                                     createFriendsCollection.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {

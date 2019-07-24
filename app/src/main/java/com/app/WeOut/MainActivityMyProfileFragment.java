@@ -47,7 +47,6 @@ public class MainActivityMyProfileFragment extends Fragment {
 
     private TextView userLogo, userName, fullName;
 
-
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
     }
@@ -84,7 +83,6 @@ public class MainActivityMyProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
-//        view.findViewById(R.id.friendsButton).setOnClickListener(this);
 
         // Associate members of this class with the layout views
         this.userLogo = view.findViewById(R.id.userLogo);
@@ -105,16 +103,23 @@ public class MainActivityMyProfileFragment extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists() && documentSnapshot != null) {
                     User currentUser = documentSnapshot.toObject(User.class);
-                    fullName.setText(currentUser.getFirstName().toString() + " " + currentUser.getLastName().toString());
+
+                    String userFullName = currentUser.getFirstName() + " " + currentUser.getLastName();
+                    String userInitials =
+                            String.valueOf(Character.toUpperCase(currentUser.getFirstName().charAt(0))) +
+                                    String.valueOf(Character.toUpperCase(currentUser.getLastName().charAt(0)));
+
+                    // Set user full name
+                    fullName.setText(userFullName);
+
+                    // Set User logo to the First and Last letter of persons name
+                    userLogo.setText(userInitials);
                 }
             }
         });
 
         // Set username in profile to specific username
         this.userName.setText(username);
-
-        // Set User logo to the first letter of the name
-        this.userLogo.setText(String.valueOf(Character.toUpperCase(this.userName.getText().charAt(0))));
 
         // Display Friend Tabs within the user's profile
         TabLayout tabLayout = view.findViewById(R.id.friendToolbar);

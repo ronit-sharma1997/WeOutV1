@@ -39,9 +39,9 @@
             android:id="@+id/userLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R"
+            android:text="RS"
             android:layout_gravity="center"
-            android:textSize="65sp"
+            android:textSize="60sp"
             android:textStyle="bold"
             android:textColor="@color/lightBlue"
             />
@@ -49,11 +49,11 @@
 
     <TextView
         android:id="@+id/fullName"
-        android:layout_marginLeft="@dimen/margin10dp"
         android:layout_marginTop="@dimen/margin55dp"
-        android:layout_width="wrap_content"
+        android:layout_marginRight="@dimen/margin30dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="rsharma1997"
+        android:text="Ron Sharma"
         android:autoSizeTextType="uniform"
         android:maxWidth="@dimen/maxWidthUsername"
         android:maxHeight="@dimen/maxHeightUsername"
@@ -65,10 +65,10 @@
         android:layout_below="@+id/welcomeTitle"/>
 
     <TextView
-        android:layout_marginLeft="@dimen/margin55dp"
         android:id="@+id/userName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/margin30dp"
         android:text="rsharma1997"
         android:autoSizeTextType="uniform"
         android:maxWidth="@dimen/maxWidthUsername"
@@ -78,7 +78,8 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:layout_below="@+id/fullName"
-        android:layout_alignStart="@id/fullName"/>
+        android:layout_alignStart="@id/fullName"
+        />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/friendToolbar"

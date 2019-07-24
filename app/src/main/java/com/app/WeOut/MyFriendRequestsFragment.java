@@ -2,8 +2,11 @@ package com.app.WeOut;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,14 +14,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firestore.v1.Write;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import utils.AcceptRejectButtonListener;
-import utils.Friend;
 import utils.MyFriendRequestRecyclerViewAdapter;
 
 /**
@@ -34,10 +51,15 @@ public class MyFriendRequestsFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<Friend> pendingFriendRequests;
+    private ArrayList<String> pendingFriendRequests;
+    private RecyclerView myFriendRequestsRecyclerView;
+    private TextView emptyRecyclerViewFriendRequests;
+    private MyFriendRequestRecyclerViewAdapter myFriendRequestRecyclerViewAdapter;
     private AcceptRejectButtonListener acceptRejectButtonListener;
-
-    private String TAG = "MyFriendRequestsFragment_TAG";
+    private String TAG;
+    private FirebaseFirestore db;
+    private String email;
+    private String userName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -63,23 +85,65 @@ public class MyFriendRequestsFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-
-        // Initialize pending friend requests list with dummy variables
-        pendingFriendRequests = new ArrayList<>();
-        this.addDummyFriendRequests();
+        this.pendingFriendRequests = new ArrayList<>();
+        this.TAG = "MyFriendRequestsFragment";
+        this.db = FirebaseFirestore.getInstance();
+        this.email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        this.userName = email.substring(0, email.indexOf("@weout.com"));
 
         // Set up Accept Reject Listener functions
         this.acceptRejectButtonListener = new AcceptRejectButtonListener() {
             @Override
             public void onAccept(int position) {
-                Log.d(TAG, "Accepted " + pendingFriendRequests.get(position).getUserName());
-                Toast.makeText(getActivity().getApplicationContext(), "Accepted " + pendingFriendRequests.get(position).getUserName(), Toast.LENGTH_SHORT);
+
+                WriteBatch stepsToAcceptFriendRequest = db.batch();
+                final String acceptedFriendRequest = pendingFriendRequests.get(position);
+                Log.d(TAG, "User clicked Accepted Button: " + acceptedFriendRequest);
+                Map<String, Object> receivedFriendRequest = new HashMap<>();
+                receivedFriendRequest.put(acceptedFriendRequest, FieldValue.delete());
+                DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName).collection("friends").document("received");
+                stepsToAcceptFriendRequest.update(dfReceivedFriendRequest, new HashMap<>(receivedFriendRequest));
+                DocumentReference dfCurrentFriends = db.collection("users").document(userName).collection("friends").document("current");
+                receivedFriendRequest.put(acceptedFriendRequest, true);
+                stepsToAcceptFriendRequest.set(dfCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
+                DocumentReference dfAddedFriendCurrentFriends = db.collection("users").document(acceptedFriendRequest).collection("friends").document("current");
+                receivedFriendRequest.put(userName, true);
+                receivedFriendRequest.remove(acceptedFriendRequest);
+                stepsToAcceptFriendRequest.set(dfAddedFriendCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
+                stepsToAcceptFriendRequest.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Database successfully updated with friend connection " + userName + " : " + acceptedFriendRequest);
+                            Toast.makeText(getActivity().getApplicationContext(), "Accepted " + acceptedFriendRequest, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "Database failed to update with friend connection " + userName + " : " + acceptedFriendRequest);
+                            Toast.makeText(getActivity().getApplicationContext(), "Error with accepting " + acceptedFriendRequest, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
             }
 
             @Override
             public void onReject(int position) {
-                Log.d(TAG, "Rejected " + pendingFriendRequests.get(position).getUserName());
-                Toast.makeText(getActivity().getApplicationContext(), "Rejected " + pendingFriendRequests.get(position).getUserName(), Toast.LENGTH_SHORT);
+                Log.d(TAG, "User Clicked Rejected Button: " + pendingFriendRequests.get(position));
+                final String rejectedFriendRequest = pendingFriendRequests.get(position);
+                Map<String, Object> receivedFriendRequest = new HashMap<>();
+                receivedFriendRequest.put(rejectedFriendRequest, FieldValue.delete());
+                DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName).collection("friends").document("received");
+                dfReceivedFriendRequest.update(receivedFriendRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Database successfully removed friend request " + rejectedFriendRequest);
+                            Toast.makeText(getActivity().getApplicationContext(), "Rejected " + rejectedFriendRequest, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "Database failed to remove friend request " + rejectedFriendRequest);
+                            Toast.makeText(getActivity().getApplicationContext(), "Error: Failed to reject " + rejectedFriendRequest, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         };
 
@@ -90,18 +154,60 @@ public class MyFriendRequestsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend_request_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyFriendRequestRecyclerViewAdapter(this.pendingFriendRequests, this.mListener, this.acceptRejectButtonListener));
-        }
+        this.myFriendRequestsRecyclerView = view.findViewById(R.id.recyclerViewMyFriendRequests);
+        this.emptyRecyclerViewFriendRequests = view.findViewById(R.id.emptyRecyclerViewMyFriendRequests);
+        this.myFriendRequestsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        this.setUpListenerAdapter();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.myFriendRequestsRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        this.myFriendRequestsRecyclerView.addItemDecoration(dividerItemDecoration);
         return view;
+    }
+
+    private void setUpListenerAdapter() {
+        DocumentReference df = this.db.collection("users").document(userName).collection("friends").document("received");
+        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                        pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
+                        emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
+                    }
+
+
+                }
+                else {
+                    emptyRecyclerViewFriendRequests.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Error with getting friend requests");
+                }
+                myFriendRequestRecyclerViewAdapter = new MyFriendRequestRecyclerViewAdapter(pendingFriendRequests, mListener, acceptRejectButtonListener);
+                myFriendRequestsRecyclerView.setAdapter(myFriendRequestRecyclerViewAdapter);
+
+            }
+        });
+
+
+        df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    //we have some sort of error
+                    Log.d(TAG, e.getMessage());
+                    return;
+                }
+                if(documentSnapshot.exists() && documentSnapshot != null) {
+                    pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
+                    emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
+                    myFriendRequestRecyclerViewAdapter = new MyFriendRequestRecyclerViewAdapter(pendingFriendRequests, mListener, acceptRejectButtonListener);
+                    myFriendRequestsRecyclerView.setAdapter(myFriendRequestRecyclerViewAdapter);
+                }
+
+            }
+        });
+
     }
 
     @Override
@@ -136,14 +242,4 @@ public class MyFriendRequestsFragment extends Fragment {
         void onListFragmentInteraction(DummyItem item);
     }
 
-    private void addDummyFriendRequests() {
-        this.pendingFriendRequests.add(new Friend("jsmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("asmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("bsmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("csmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("dsmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("esmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("fsmith01", "", ""));
-        this.pendingFriendRequests.add(new Friend("jsmith010123123", "", ""));
-    }
 }

@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRecyclerViewAdapter.ViewHolder> {
 
-    private List<Friend> friendsList;
+    private List<String> friendsList;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyFriendRecyclerViewAdapter(List<Friend> items, OnListFragmentInteractionListener listener) {
+    public MyFriendRecyclerViewAdapter(List<String> items, OnListFragmentInteractionListener listener) {
         friendsList = items;
         mListener = listener;
     }
@@ -37,8 +37,7 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.friend = friendsList.get(position);
-        holder.friendUsername.setText(friendsList.get(position).userName);
+        holder.friendUsername.setText(friendsList.get(position));
 //        Icon friendLogo = Icon.createWithResource(this,R.drawable.friendaccount);
 //        holder.imgId.setImageResource(R.drawable.friendaccount);
 
@@ -63,7 +62,6 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
         public final View mView;
         public final ImageView imgId;
         public final TextView friendUsername;
-        public Friend friend;
 
         public ViewHolder(View view) {
             super(view);

@@ -73,6 +73,7 @@ public class MainActivityNotificationsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
         this.eventInvites = new ArrayList<>();
         this.addDummyEventInvites();
         this.acceptRejectListener = new AcceptRejectButtonListener() {

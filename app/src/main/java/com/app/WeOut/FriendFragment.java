@@ -2,20 +2,37 @@ package com.app.WeOut;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 
 import java.util.ArrayList;
 
-import utils.Friend;
+
+
+import javax.annotation.Nullable;
+
 import utils.MyFriendRecyclerViewAdapter;
 
 /**
@@ -31,7 +48,11 @@ public class FriendFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<Friend> friendList;
+    private ArrayList<String> friendList;
+    private RecyclerView myFriendsRecyclerView;
+    private TextView emptyRecyclerView;
+    private MyFriendRecyclerViewAdapter myFriendRecyclerViewAdapter;
+    private String TAG;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -53,8 +74,8 @@ public class FriendFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        friendList = new ArrayList<>();
-        this.addDummyFriends();
+        this.TAG = "FriendFragment";
+        this.friendList = new ArrayList<>();
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -65,23 +86,66 @@ public class FriendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend_list, container, false);
+        this.myFriendsRecyclerView = view.findViewById(R.id.recyclerViewMyFriends);
+        this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewMyFriendsList);
+        this.myFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        setUpListenerAdapter();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(myFriendsRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        myFriendsRecyclerView.addItemDecoration(dividerItemDecoration);
 
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyFriendRecyclerViewAdapter(this.friendList, mListener));
-            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                   DividerItemDecoration.VERTICAL);
-            recyclerView.addItemDecoration(dividerItemDecoration);
-        }
+//        }
         return view;
+    }
+
+    private void setUpListenerAdapter() {
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String shortenUserName = userName.substring(0, userName.indexOf("@weout.com"));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference df = db.collection("users").document(shortenUserName).collection("friends").document("current");
+        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                        friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+                        emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
+                    }
+
+
+                }
+                else {
+                    emptyRecyclerView.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Error with getting current friends");
+                }
+                myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
+                myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
+
+            }
+        });
+
+
+        df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    //we have some sort of error
+                    Log.d(TAG, e.getMessage());
+                    return;
+                }
+                if(documentSnapshot.exists() && documentSnapshot != null) {
+                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+                    emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
+                    myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
+                    myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
+                }
+
+            }
+        });
+
     }
 
 
@@ -102,6 +166,7 @@ public class FriendFragment extends Fragment {
         mListener = null;
     }
 
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -117,26 +182,4 @@ public class FriendFragment extends Fragment {
         void onListFragmentInteraction(DummyItem item);
     }
 
-    private void addDummyFriends() {
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-        this.friendList.add(new Friend("sbillah1969", "Saif", "Billah"));
-    }
 }

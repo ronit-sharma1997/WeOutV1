@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "333381888814-8q0d7ficr8sfj7s34m8b9rj2ldnn4utc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.WeOut",
+            "certificate_hash": "c63556f07b95bf5395f725955cb28c8a697da7ef"
+          }
+        },
+        {
           "client_id": "333381888814-6uk4mbv7tjai7ghohng1v9rjmo3uuc19.apps.googleusercontent.com",
           "client_type": 3
         }

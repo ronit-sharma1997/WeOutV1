@@ -17,9 +17,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * Class to handle the Login Screen of the App. Here the user can login with a username and
+ * password.
+ */
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText inputEmail, inputPassword;
+    private EditText inputUsername, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin;
@@ -33,8 +37,8 @@ public class LoginActivity extends AppCompatActivity {
 
         auth.signOut();
 
+        //if we are already logged in, we can go straight to the Main Activity
         if (auth.getCurrentUser() != null) {
-            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
@@ -42,19 +46,14 @@ public class LoginActivity extends AppCompatActivity {
         // set the view now
         setContentView(R.layout.activity_login);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        //obtain Views from the screen and assign to variables
+        inputUsername = findViewById(R.id.username_input);
+        inputPassword = findViewById(R.id.password);
+        progressBar = findViewById(R.id.progressBar);
+        btnSignup = findViewById(R.id.btn_signup);
+        btnLogin = findViewById(R.id.btn_login);
 
-        inputEmail = (EditText) findViewById(R.id.username_input);
-        inputPassword = (EditText) findViewById(R.id.password);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        btnSignup = (Button) findViewById(R.id.btn_signup);
-        btnLogin = (Button) findViewById(R.id.btn_login);
-//        btnReset = (Button) findViewById(R.id.btn_reset_password);
-
-        //Get Firebase auth instance
-//        auth = FirebaseAuth.getInstance();
-
+        //if user needs to sign up, go to Register activity and end current activity
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,17 +62,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-//        btnReset.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
-//            }
-//        });
-
+        //attempt to login with input from EditText Views
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = inputEmail.getText().toString() + "@weout.com";
+                String email = inputUsername.getText().toString() + "@weout.com";
                 final String password = inputPassword.getText().toString();
 
                 if (TextUtils.isEmpty(email)) {
@@ -101,14 +94,16 @@ public class LoginActivity extends AppCompatActivity {
                                 if (!task.isSuccessful()) {
                                     // there was an error
                                     if (password.length() < 6) {
-                                        inputPassword.setError(getString(R.string.minimum_password));
+                                        inputPassword.setError(getString(R.string
+                                                .minimum_password));
                                     } else {
-                                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivity.this,
+                                                getString(R.string.auth_failed),
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    // TODO: Clean up intent if not sending data (no putExtra)
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
+                                    startActivity(new Intent(LoginActivity.this,
+                                            MainActivity.class));
                                     finish();
                                 }
                             }

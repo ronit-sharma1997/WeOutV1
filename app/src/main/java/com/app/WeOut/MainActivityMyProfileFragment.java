@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import utils.FriendActivityPagerAdapter;
+import utils.User;
 
 
 /**
@@ -44,6 +46,7 @@ public class MainActivityMyProfileFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private TextView userLogo, userName, fullName;
+
 
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
@@ -88,7 +91,6 @@ public class MainActivityMyProfileFragment extends Fragment {
         this.userName = view.findViewById(R.id.userName);
         this.fullName = view.findViewById(R.id.fullName);
 
-        // Get current user name from email and get substring of that
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String username = email.substring(0, email.indexOf("@weout.com"));
 
@@ -98,22 +100,19 @@ public class MainActivityMyProfileFragment extends Fragment {
         // Reference the current user by their username within the "users" collection
         DocumentReference dr = db.collection("users").document(username);
 
-        // Get the user-specific data from the data base
-        dr.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-
-                    // Set the full name of the user in the text view on the profile
-                    fullName.setText(documentSnapshot.get("firstName").toString()
-                            + " " + documentSnapshot.get("lastName").toString());
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists() && documentSnapshot != null) {
+                    User currentUser = documentSnapshot.toObject(User.class);
+                    fullName.setText(currentUser.getFirstName().toString() + " " + currentUser.getLastName().toString());
                 }
             }
         });
 
         // Set username in profile to specific username
         this.userName.setText(username);
+
         // Set User logo to the first letter of the name
         this.userLogo.setText(String.valueOf(Character.toUpperCase(this.userName.getText().charAt(0))));
 

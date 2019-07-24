@@ -7,7 +7,7 @@
         android:radius="35dp"/>
 
     <!-- color of the selected tab -->
-    <solid
-        android:color="#fff"/>
+    <solid android:color="#fff"/>
+    <stroke android:width="3dp" android:color="@color/lightBlue" />
 
 </shape>

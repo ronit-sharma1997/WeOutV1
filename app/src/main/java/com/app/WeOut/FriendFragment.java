@@ -104,28 +104,28 @@ public class FriendFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         DocumentReference df = db.collection("users").document(shortenUserName).collection("friends").document("current");
-        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if(documentSnapshot.exists() && documentSnapshot != null) {
-
-                        friendList = new ArrayList<>(documentSnapshot.getData().keySet());
-                        emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
-                    }
-
-
-                }
-                else {
-                    emptyRecyclerView.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "Error with getting current friends");
-                }
-                myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
-                myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
-
-            }
-        });
+//        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if(task.isSuccessful()) {
+//                    DocumentSnapshot documentSnapshot = task.getResult();
+//                    if(documentSnapshot.exists() && documentSnapshot != null) {
+//
+//                        friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+//                        emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
+//                    }
+//
+//
+//                }
+//                else {
+//                    emptyRecyclerView.setVisibility(View.VISIBLE);
+//                    Log.d(TAG, "Error with getting current friends");
+//                }
+//                myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
+//                myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
+//
+//            }
+//        });
 
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {

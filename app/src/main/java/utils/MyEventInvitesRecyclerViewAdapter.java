@@ -19,9 +19,9 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
 
     private List<Event> eventInvites;
     private OnListFragmentInteractionListener myListener;
-    private EventInviteButtonListener buttonListener;
+    private AcceptRejectButtonListener buttonListener;
 
-    public MyEventInvitesRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, EventInviteButtonListener buttonListener) {
+    public MyEventInvitesRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener buttonListener) {
         this.eventInvites = items;
         this.myListener = listener;
         this.buttonListener = buttonListener;
@@ -76,7 +76,7 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public WeakReference<EventInviteButtonListener> listener;
+        public WeakReference<AcceptRejectButtonListener> listener;
         public final View mView;
         public final TextView eventTitle;
         public final TextView eventDate;
@@ -84,7 +84,7 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
         public final Button accept;
         public final Button reject;
         public Event event;
-        public ViewHolder(@NonNull View itemView, EventInviteButtonListener listener) {
+        public ViewHolder(@NonNull View itemView, AcceptRejectButtonListener listener) {
             super(itemView);
             this.mView = itemView;
             this.eventTitle = this.mView.findViewById(R.id.eventInviteTitle);

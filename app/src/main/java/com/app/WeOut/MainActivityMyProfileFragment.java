@@ -82,29 +82,49 @@ public class MainActivityMyProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
 //        view.findViewById(R.id.friendsButton).setOnClickListener(this);
+
+        // Associate members of this class with the layout views
         this.userLogo = view.findViewById(R.id.userLogo);
         this.userName = view.findViewById(R.id.userName);
         this.fullName = view.findViewById(R.id.fullName);
-        String userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String shortenUserName = userName.substring(0, userName.indexOf("@weout.com"));
+
+        // Get current user name from email and get substring of that
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String username = email.substring(0, email.indexOf("@weout.com"));
+
+        // Get instance of Database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference dr = db.collection("users").document(shortenUserName);
+
+        // Reference the current user by their username within the "users" collection
+        DocumentReference dr = db.collection("users").document(username);
+
+        // Get the user-specific data from the data base
         dr.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
-                    fullName.setText(documentSnapshot.get("firstName").toString() + " " + documentSnapshot.get("lastName").toString());
+
+                    // Set the full name of the user in the text view on the profile
+                    fullName.setText(documentSnapshot.get("firstName").toString()
+                            + " " + documentSnapshot.get("lastName").toString());
                 }
             }
         });
-        this.userName.setText(shortenUserName);
+
+        // Set username in profile to specific username
+        this.userName.setText(username);
+        // Set User logo to the first letter of the name
         this.userLogo.setText(String.valueOf(Character.toUpperCase(this.userName.getText().charAt(0))));
+
+        // Display Friend Tabs within the user's profile
         TabLayout tabLayout = view.findViewById(R.id.friendToolbar);
         tabLayout.addTab(tabLayout.newTab().setText("My Friends"));
         tabLayout.addTab(tabLayout.newTab().setText("Add Friends"));
         tabLayout.addTab(tabLayout.newTab().setText("Added Me"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
         final ViewPager viewPager = view.findViewById(R.id.myProfilePager);
         final FriendActivityPagerAdapter myAdapter = new FriendActivityPagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(myAdapter);

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import utils.CustomSnackBar;
 import utils.User;
 
 /**
@@ -37,10 +38,16 @@ import utils.User;
  */
 public class RegisterActivity extends AppCompatActivity {
 
+    // Variables in XML
     private EditText inputUsername, inputPassword, inputRetypePassword, inputFirstName,
-            inputLastName, inputEmailAddress;
+            inputLastName;
     private Button btnSignUp;
     private ProgressBar progressBar;
+
+    // Snackbar for displaying feedback
+    CustomSnackBar snackBar;
+
+    // Firebase variable
     private FirebaseAuth auth;
 
     private String friendCollectionPath;
@@ -55,11 +62,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
 
+
+        // Associate all views by id
         btnSignUp = findViewById(R.id.sign_up_button);
-
         inputUsername = findViewById(R.id.username_input);
         inputPassword = findViewById(R.id.password);
         inputRetypePassword = findViewById(R.id.retype_password);
@@ -67,9 +73,15 @@ public class RegisterActivity extends AppCompatActivity {
         inputLastName = findViewById(R.id.lastName);
         progressBar = findViewById(R.id.progressBar);
 
+        // Initialize necessary variables
+        snackBar = new CustomSnackBar();
+
+        // Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 final String username = inputUsername.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
@@ -78,38 +90,33 @@ public class RegisterActivity extends AppCompatActivity {
                 final String lastName = inputLastName.getText().toString().trim();
 
                 if (TextUtils.isEmpty(firstName)) {
-                    Toast.makeText(getApplicationContext(), "Please enter First Name!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter First Name!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(lastName)) {
-                    Toast.makeText(getApplicationContext(), "Please enter Last Name!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter Last Name!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(username)) {
-                    Toast.makeText(getApplicationContext(), "Please enter username!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter username!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Please enter password!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter password!", R.color.black);
                     return;
                 }
                 else if (username.length() > 15) {
-                    Toast.makeText(getApplicationContext(), "Username is too long, " +
-                            "maximum 15 characters!", Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),
+                            "Username is too long, maximum 15 characters!", R.color.black);
                     return;
                 }
                 else if (password.length() < 6) {
-                    Toast.makeText(getApplicationContext(), "Password too short, enter " +
-                            "minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),
+                            "Password too short, enter minimum 6 characters!", R.color.black);
                     return;
                 }
                 else if (!password.equals(retype_password)) {
-                    Toast.makeText(getApplicationContext(), "Passwords do not match!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Passwords do not match!", R.color.black);
                     return;
                 }
 
@@ -127,10 +134,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
-                                    // TODO: Remove before final product
-                                    Toast.makeText(RegisterActivity.this,
-                                            "Error: Account creation failed:" +
-                                                    task.getException(), Toast.LENGTH_SHORT).show();
+                                    snackBar.display(v, getApplicationContext(),
+                                            "Error: Account creation failed:" + task.getException(), R.color.black);
                                 }
 
                                 // If task is successful,
@@ -155,14 +160,14 @@ public class RegisterActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "Database successfully written to with user info.");
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                                            Toast.makeText(RegisterActivity.this, "Account created successfully.", Toast.LENGTH_SHORT).show();
+                                            snackBar.display(v, getApplicationContext(),"Account created successfully.", R.color.black);
                                             finish();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Log.d(TAG, "Database unsuccessfully written to with user info.");
-                                            Toast.makeText(RegisterActivity.this, "Error: Failure writing to database.", Toast.LENGTH_SHORT).show();
+                                            snackBar.display(v, getApplicationContext(),"Error: Failure writing to database.", R.color.black);
                                         }
                                     });
                                 }

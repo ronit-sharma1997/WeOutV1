@@ -35,13 +35,14 @@
             android:layout_gravity="center"
             android:src="@drawable/userbox"
             />
+
         <TextView
             android:id="@+id/userLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="RS"
             android:layout_gravity="center"
-            android:textSize="60sp"
+            android:textSize="55sp"
             android:textStyle="bold"
             android:textColor="@color/lightBlue"
             />

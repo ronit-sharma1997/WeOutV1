@@ -33,6 +33,8 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import utils.CustomSnackBar;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,7 +58,7 @@ public class Profile_AddFriendFragment extends Fragment {
     private ProgressBar progressBar;
     private EditText addFriendByUsername;
     private String TAG;
-    private Snackbar messageBar;
+    private CustomSnackBar snackBar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -91,16 +93,20 @@ public class Profile_AddFriendFragment extends Fragment {
         }
         this.TAG = "Profile_AddFriendFragment";
 
+        snackBar = new CustomSnackBar();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_friend, container, false);
         this.addFriend = view.findViewById(R.id.addFriendButton);
         this.progressBar = view.findViewById(R.id.progressBarAddFriend);
         this.addFriendByUsername = view.findViewById(R.id.addUsernameFriend);
+
+        // Get info for logged in user
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         final String username = email.substring(0, email.indexOf("@weout.com"));
 
@@ -109,11 +115,7 @@ public class Profile_AddFriendFragment extends Fragment {
             public void onClick(final View view) {
                 progressBar.setVisibility(View.VISIBLE);
                 if (TextUtils.isEmpty(addFriendByUsername.getText()) || addFriendByUsername.getText().toString().equals(username)) {
-                    messageBar = Snackbar.make(view, "Please enter a valid username!", Snackbar.LENGTH_SHORT);
-                    View messageBarView = messageBar.getView();
-                    messageBarView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.lightBlue));
-                    messageBar.show();
-                    //Toast.makeText(getContext(), "Please enter a valid username!", Toast.LENGTH_SHORT).show();
+                    snackBar.display(view, getActivity(), "Please enter a valid username!");
                 } else {
 
                     final String friendToAdd = addFriendByUsername.getText().toString().trim();
@@ -133,7 +135,7 @@ public class Profile_AddFriendFragment extends Fragment {
                                     // 1. friendToAdd is already friends with current user
                                     // 2. friendToAdd already has a friend request from the current user
                                 if(!queryDocumentSnapshot.isEmpty()) {
-                                    Toast.makeText(getContext(), "You're already friends with this person, or you've already sent a friend request to them!", Toast.LENGTH_SHORT).show();
+                                    snackBar.display(view, getActivity(), "You're already friends with this person, or you've already sent a friend request to them!");
                                 }
                                 else {
                                     // Check to see if the current user is:
@@ -151,7 +153,7 @@ public class Profile_AddFriendFragment extends Fragment {
                                                     // Current user is already friends with friendToAdd
                                                     // Current user already has a friend request from friendToAdd
                                                 if(!queryDocumentSnapshot1.isEmpty()) {
-                                                    Toast.makeText(getContext(), "You're already friends with this person, or you have a friend request from them already!", Toast.LENGTH_SHORT).show();
+                                                    snackBar.display(view, getActivity(), "You're already friends with this person, or you have a friend request from them already!");
                                                 }
 
                                                 // Finally, send friend request, as all tests have passed
@@ -175,17 +177,17 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                             .set(pendingFriendRequest, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
-                                                                            Toast.makeText(getContext(), "Friend request successfully sent", Toast.LENGTH_SHORT).show();
+                                                                            snackBar.display(view, getActivity(), "Friend request successfully sent");
                                                                         }
                                                                     }).addOnFailureListener(new OnFailureListener() {
                                                                         @Override
                                                                         public void onFailure(@NonNull Exception e) {
-                                                                            Toast.makeText(getContext(), "Friend request failed to send", Toast.LENGTH_SHORT).show();
+                                                                            snackBar.display(view, getActivity(), "Friend request failed to send");
                                                                         }
                                                                     });
                                                                 }
                                                                 else {
-                                                                    Toast.makeText(getContext(), "Username doesn't exist", Toast.LENGTH_SHORT).show();
+                                                                    snackBar.display(view, getActivity(), "Username doesn't exist");
                                                                 }
                                                             }
                                                         }

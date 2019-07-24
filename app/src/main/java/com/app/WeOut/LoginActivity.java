@@ -17,16 +17,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import utils.CustomSnackBar;
+
 /**
  * Class to handle the Login Screen of the App. Here the user can login with a username and
  * password.
  */
 public class LoginActivity extends AppCompatActivity {
 
+    // XML Variables
     private EditText inputUsername, inputPassword;
-    private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin;
+
+    private CustomSnackBar snackBar;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,9 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
+        // Initialize snackbar
+        snackBar = new CustomSnackBar();
 
         auth.signOut();
 
@@ -58,26 +66,30 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                finish();
+                // TODO: Decide if you want to fully remove this
+                // Removed so that user can press back when fully logged in
+                //finish();
             }
         });
 
         //attempt to login with input from EditText Views
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                String email = inputUsername.getText().toString() + "@weout.com";
+            public void onClick(final View v) {
+                String username = inputUsername.getText().toString();
                 final String password = inputPassword.getText().toString();
 
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(username)) {
+                    snackBar.display(v, getApplicationContext(),"Enter username!", R.color.black);
+                    return;
+                }
+                else if (TextUtils.isEmpty(password)) {
+                    snackBar.display(v, getApplicationContext(),"Enter password!", R.color.black);
                     return;
                 }
 
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                // Append @weout.com to username
+                String email = username + "@weout.com";
 
                 // Show progress of login authentication at bottom of screen
                 progressBar.setVisibility(View.VISIBLE);
@@ -97,13 +109,10 @@ public class LoginActivity extends AppCompatActivity {
                                         inputPassword.setError(getString(R.string
                                                 .minimum_password));
                                     } else {
-                                        Toast.makeText(LoginActivity.this,
-                                                getString(R.string.auth_failed),
-                                                Toast.LENGTH_LONG).show();
+                                        snackBar.display(v, getApplicationContext(),getString(R.string.auth_failed), R.color.black);
                                     }
                                 } else {
-                                    startActivity(new Intent(LoginActivity.this,
-                                            MainActivity.class));
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                     finish();
                                 }
                             }

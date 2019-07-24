@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -38,12 +37,12 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AddFriendFragment.OnFragmentInteractionListener} interface
+ * {@link Profile_AddFriendFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AddFriendFragment#newInstance} factory method to
+ * Use the {@link Profile_AddFriendFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddFriendFragment extends Fragment {
+public class Profile_AddFriendFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -61,7 +60,7 @@ public class AddFriendFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public AddFriendFragment() {
+    public Profile_AddFriendFragment() {
         // Required empty public constructor
     }
 
@@ -71,11 +70,11 @@ public class AddFriendFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AddFriendFragment.
+     * @return A new instance of fragment Profile_AddFriendFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddFriendFragment newInstance(String param1, String param2) {
-        AddFriendFragment fragment = new AddFriendFragment();
+    public static Profile_AddFriendFragment newInstance(String param1, String param2) {
+        Profile_AddFriendFragment fragment = new Profile_AddFriendFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -90,7 +89,7 @@ public class AddFriendFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        this.TAG = "AddFriendFragment";
+        this.TAG = "Profile_AddFriendFragment";
 
     }
 

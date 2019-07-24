@@ -29,7 +29,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firestore.v1.Write;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ import utils.MyFriendRequestRecyclerViewAdapter;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class MyFriendRequestsFragment extends Fragment {
+public class Profile_FriendRequestsFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -58,6 +57,8 @@ public class MyFriendRequestsFragment extends Fragment {
     private AcceptRejectButtonListener acceptRejectButtonListener;
     private String TAG;
     private FirebaseFirestore db;
+
+    // User Information from database
     private String email;
     private String userName;
 
@@ -65,13 +66,13 @@ public class MyFriendRequestsFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MyFriendRequestsFragment() {
+    public Profile_FriendRequestsFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static MyFriendRequestsFragment newInstance(int columnCount) {
-        MyFriendRequestsFragment fragment = new MyFriendRequestsFragment();
+    public static Profile_FriendRequestsFragment newInstance(int columnCount) {
+        Profile_FriendRequestsFragment fragment = new Profile_FriendRequestsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -86,7 +87,7 @@ public class MyFriendRequestsFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         this.pendingFriendRequests = new ArrayList<>();
-        this.TAG = "MyFriendRequestsFragment";
+        this.TAG = "Profile_FriendRequestsFragment";
         this.db = FirebaseFirestore.getInstance();
         this.email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         this.userName = email.substring(0, email.indexOf("@weout.com"));
@@ -172,7 +173,6 @@ public class MyFriendRequestsFragment extends Fragment {
                 if(task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if(documentSnapshot.exists() && documentSnapshot != null) {
-
                         pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
                         emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
                     }

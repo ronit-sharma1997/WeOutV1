@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.app.WeOut.FriendFragment.OnListFragmentInteractionListener;
+import com.app.WeOut.Profile_FriendListFragment.OnListFragmentInteractionListener;
 import com.app.WeOut.R;
 import com.app.WeOut.dummy.DummyContent.DummyItem;
 

@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.app.WeOut.AddFriendFragment;
-import com.app.WeOut.FriendFragment;
-import com.app.WeOut.MyFriendRequestsFragment;
+import com.app.WeOut.Profile_AddFriendFragment;
+import com.app.WeOut.Profile_FriendListFragment;
+import com.app.WeOut.Profile_FriendRequestsFragment;
 
 public class FriendActivityPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -21,13 +21,13 @@ public class FriendActivityPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                FriendFragment tab1 = new FriendFragment();
+                Profile_FriendListFragment tab1 = new Profile_FriendListFragment();
                 return tab1;
             case 1:
-                AddFriendFragment tab2 = new AddFriendFragment();
+                Profile_AddFriendFragment tab2 = new Profile_AddFriendFragment();
                 return tab2;
             case 2:
-                MyFriendRequestsFragment tab3 = new MyFriendRequestsFragment();
+                Profile_FriendRequestsFragment tab3 = new Profile_FriendRequestsFragment();
                 return tab3;
             default:
                 return null;

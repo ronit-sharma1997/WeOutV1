@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity
         implements MainActivityHomeFragment.OnFragmentInteractionListener,
         MainActivityMyProfileFragment.OnFragmentInteractionListener,
         MainActivityNotificationsFragment.OnFragmentInteractionListener,
-        FriendFragment.OnListFragmentInteractionListener,
-        AddFriendFragment.OnFragmentInteractionListener,
-        MyFriendRequestsFragment.OnListFragmentInteractionListener,
+        Profile_FriendListFragment.OnListFragmentInteractionListener,
+        Profile_AddFriendFragment.OnFragmentInteractionListener,
+        Profile_FriendRequestsFragment.OnListFragmentInteractionListener,
         MainActivityNotificationsFragment.OnListFragmentInteractionListener
         {
 

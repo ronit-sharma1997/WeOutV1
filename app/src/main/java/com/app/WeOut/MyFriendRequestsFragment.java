@@ -6,14 +6,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
 
 import java.util.ArrayList;
 
+import utils.AcceptRejectButtonListener;
 import utils.Friend;
 import utils.MyFriendRequestRecyclerViewAdapter;
 
@@ -31,6 +35,9 @@ public class MyFriendRequestsFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private ArrayList<Friend> pendingFriendRequests;
+    private AcceptRejectButtonListener acceptRejectButtonListener;
+
+    private String TAG = "MyFriendRequestsFragment_TAG";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,8 +63,26 @@ public class MyFriendRequestsFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        // Initialize pending friend requests list with dummy variables
         pendingFriendRequests = new ArrayList<>();
         this.addDummyFriendRequests();
+
+        // Set up Accept Reject Listener functions
+        this.acceptRejectButtonListener = new AcceptRejectButtonListener() {
+            @Override
+            public void onAccept(int position) {
+                Log.d(TAG, "Accepted " + pendingFriendRequests.get(position).getUserName());
+                Toast.makeText(getActivity().getApplicationContext(), "Accepted " + pendingFriendRequests.get(position).getUserName(), Toast.LENGTH_SHORT);
+            }
+
+            @Override
+            public void onReject(int position) {
+                Log.d(TAG, "Rejected " + pendingFriendRequests.get(position).getUserName());
+                Toast.makeText(getActivity().getApplicationContext(), "Rejected " + pendingFriendRequests.get(position).getUserName(), Toast.LENGTH_SHORT);
+            }
+        };
+
     }
 
     @Override
@@ -74,11 +99,10 @@ public class MyFriendRequestsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyFriendRequestRecyclerViewAdapter(this.pendingFriendRequests, mListener));
+            recyclerView.setAdapter(new MyFriendRequestRecyclerViewAdapter(this.pendingFriendRequests, this.mListener, this.acceptRejectButtonListener));
         }
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {

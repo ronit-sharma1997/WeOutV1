@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
@@ -21,13 +23,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,7 @@ public class AddFriendFragment extends Fragment {
     private ProgressBar progressBar;
     private EditText addFriendByUsername;
     private String TAG;
+    private Snackbar messageBar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -107,7 +110,11 @@ public class AddFriendFragment extends Fragment {
             public void onClick(final View view) {
                 progressBar.setVisibility(View.VISIBLE);
                 if (TextUtils.isEmpty(addFriendByUsername.getText()) || addFriendByUsername.getText().toString().equals(shortenUserName)) {
-                    Toast.makeText(getContext(), "Please enter a valid username!", Toast.LENGTH_SHORT).show();
+                    messageBar = Snackbar.make(view, "Please enter a valid username!", Snackbar.LENGTH_SHORT);
+                    View messageBarView = messageBar.getView();
+                    messageBarView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.lightBlue));
+                    messageBar.show();
+                    //Toast.makeText(getContext(), "Please enter a valid username!", Toast.LENGTH_SHORT).show();
                 } else {
                     final String friendToAdd = addFriendByUsername.getText().toString().trim();
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -132,7 +139,7 @@ public class AddFriendFragment extends Fragment {
                                                     pendingFriendRequest.put(shortenUserName, true);
                                                     db.collection("users").document(friendToAdd)
                                                             .collection("friends").document("received")
-                                                            .set(pendingFriendRequest).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            .set(pendingFriendRequest, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
                                                             Toast.makeText(getContext(), "Friend request successfully sent", Toast.LENGTH_SHORT).show();

@@ -53,7 +53,6 @@ public class FriendFragment extends Fragment {
     private TextView emptyRecyclerView;
     private MyFriendRecyclerViewAdapter myFriendRecyclerViewAdapter;
     private String TAG;
-    private DocumentReference currentFriends;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,15 +88,7 @@ public class FriendFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_friend_list, container, false);
         this.myFriendsRecyclerView = view.findViewById(R.id.recyclerViewMyFriends);
         this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewMyFriendsList);
-        // Set the adapter
-//        if (view instanceof RecyclerView) {
-//            Context context = view.getContext();
-//            RecyclerView recyclerView = (RecyclerView) view;
-//            if (mColumnCount <= 1) {
-                this.myFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//            } else {
-//                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-//            }
+        this.myFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setUpListenerAdapter();
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(myFriendsRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);

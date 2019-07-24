@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:theme="@style/TextLabel">
+        android:theme="@style/TextLabel"
+        android:hint="@string/addByUsername">
 
         <EditText
             android:id="@+id/addUsernameFriend"
@@ -22,7 +23,6 @@
             android:layout_centerVertical="true"
             android:ems="10"
             android:maxLength="15"
-            android:hint="@string/addByUsername"
             android:inputType="text"
             android:imeOptions="actionDone"
             android:focusable="true"/>

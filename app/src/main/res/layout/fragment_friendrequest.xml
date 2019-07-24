@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@drawable/friend_item_border"
     android:padding="10dp">
+    <!--android:background="@drawable/friend_item_border"-->
+
 
     <FrameLayout
         android:id="@+id/pendingFriendRequestContainer"

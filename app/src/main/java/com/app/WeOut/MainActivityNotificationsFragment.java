@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import utils.Event;
-import utils.EventInviteButtonListener;
+import utils.AcceptRejectButtonListener;
 import utils.MyEventInvitesRecyclerViewAdapter;
 
 
@@ -40,7 +40,7 @@ public class MainActivityNotificationsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private OnListFragmentInteractionListener listListener;
-    private EventInviteButtonListener acceptRejectListener;
+    private AcceptRejectButtonListener acceptRejectListener;
     private List<Event> eventInvites;
     private MyEventInvitesRecyclerViewAdapter myAdapter;
 
@@ -76,7 +76,7 @@ public class MainActivityNotificationsFragment extends Fragment {
 
         this.eventInvites = new ArrayList<>();
         this.addDummyEventInvites();
-        this.acceptRejectListener = new EventInviteButtonListener() {
+        this.acceptRejectListener = new AcceptRejectButtonListener() {
             @Override
             public void onAccept(int position) {
                 System.out.println("Event Invite " + eventInvites.get(position).getTitle() + " was accepted!");

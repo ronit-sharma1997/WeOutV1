@@ -10,11 +10,10 @@
 
     <ImageView
         android:id="@+id/myFriendLogo"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/friendaccount"
         android:layout_marginTop="@dimen/margin4dp"
-        android:layout_weight="2"
         android:paddingLeft="@dimen/margin95dp"
 
         />

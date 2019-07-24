@@ -20,18 +20,30 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import utils.User;
+
+/**
+ * Class to handle the Register Screen of the App. Here the user can register with given first name,
+ * last name, email address, username(less than or equal to 15 characters), and appropriate password
+ */
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText inputUsername, inputPassword, inputRetypePassword, inputFirstName, inputLastName, emailAddress;
+    private EditText inputUsername, inputPassword, inputRetypePassword, inputFirstName,
+            inputLastName, inputEmailAddress;
     private Button btnSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+
+    private String friendCollectionPath;
 
     private String TAG = "RegisterActivity_TAG";
 
@@ -46,71 +58,65 @@ public class RegisterActivity extends AppCompatActivity {
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 
-//        btnSignIn = (Button) findViewById(R.id.sign_in_button);
-        btnSignUp = (Button) findViewById(R.id.sign_up_button);
+        btnSignUp = findViewById(R.id.sign_up_button);
 
-        inputUsername = (EditText) findViewById(R.id.username_input);
-        inputPassword = (EditText) findViewById(R.id.password);
-        inputRetypePassword = (EditText) findViewById(R.id.retype_password);
-
+        inputUsername = findViewById(R.id.username_input);
+        inputPassword = findViewById(R.id.password);
+        inputRetypePassword = findViewById(R.id.retype_password);
         inputFirstName = findViewById(R.id.firstName);
         inputLastName = findViewById(R.id.lastName);
+        inputEmailAddress = findViewById(R.id.emailInput);
+        progressBar = findViewById(R.id.progressBar);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        emailAddress = findViewById(R.id.emailInput);
-//        btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
-
-//        btnResetPassword.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(SignupActivity.this, ResetPasswordActivity.class));
-//            }
-//        });
-
-//        btnSignIn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-//                finish();
-//            }
-//        });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 final String username = inputUsername.getText().toString().trim();
+                final String emailAddress = inputEmailAddress.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String retype_password = inputRetypePassword.getText().toString().trim();
                 final String firstName = inputFirstName.getText().toString().trim();
                 final String lastName = inputLastName.getText().toString().trim();
 
                 if (TextUtils.isEmpty(firstName)) {
-                    Toast.makeText(getApplicationContext(), "Enter First Name!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter First Name!",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else if (TextUtils.isEmpty(lastName)) {
-                    Toast.makeText(getApplicationContext(), "Enter Last Name!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter Last Name!",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else if (TextUtils.isEmpty(username)) {
-                    Toast.makeText(getApplicationContext(), "Enter username!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter username!",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter password!",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
+                else if (TextUtils.isEmpty(emailAddress) || !ValidEmailAddress(emailAddress)) {
+                    Toast.makeText(getApplicationContext(), "Please enter valid email address!",
+                            Toast.LENGTH_SHORT).show();
+                }
                 else if (username.length() > 15) {
-                    Toast.makeText(getApplicationContext(), "Username is too long, maximum 15 characters!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Username is too long, " +
+                            "maximum 15 characters!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else if (password.length() < 6) {
-                    Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Password too short, enter " +
+                            "minimum 6 characters!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else if (!password.equals(retype_password)) {
-                    Toast.makeText(getApplicationContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Passwords do not match!",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -129,30 +135,37 @@ public class RegisterActivity extends AppCompatActivity {
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
                                     // TODO: Remove before final product
-                                    Toast.makeText(RegisterActivity.this, "Error: Account creation failed:" + task.getException(),
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RegisterActivity.this,
+                                            "Error: Account creation failed:" +
+                                                    task.getException(), Toast.LENGTH_SHORT).show();
                                 }
 
                                 // If task is successful,
                                 else {
                                     FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    Map<String, Object> userInfoHashMap = new HashMap<>();
-                                    userInfoHashMap.put("firstName", firstName);
-                                    userInfoHashMap.put("lastName", lastName);
-                                    userInfoHashMap.put("joinedDate", new Timestamp(new Date()));
-                                    userInfoHashMap.put("emailAddress", emailAddress.getText().toString());
-                                    db.collection("users").document(username).set(userInfoHashMap)
-
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    WriteBatch createFriendsCollection = db.batch();
+//                                    Map<String, Object> userInfoHashMap = new HashMap<>();
+//                                    userInfoHashMap.put("firstName", firstName);
+//                                    userInfoHashMap.put("lastName", lastName);
+//                                    userInfoHashMap.put("joinedDate", new Timestamp(new Date()));
+//                                    userInfoHashMap.put("emailAddress", emailAddress);
+                                    Map<String, Object> demoFriend = new HashMap<>();
+                                    demoFriend.put("demoFriend", true);
+                                    DocumentReference currentFriends = db.collection("users").document(username).collection("friends").document("current");
+                                    createFriendsCollection.set(currentFriends, demoFriend);
+                                    DocumentReference friendRequests = db.collection("users").document(username).collection("friends").document("received");
+                                    createFriendsCollection.set(friendRequests, demoFriend);
+                                    DocumentReference currentUser =  db.collection("users").document(username);
+                                    createFriendsCollection.set(currentUser, new User(firstName, lastName, username, emailAddress, new Timestamp(new Date()).toString()));
+                                    createFriendsCollection.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
-                                        public void onSuccess(Void aVoid) {
+                                        public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "Database successfully written to with user info.");
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                             Toast.makeText(RegisterActivity.this, "Account created successfully.", Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
-                                    })
-                                            .addOnFailureListener(new OnFailureListener() {
+                                    }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Log.d(TAG, "Database unsuccessfully written to with user info.");
@@ -165,6 +178,19 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    //checks if a potential email address is valid using regex
+    private boolean ValidEmailAddress(String emailAddress) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                    "[a-zA-Z0-9_+&*-]+)*@" +
+                    "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                    "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (emailAddress == null)
+            return false;
+        return pat.matcher(emailAddress).matches();
     }
 
     @Override

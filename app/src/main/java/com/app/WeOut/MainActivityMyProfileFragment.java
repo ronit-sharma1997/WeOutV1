@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import utils.FriendActivityPagerAdapter;
+import utils.User;
 
 
 /**
@@ -44,6 +46,7 @@ public class MainActivityMyProfileFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private TextView userLogo, userName, fullName;
+
 
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
@@ -81,23 +84,24 @@ public class MainActivityMyProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
-//        view.findViewById(R.id.friendsButton).setOnClickListener(this);
         this.userLogo = view.findViewById(R.id.userLogo);
         this.userName = view.findViewById(R.id.userName);
         this.fullName = view.findViewById(R.id.fullName);
+
         String userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String shortenUserName = userName.substring(0, userName.indexOf("@weout.com"));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dr = db.collection("users").document(shortenUserName);
-        dr.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    fullName.setText(documentSnapshot.get("firstName").toString() + " " + documentSnapshot.get("lastName").toString());
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists() && documentSnapshot != null) {
+                    User currentUser = documentSnapshot.toObject(User.class);
+                    fullName.setText(currentUser.getFirstName().toString() + " " + currentUser.getLastName().toString());
                 }
             }
         });
+
         this.userName.setText(shortenUserName);
         this.userLogo.setText(String.valueOf(Character.toUpperCase(this.userName.getText().charAt(0))));
         TabLayout tabLayout = view.findViewById(R.id.friendToolbar);

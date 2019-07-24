@@ -83,12 +83,6 @@ public class MainActivityHomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-//        eventList.add(new Event("Spider Man", "7.4.19, 8PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-//        eventList.add(new Event("Pho and I", "7.5.19, 1PM", "ronswanson1", "AMC Theater", "Watching Spiderman with the homies"));
-//        eventList.add(new Event("Billiards", "7.23.19, 4PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-//        eventList.add(new Event("Avengers", "7.25.19, 8PM", "ronswanson2", "AMC Theater", "Watching Spiderman with the homies"));
-//        eventList.add(new Event("Amelias", "7.27.19, 1PM", "ronswanson", "AMC Theater", "Watching Spiderman with the homies"));
-//        eventList.add(new Event("Swimming", "7.27.19, 3PM", "ronswanson4", "AMC Theater", "Watching Spiderman with the homies"));
     }
 
     @Override
@@ -111,7 +105,7 @@ public class MainActivityHomeFragment extends Fragment {
             }
         });
 
-        this.eventInvites = (RecyclerView) view.findViewById(R.id.eventInvitesHomeFeed);
+        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
         this.eventInvites.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layoutanimationelementsfalldown);
 //        recyclerView.setLayoutAnimation(animation);

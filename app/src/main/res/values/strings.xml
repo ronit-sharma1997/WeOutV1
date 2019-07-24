@@ -75,6 +75,7 @@
     <string name="addByUsername">Add By Username</string>
     <string name="addButton">Add</string>
     <string name="Welcome">Welcome</string>
+    <string name="emptyViewMyFriends">No Friends!</string>
 
     <!--End of Friend Screen Strings-->
 

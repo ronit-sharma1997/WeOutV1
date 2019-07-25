@@ -27,7 +27,7 @@
         android:text="@string/emptyViewMyFriends"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 

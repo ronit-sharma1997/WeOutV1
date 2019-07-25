@@ -140,22 +140,37 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 // If task is successful,
                                 else {
+                                    // Get database variable instance from firebase
                                     FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    WriteBatch createFriendsCollection = db.batch();
-//                                    Map<String, Object> userInfoHashMap = new HashMap<>();
-//                                    userInfoHashMap.put("firstName", firstName);
-//                                    userInfoHashMap.put("lastName", lastName);
-//                                    userInfoHashMap.put("joinedDate", new Timestamp(new Date()));
-//                                    userInfoHashMap.put("emailAddress", emailAddress);
-                                    Map<String, Object> demoFriend = new HashMap<>();
-                                    demoFriend.put("demoFriend", true);
-                                    DocumentReference currentFriends = db.collection("users").document(username).collection("friends").document("current");
-                                    createFriendsCollection.set(currentFriends, demoFriend);
-                                    DocumentReference friendRequests = db.collection("users").document(username).collection("friends").document("received");
-                                    createFriendsCollection.set(friendRequests, demoFriend);
+
+                                    // Create a batch to upload a batch of data at once
+                                    WriteBatch batch = db.batch();
+
+                                    // Create map for initial friend to store for the user
+                                    Map<String, Object> demoFriendData = new HashMap<>();
+                                    // Store one username in the map
+                                    demoFriendData.put("pratheepk", true);
+
+                                    // Commented out because the user does not need friends to start.
+                                    // Get the new user's current friend document
+//                                    DocumentReference currentFriends = db.collection("users").document(username).collection("friends").document("current");
+                                    // Write the new friend data to the current friends document
+//                                    batch.set(currentFriends, demoFriendData);
+
+                                    // Get the new user's friend requests document
+                                    DocumentReference friendRequests = db.collection("users").document(username)
+                                            .collection("friends").document("received");
+                                    // Write the demo friend to users friend requests doc
+                                    batch.set(friendRequests, demoFriendData);
+
+                                    // Create a document with the user's username
                                     DocumentReference currentUser =  db.collection("users").document(username);
-                                    createFriendsCollection.set(currentUser, new User(firstName, lastName, username, "fake@gmail.com", new Timestamp(new Date()).toString()));
-                                    createFriendsCollection.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    // Create a new User object and write that data
+                                    batch.set(currentUser,
+                                            new User(firstName, lastName, username, "fake@gmail.com", new Timestamp(new Date()).toString()));
+
+                                    // Commit all of the data in the batch
+                                    batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "Database successfully written to with user info.");

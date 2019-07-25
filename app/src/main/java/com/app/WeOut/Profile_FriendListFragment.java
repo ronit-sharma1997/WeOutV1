@@ -70,6 +70,7 @@ public class Profile_FriendListFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
         this.TAG = "Profile_FriendListFragment";
         this.friendList = new ArrayList<>();
@@ -82,6 +83,7 @@ public class Profile_FriendListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView called");
         View view = inflater.inflate(R.layout.fragment_friend_list, container, false);
         this.myFriendsRecyclerView = view.findViewById(R.id.recyclerViewMyFriends);
         this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewMyFriendsList);
@@ -135,6 +137,7 @@ public class Profile_FriendListFragment extends Fragment {
                 }
                 if(documentSnapshot.exists() && documentSnapshot != null) {
                     friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+                    Log.d(TAG, "FriendList Size: " + friendList.size());
                     emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
                     myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
                     myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);

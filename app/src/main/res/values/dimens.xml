@@ -23,8 +23,8 @@
     <dimen name="eventTitle">301dp</dimen>
     <dimen name="eventButtonWidth">100dp</dimen>
     <dimen name="eventButtonHeight">45dp</dimen>
-    <dimen name="userLogoWidth">90dp</dimen>
-    <dimen name="userLogoHeight">90dp</dimen>
+    <dimen name="userLogoWidth">100dp</dimen>
+    <dimen name="userLogoHeight">100dp</dimen>
     <dimen name="maxWidthUsername">280dp</dimen>
     <dimen name="maxHeightUsername">50dp</dimen>
 

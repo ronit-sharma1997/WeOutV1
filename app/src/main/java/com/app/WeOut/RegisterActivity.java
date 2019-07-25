@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import utils.CustomSnackBar;
 import utils.User;
 
 /**
@@ -37,10 +38,16 @@ import utils.User;
  */
 public class RegisterActivity extends AppCompatActivity {
 
+    // Variables in XML
     private EditText inputUsername, inputPassword, inputRetypePassword, inputFirstName,
-            inputLastName, inputEmailAddress;
+            inputLastName;
     private Button btnSignUp;
     private ProgressBar progressBar;
+
+    // Snackbar for displaying feedback
+    CustomSnackBar snackBar;
+
+    // Firebase variable
     private FirebaseAuth auth;
 
     private String friendCollectionPath;
@@ -55,68 +62,61 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
 
+
+        // Associate all views by id
         btnSignUp = findViewById(R.id.sign_up_button);
-
         inputUsername = findViewById(R.id.username_input);
         inputPassword = findViewById(R.id.password);
         inputRetypePassword = findViewById(R.id.retype_password);
         inputFirstName = findViewById(R.id.firstName);
         inputLastName = findViewById(R.id.lastName);
-        inputEmailAddress = findViewById(R.id.emailInput);
         progressBar = findViewById(R.id.progressBar);
 
+        // Initialize necessary variables
+        snackBar = new CustomSnackBar();
+
+        // Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 final String username = inputUsername.getText().toString().trim();
-                final String emailAddress = inputEmailAddress.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String retype_password = inputRetypePassword.getText().toString().trim();
                 final String firstName = inputFirstName.getText().toString().trim();
                 final String lastName = inputLastName.getText().toString().trim();
 
                 if (TextUtils.isEmpty(firstName)) {
-                    Toast.makeText(getApplicationContext(), "Please enter First Name!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter First Name!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(lastName)) {
-                    Toast.makeText(getApplicationContext(), "Please enter Last Name!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter Last Name!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(username)) {
-                    Toast.makeText(getApplicationContext(), "Please enter username!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter username!", R.color.black);
                     return;
                 }
                 else if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Please enter password!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Please enter password!", R.color.black);
                     return;
                 }
-                else if (TextUtils.isEmpty(emailAddress) || !ValidEmailAddress(emailAddress)) {
-                    Toast.makeText(getApplicationContext(), "Please enter valid email address!",
-                            Toast.LENGTH_SHORT).show();
-                }
                 else if (username.length() > 15) {
-                    Toast.makeText(getApplicationContext(), "Username is too long, " +
-                            "maximum 15 characters!", Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),
+                            "Username is too long, maximum 15 characters!", R.color.black);
                     return;
                 }
                 else if (password.length() < 6) {
-                    Toast.makeText(getApplicationContext(), "Password too short, enter " +
-                            "minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),
+                            "Password too short, enter minimum 6 characters!", R.color.black);
                     return;
                 }
                 else if (!password.equals(retype_password)) {
-                    Toast.makeText(getApplicationContext(), "Passwords do not match!",
-                            Toast.LENGTH_SHORT).show();
+                    snackBar.display(v, getApplicationContext(),"Passwords do not match!", R.color.black);
                     return;
                 }
 
@@ -134,42 +134,55 @@ public class RegisterActivity extends AppCompatActivity {
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
-                                    // TODO: Remove before final product
-                                    Toast.makeText(RegisterActivity.this,
-                                            "Error: Account creation failed:" +
-                                                    task.getException(), Toast.LENGTH_SHORT).show();
+                                    snackBar.display(v, getApplicationContext(),
+                                            "Error: Account creation failed:" + task.getException(), R.color.black);
                                 }
 
                                 // If task is successful,
                                 else {
+                                    // Get database variable instance from firebase
                                     FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    WriteBatch createFriendsCollection = db.batch();
-//                                    Map<String, Object> userInfoHashMap = new HashMap<>();
-//                                    userInfoHashMap.put("firstName", firstName);
-//                                    userInfoHashMap.put("lastName", lastName);
-//                                    userInfoHashMap.put("joinedDate", new Timestamp(new Date()));
-//                                    userInfoHashMap.put("emailAddress", emailAddress);
-                                    Map<String, Object> demoFriend = new HashMap<>();
-                                    demoFriend.put("demoFriend", true);
-                                    DocumentReference currentFriends = db.collection("users").document(username).collection("friends").document("current");
-                                    createFriendsCollection.set(currentFriends, demoFriend);
-                                    DocumentReference friendRequests = db.collection("users").document(username).collection("friends").document("received");
-                                    createFriendsCollection.set(friendRequests, demoFriend);
+
+                                    // Create a batch to upload a batch of data at once
+                                    WriteBatch batch = db.batch();
+
+                                    // Create map for initial friend to store for the user
+                                    Map<String, Object> demoFriendData = new HashMap<>();
+                                    // Store one username in the map
+                                    demoFriendData.put("pratheepk", true);
+
+                                    // Commented out because the user does not need friends to start.
+                                    // Get the new user's current friend document
+//                                    DocumentReference currentFriends = db.collection("users").document(username).collection("friends").document("current");
+                                    // Write the new friend data to the current friends document
+//                                    batch.set(currentFriends, demoFriendData);
+
+                                    // Get the new user's friend requests document
+                                    DocumentReference friendRequests = db.collection("users").document(username)
+                                            .collection("friends").document("received");
+                                    // Write the demo friend to users friend requests doc
+                                    batch.set(friendRequests, demoFriendData);
+
+                                    // Create a document with the user's username
                                     DocumentReference currentUser =  db.collection("users").document(username);
-                                    createFriendsCollection.set(currentUser, new User(firstName, lastName, username, emailAddress, new Timestamp(new Date()).toString()));
-                                    createFriendsCollection.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    // Create a new User object and write that data
+                                    batch.set(currentUser,
+                                            new User(firstName, lastName, username, "fake@gmail.com", new Timestamp(new Date()).toString()));
+
+                                    // Commit all of the data in the batch
+                                    batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "Database successfully written to with user info.");
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                                            Toast.makeText(RegisterActivity.this, "Account created successfully.", Toast.LENGTH_SHORT).show();
+                                            snackBar.display(v, getApplicationContext(),"Account created successfully.", R.color.black);
                                             finish();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Log.d(TAG, "Database unsuccessfully written to with user info.");
-                                            Toast.makeText(RegisterActivity.this, "Error: Failure writing to database.", Toast.LENGTH_SHORT).show();
+                                            snackBar.display(v, getApplicationContext(),"Error: Failure writing to database.", R.color.black);
                                         }
                                     });
                                 }

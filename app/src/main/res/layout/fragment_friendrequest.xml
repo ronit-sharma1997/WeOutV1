@@ -13,11 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="40dp">
+        android:layout_marginLeft="20dp">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/userbox"
             />
 
@@ -25,41 +25,57 @@
             android:id="@+id/pendingFriendLogo"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:text="R"
+            android:layout_gravity="center"
+            android:text="RS"
             android:textColor="@color/lightBlue"
-            android:textSize="30sp"
+            android:textSize="26sp"
             android:textStyle="bold" />
     </FrameLayout>
 
     <TextView
+        android:id="@+id/pendingFriendFullName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ron Sharma"
+        android:layout_toRightOf="@+id/pendingFriendRequestContainer"
+        android:layout_marginLeft="@dimen/margin20dp"
+        android:layout_marginBottom="@dimen/margin10dp"
+        android:textColor="@color/black"
+        android:autoSizeTextType="uniform"
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/pendingFriendNameRequest"
-        android:layout_width="301dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="@dimen/margin25dp"
+        android:layout_alignTop="@id/pendingFriendFullName"
         android:layout_toRightOf="@+id/pendingFriendRequestContainer"
         android:text="rsharma1997"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="12sp"
         />
 
     <Button
         android:id="@+id/acceptButton"
         android:layout_width="85dp"
         android:layout_height="40dp"
-        android:layout_below="@+id/pendingFriendNameRequest"
+        android:layout_below="@+id/pendingFriendFullName"
         android:layout_marginTop="0dp"
         android:layout_toRightOf="@id/pendingFriendRequestContainer"
         android:text="Accept"
         android:textAllCaps="false"
         android:textSize="14dp"
-        android:layout_alignStart="@id/pendingFriendNameRequest"/>
+        android:layout_alignStart="@id/pendingFriendFullName"
+        android:layout_marginLeft="-5dp"
+        />
 
     <Button
         android:id="@+id/rejectButton"
         android:layout_width="85dp"
         android:layout_height="40dp"
-        android:layout_below="@+id/pendingFriendNameRequest"
+        android:layout_below="@+id/pendingFriendFullName"
         android:layout_marginTop="0dp"
         android:layout_toRightOf="@id/acceptButton"
         android:text="Reject"

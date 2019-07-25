@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FriendFragment">
+    tools:context=".Profile_FriendListFragment">
 
 
 <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,7 +17,7 @@
     android:layout_marginLeft="@dimen/margin16dp"
     android:layout_marginRight="@dimen/margin16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".FriendFragment"
+    tools:context=".Profile_FriendListFragment"
     tools:listitem="@layout/fragment_friend" />
 
     <TextView
@@ -27,7 +27,7 @@
         android:text="@string/emptyViewMyFriends"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 

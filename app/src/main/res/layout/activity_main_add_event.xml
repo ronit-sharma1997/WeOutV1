@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivityAddEvent"
     android:orientation="vertical"
-    >
+    android:background="@color/lightBlue">
 
     <TextView
         android:id="@+id/eventCreationActionBarTextView"
@@ -21,8 +22,19 @@
         android:background="@drawable/toptitleborder"
         />
 
+    <androidx.cardview.widget.CardView
+        android:layout_below="@id/eventCreationActionBarTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin20dp"
+        android:elevation="@dimen/margin55dp"
+        card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <TextView
-        android:layout_marginTop="@dimen/margin20dp"
         android:id="@+id/eventCreationTitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +44,6 @@
         android:textStyle="bold"
         android:textColor="@color/black"
         android:paddingTop="10dp"
-        android:layout_below="@+id/eventCreationActionBarTextView"
         android:textSize="30sp"
         />
 
@@ -208,5 +219,7 @@
         android:textAllCaps="false"
         android:onClick="onClick_InviteFriends"
         />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

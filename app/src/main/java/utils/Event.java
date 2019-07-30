@@ -44,6 +44,10 @@ public class Event {
         this.invitedMap = null;
     }
 
+    public Event () {
+
+    }
+
     // TODO: Is this function necessary?
 //    public HashMap <String, String> getEventHashMap() {
 //        HashMap <String, String> hashMap = new HashMap<>();

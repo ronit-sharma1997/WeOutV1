@@ -204,4 +204,19 @@ public class Utilities {
 
     }
 
+    public static void displaySnackBar (View view, Context context, String message) {
+        // Create a new custom snack bar
+        CustomSnackBar customSnackBar = new CustomSnackBar();
+
+        customSnackBar.display(view, context, message);
+    }
+
+    public static void displaySnackBar (View view, Context context, String message, int colorID) {
+        // Create a new custom snack bar
+        CustomSnackBar customSnackBar = new CustomSnackBar();
+
+        // Display the snackbar
+        customSnackBar.display(view, context, message, colorID);
+    }
+
 }

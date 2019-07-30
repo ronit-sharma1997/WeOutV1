@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,13 @@ import android.widget.TextView;
 
 import com.app.WeOut.dummy.DummyContent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import utils.Event;
 import utils.EventHomeFeedRecyclerViewAdapter;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
@@ -38,8 +40,8 @@ public class MainActivityHomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private RecyclerView eventInvites;
-    private TextView emptyRecyclerView;
+    private RecyclerView eventInvitesRecyclerView;
+    private TextView emptyRecyclerViewText;
 
     private  ArrayList<Event> eventList = new ArrayList<>();
 
@@ -88,52 +90,68 @@ public class MainActivityHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.mainactivity_fragment_tab1, container, false);
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
+
+        // Associate all XML components w/ their IDs
+        this.eventInvitesRecyclerView = view.findViewById(R.id.eventInvitesHomeFeed);
         this.addEventFAB = view.findViewById(R.id.addEventButton);
-        this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
-        if(this.eventList.size() == 0) {
-            this.emptyRecyclerView.setVisibility(View.VISIBLE);
-        }
+        this.emptyRecyclerViewText = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
+
+        // Set the empty text to visible at the start
+        this.emptyRecyclerViewText.setVisibility(View.GONE);
+
+        // Open the Add Event activity when the FAB is clicked
         this.addEventFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(getActivity(), MainActivityAddEvent.class);
                 startActivityForResult(myIntent, 1);
-
             }
         });
 
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
-        this.eventInvites.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // Set the layout manager for the Recycler View
+        this.eventInvitesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 //        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layoutanimationelementsfalldown);
 //        recyclerView.setLayoutAnimation(animation);
-        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(this.eventList, this.listListener);
-        this.myAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkEmpty();
-            }
 
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                checkEmpty();
-            }
+//        this.eventList.add(new Event(
+//                "Title", "Location", "Date", "Time",
+//                "WhenCreated", "Description", "Organizer" ));
 
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                checkEmpty();
-            }
-            void checkEmpty() {
-                emptyRecyclerView.setVisibility(myAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
-        this.eventInvites.setAdapter(this.myAdapter);
+        // Create the adapter
+        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(
+                this.eventList, this.listListener, this.emptyRecyclerViewText);
 
+//
+//        this.myAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+//            @Override
+//            public void onChanged() {
+//                super.onChanged();
+//                checkEmpty();
+//            }
+//
+//            @Override
+//            public void onItemRangeInserted(int positionStart, int itemCount) {
+//                super.onItemRangeInserted(positionStart, itemCount);
+//                checkEmpty();
+//            }
+//
+//            @Override
+//            public void onItemRangeRemoved(int positionStart, int itemCount) {
+//                super.onItemRangeRemoved(positionStart, itemCount);
+//                checkEmpty();
+//            }
+//            void checkEmpty() {
+//                emptyRecyclerViewText.setVisibility(myAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+//            }
+//        });
+//
+
+        // Set the adapter
+        this.eventInvitesRecyclerView.setAdapter(this.myAdapter);
 
         return view;
     }
@@ -167,8 +185,9 @@ public class MainActivityHomeFragment extends Fragment {
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
 //                eventList.add(new Gson().fromJson(data.getStringExtra("newEventJson"), Event.class));
+                Log.d(TAG, "Size of event List: " + eventList.size());
 //                myAdapter.notifyItemInserted(eventList.size()-1);
-//                myAdapter.notifyDataSetChanged();
+                myAdapter.notifyDataSetChanged();
             }
         }
     }

@@ -63,20 +63,20 @@ public class MainActivityAddEvent extends AppCompatActivity {
         Log.d(TAG, "Invite Friends Clicked");
 
         // Check for issues in the fields
-//        int checkFieldsResult = checkFields();
-//        if (checkFieldsResult != 0) {
-//            String errorMessage = "Error: Incorrect Fields";
-//
-//            if (checkFieldsResult == 1) {
-//                errorMessage = "Error: Fields are empty.";
-//            }
-//            else if (checkFieldsResult == 2) {
-//                errorMessage = "Error: Your event occurs in the past.";
-//            }
-//
-//            customSnackBar.display(view, getApplicationContext(), errorMessage);
-//            return;
-//        }
+        int checkFieldsResult = checkFields();
+        if (checkFieldsResult != 0) {
+            String errorMessage = "Error: Incorrect Fields";
+
+            if (checkFieldsResult == 1) {
+                errorMessage = "Error: Fields are empty.";
+            }
+            else if (checkFieldsResult == 2) {
+                errorMessage = "Error: Your event occurs in the past.";
+            }
+
+            customSnackBar.display(view, getApplicationContext(), errorMessage);
+            return;
+        }
 
         // Get current user's username
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();

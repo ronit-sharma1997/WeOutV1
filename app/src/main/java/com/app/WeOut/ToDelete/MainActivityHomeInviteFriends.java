@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.app.WeOut.MainActivity;
 import com.app.WeOut.MainActivityHomeFragment;
 import com.app.WeOut.R;
 
@@ -66,7 +67,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
 
         // Create intent to take you from Inviting Friends to Home Page
-        Intent intent = new Intent(MainActivityHomeInviteFriends.this, MainActivityHomeFragment.class);
+        Intent intent = new Intent(MainActivityHomeInviteFriends.this, MainActivity.class);
 
         // Get event information from previous intent
         String newEventJson = getIntent().getStringExtra("newEventJson");
@@ -76,7 +77,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         event.setInvitedMap(friendsCheckedMap);
 
         // Create the event in the database
-        Utilities.createEventInDatabase(event);
+        Utilities.createEventInDatabase(event, view, getApplicationContext());
 
 //
 //        // Create a new JSON to send to the next activity

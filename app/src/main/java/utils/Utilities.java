@@ -1,6 +1,8 @@
 package utils;
 
+import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -12,8 +14,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class Utilities {
 
@@ -115,7 +120,7 @@ public class Utilities {
         return username;
     }
 
-    public static void createEventInDatabase(Event event) {
+    public static void createEventInDatabase(final Event event, final View view, final Context context) {
         // Get database variable instance from firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -130,18 +135,73 @@ public class Utilities {
             public void onSuccess(Void aVoid) {
                 Log.d("EventCreation: ", "Successful. Event ID: " + eventID);
 
-                // Add the event invitation to every user's invite list
-
+                // Add the event invitation to every user event collection
+                addEventToUserEventsCollection(event, eventID, view, context);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.d("EventCreation: ", e.getMessage());
-                
+                CustomSnackBar customSnackBar = new CustomSnackBar();
+                customSnackBar.display(view, context, "Event creation in the database has failed.");
             }
         });
     }
 
+    private static void addEventToUserEventsCollection(Event event, String documentID, final View view, final Context context) {
+        // First add the event to the organizer's accepted list
+        // Get database variable instance from firebase
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // Get Document Reference for organizer
+        DocumentReference df_organizer = db
+                .collection("users").document(event.getOrganizer())
+                .collection("events").document("accepted");
+
+        // Create the event map data object that will be added to each users events collection
+        HashMap <String, Object> eventMapData = new HashMap<>();
+        eventMapData.put(documentID, true);
+
+        // Create the batch to write all the data at once
+        WriteBatch batch = db.batch();
+
+        // Set the organizer's data under accepted
+        batch.update(df_organizer, eventMapData);
+
+        // Create an array list to store the invited friend data
+        ArrayList <String> invitedFriendList = new ArrayList<String>(event.getInvitedMap().keySet());
+
+        // Loop through every invited user and add them to the batch
+        for (int i = 0; i < invitedFriendList.size(); i++) {
+            // Get the username of the friend at the current index
+            String invitedFriendUsername = invitedFriendList.get(i);
+
+            // Get a document reference for this particular friend's invited list
+            DocumentReference df_invitedFriend = db
+                    .collection("users").document(invitedFriendUsername)
+                    .collection("events").document("invited");
+
+            // Add this value to the batch
+            batch.update(df_invitedFriend, eventMapData);
+        }
+
+        // Finally, commit the batch
+        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("EventCreation: ", "Successfully added event to all affected users.");
+                CustomSnackBar customSnackBar = new CustomSnackBar();
+                customSnackBar.display(view, context, "Event creation successful!");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("EventCreation: ", "Failed to update all user documents. Error: " + e.getMessage());
+                CustomSnackBar customSnackBar = new CustomSnackBar();
+                customSnackBar.display(view, context, "Event creation in the database has failed.");
+            }
+        });
+
+    }
 
 }

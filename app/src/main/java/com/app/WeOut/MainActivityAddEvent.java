@@ -36,7 +36,7 @@ public class MainActivityAddEvent extends AppCompatActivity {
     EditText eventCreationDescription, eventCreationTitle, eventCreationLocation;
 
     // Private variables
-    private String TAG = "EventCreation";
+    private String TAG = "EventCreation: ";
     private int _year, _month, _day, _hour, _minute;
     private int currentYear, currentMonth, currentDay, currentHour, currentMinute;
     private CustomSnackBar customSnackBar = new CustomSnackBar();
@@ -91,7 +91,7 @@ public class MainActivityAddEvent extends AppCompatActivity {
                 this.eventCreationLocation.getText().toString(),
                 this.textView_Date.getText().toString(),
                 this.textView_Time.getText().toString(),
-                new Timestamp(new Date()).toString(),
+                String.valueOf(new Timestamp(new Date()).getSeconds()),
                 this.eventCreationDescription.getText().toString(),
                 username
         );
@@ -99,6 +99,7 @@ public class MainActivityAddEvent extends AppCompatActivity {
         // Convert the event information into a JSON
         Gson gson = new Gson();
         String eventJson = gson.toJson(event);
+        // Log json for debugging
         Log.d(TAG, eventJson);
 
         // Attach the JSON as a string to the intent

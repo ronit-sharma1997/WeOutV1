@@ -160,6 +160,7 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
 
         @Override
         public void onClick(View view) {
+            Log.d(TAG, "Friend request item clicked");
 
             // TODO: See if this is necessary
 //            if (pendingFriendsList.get(getLayoutPosition()).equals("demoFriend")){

@@ -4,6 +4,15 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import java.util.Calendar;
 
 public class Utilities {
@@ -98,5 +107,41 @@ public class Utilities {
 
         return result;
     }
+
+    public static String getCurrentUsername () {
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String username = email.substring(0, email.indexOf("@weout.com"));
+
+        return username;
+    }
+
+    public static void createEventInDatabase(Event event) {
+        // Get database variable instance from firebase
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Get Document Reference
+        DocumentReference df = db.collection("events").document();
+
+        // Store unique event ID
+        final String eventID = df.getId();
+
+        df.set(event).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("EventCreation: ", "Successful. Event ID: " + eventID);
+
+                // Add the event invitation to every user's invite list
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("EventCreation: ", e.getMessage());
+                
+            }
+        });
+    }
+
+
 
 }

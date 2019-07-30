@@ -9,4 +9,6 @@
     <color name="gray">#ff888888</color>
     <color name="white">#FFF</color>
     <color name="darkBlue">#237cc4</color>
+    <color name="veryLightGray">#ededed</color>
+    <color name="defaultLightBG">#EEEEEE</color>
 </resources>

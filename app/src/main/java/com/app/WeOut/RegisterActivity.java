@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import io.opencensus.internal.StringUtils;
 import utils.CustomSnackBar;
 import utils.User;
 
@@ -163,15 +164,31 @@ public class RegisterActivity extends AppCompatActivity {
                                     // Write the demo friend to users friend requests doc
                                     batch.set(friendRequests, demoFriendData);
 
+                                    // Create an Events accepted and invited document
+                                    HashMap <String, Object> fakeEventMap = new HashMap<>();
+                                    fakeEventMap.put("FakeEvent", true);
+
+                                    // Get the new user's event requests document
+                                    DocumentReference eventInvitedRef = db.collection("users").document(username)
+                                            .collection("events").document("accepted");
+                                    // Write the demo friend to users friend requests doc
+                                    batch.set(eventInvitedRef, fakeEventMap);
+
+                                    // Get the new user's event accepted document
+                                    DocumentReference eventAcceptedRef = db.collection("users").document(username)
+                                            .collection("events").document("invited");
+                                    // Write the demo friend to users friend requests doc
+                                    batch.set(eventAcceptedRef, fakeEventMap);
+
                                     // Create a document with the user's username
                                     DocumentReference currentUser =  db.collection("users").document(username);
-
-                                    Timestamp timestamp = new Timestamp(new Date());
 
                                     // Create a new User object and write that data
                                     batch.set(currentUser,
                                             new User(
-                                                    firstName, lastName, username,
+                                                    firstName.substring(0,1).toUpperCase() + firstName.substring(1),
+                                                    lastName.substring(0,1).toUpperCase() + lastName.substring(1),
+                                                    username,
                                                     "fake@gmail.com",
                                                     String.valueOf(new Timestamp(new Date()).getSeconds())
                                             )

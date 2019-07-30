@@ -22,7 +22,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
     private final OnListFragmentInteractionListener mListener;
 
     public EventHomeFeedRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener) {
-        eventsList = items;
+        this.eventsList = items;
         mListener = listener;
     }
 
@@ -33,15 +33,23 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         return new ViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+
+        // fill the holder with information for the corresponding event
         holder.eventInvite = this.eventsList.get(position);
         holder.eventTitle.setText(this.eventsList.get(position).getTitle());
         holder.eventLocation.setText(this.eventsList.get(position).getLocation());
-        holder.eventDate.setText(this.eventsList.get(position).getDate());
+        holder.eventDate.setText(
+                this.eventsList.get(position).getEventDate() + " " +
+                this.eventsList.get(position).getEventTime()
+        );
+
+        // Get current user's information from firebase
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String userName = email.substring(0, email.indexOf("@weout.com"));
+
+        // Only show the organizer badge if this event was created by the current user
         holder.organizer.setVisibility(View.GONE);
         if(userName.equals(this.eventsList.get(position).getOrganizer())) {
             holder.organizer.setVisibility(View.VISIBLE);

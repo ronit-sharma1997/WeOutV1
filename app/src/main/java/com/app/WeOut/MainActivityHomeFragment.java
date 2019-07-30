@@ -166,7 +166,7 @@ public class MainActivityHomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
-                eventList.add(new Gson().fromJson(data.getStringExtra("newEvent"), Event.class));
+                eventList.add(new Gson().fromJson(data.getStringExtra("newEventJson"), Event.class));
                 myAdapter.notifyItemInserted(eventList.size()-1);
                 myAdapter.notifyDataSetChanged();
             }

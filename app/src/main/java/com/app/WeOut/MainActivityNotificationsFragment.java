@@ -152,8 +152,6 @@ public class MainActivityNotificationsFragment extends Fragment {
     }
 
     private void addDummyEventInvites(){
-        this.eventInvites.add(new Event("Watch Spider-Man", "7/18/2019 10:00 P.M.", "sbillah1969", "", ""));
-        this.eventInvites.add(new Event("Complete App Dev Project", "7/19/2019 10:00 P.M.", "sbillah1969", "", ""));
-        this.eventInvites.add(new Event("Watch Venom", "7/20/2019 10:00 P.M.", "sbillah1969", "", ""));
+        this.eventInvites.add(new Event("Watch Spider-Man", "", "7/18/2019", "10:00 P.M.", "", "", "saif"));
     }
 }

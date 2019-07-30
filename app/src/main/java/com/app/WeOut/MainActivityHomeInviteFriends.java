@@ -30,19 +30,6 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         friendList.add("Saif");
         friendList.add("Ronit");
         friendList.add("Pratheep");
-        friendList.add("Aoun");
-        friendList.add("Saif");
-        friendList.add("Ronit");
-        friendList.add("Pratheep");
-        friendList.add("Aoun");
-        friendList.add("Saif");
-        friendList.add("Ronit");
-        friendList.add("Pratheep");
-        friendList.add("Aoun");
-        friendList.add("Saif");
-        friendList.add("Ronit");
-        friendList.add("Pratheep");
-        friendList.add("Aoun");
 
 //        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
 //                android.R.layout.simple_list_item_1,
@@ -55,8 +42,8 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         // Create intent to take you from Inviting Friends to Home Page
         Intent intent = new Intent();
 
-        String newEventObject = getIntent().getStringExtra("newEvent");
-        intent.putExtra("newEvent", newEventObject);
+        String newEventJson = getIntent().getStringExtra("newEventJson");
+        intent.putExtra("newEventJson", newEventJson);
 
         // Feedback to show event has been created
         Toast.makeText(getApplicationContext(), "Event Created Successfully.", Toast.LENGTH_SHORT).show();

@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize snackbar
         snackBar = new CustomSnackBar();
 
-        auth.signOut();
+        // auth.signOut();
 
         //if we are already logged in, we can go straight to the Main Activity
         if (auth.getCurrentUser() != null) {

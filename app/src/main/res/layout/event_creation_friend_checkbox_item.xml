@@ -4,12 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="10dp">
-    <!--android:background="@drawable/friend_item_border"-->
-
+    android:padding="10dp"
+    >
 
     <FrameLayout
-        android:id="@+id/pendingFriendRequestContainer"
+        android:id="@+id/friendCheckboxItem_Container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -22,7 +21,7 @@
             />
 
         <TextView
-            android:id="@+id/pendingFriendLogo"
+            android:id="@+id/friendCheckboxItem_Logo"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -33,54 +32,36 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/pendingFriendFullName"
+        android:id="@+id/friendCheckboxItem_fullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ron Sharma"
-        android:layout_toRightOf="@+id/pendingFriendRequestContainer"
+        android:layout_toRightOf="@+id/friendCheckboxItem_Container"
         android:layout_marginLeft="@dimen/margin20dp"
-        android:layout_marginBottom="@dimen/margin10dp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/black"
         android:autoSizeTextType="uniform"
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/pendingFriendNameRequest"
+        android:id="@+id/friendCheckboxItem_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin25dp"
-        android:layout_alignTop="@id/pendingFriendFullName"
-        android:layout_alignLeft="@id/pendingFriendFullName"
-        android:layout_toRightOf="@+id/pendingFriendRequestContainer"
+        android:layout_alignTop="@id/friendCheckboxItem_fullName"
+        android:layout_alignLeft="@id/friendCheckboxItem_fullName"
         android:text="rsharma1997"
         android:textColor="@color/black"
         android:textSize="12sp"
         />
 
-    <Button
-        android:id="@+id/acceptButton"
-        android:layout_width="85dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/pendingFriendFullName"
-        android:layout_marginTop="0dp"
-        android:layout_toRightOf="@id/pendingFriendRequestContainer"
-        android:text="Accept"
-        android:textAllCaps="false"
-        android:textSize="14dp"
-        android:layout_alignStart="@id/pendingFriendFullName"
-        android:layout_marginLeft="-5dp"
+    <CheckBox
+        android:id="@+id/friendCheckboxItem_checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible"
         />
-
-    <Button
-        android:id="@+id/rejectButton"
-        android:layout_width="85dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/pendingFriendFullName"
-        android:layout_marginTop="0dp"
-        android:layout_toRightOf="@id/acceptButton"
-        android:text="Reject"
-        android:textAllCaps="false"
-        android:textSize="14dp"/>
-
 
 </RelativeLayout>

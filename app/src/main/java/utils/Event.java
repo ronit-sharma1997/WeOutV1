@@ -113,20 +113,21 @@ public class Event {
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
-////
-////    public HashMap<String, Boolean> getAttendingMap() {
-////        return attendingMap;
-////    }
-////
-////    public void setAttendingMap(HashMap<String, Boolean> attendingMap) {
-////        this.attendingMap = attendingMap;
-////    }
-////
-////    public HashMap<String, Boolean> getInvitedMap() {
-////        return invitedMap;
-////    }
-////
-////    public void setInvitedMap(HashMap<String, Boolean> invitedMap) {
-////        this.invitedMap = invitedMap;
-////    }
+
+    public HashMap<String, Boolean> getAttendingMap() {
+        return attendingMap;
+    }
+
+    public void setAttendingMap(HashMap<String, Boolean> attendingMap) {
+        this.attendingMap = attendingMap;
+    }
+
+    public HashMap<String, Boolean> getInvitedMap() {
+        return invitedMap;
+    }
+
+    public void setInvitedMap(HashMap<String, Boolean> invitedMap) {
+        this.invitedMap = invitedMap;
+    }
+
 }

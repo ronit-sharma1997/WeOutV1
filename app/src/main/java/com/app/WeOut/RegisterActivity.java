@@ -165,9 +165,17 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     // Create a document with the user's username
                                     DocumentReference currentUser =  db.collection("users").document(username);
+
+                                    Timestamp timestamp = new Timestamp(new Date());
+
                                     // Create a new User object and write that data
                                     batch.set(currentUser,
-                                            new User(firstName, lastName, username, "fake@gmail.com", new Timestamp(new Date()).toString()));
+                                            new User(
+                                                    firstName, lastName, username,
+                                                    "fake@gmail.com",
+                                                    String.valueOf(new Timestamp(new Date()).getSeconds())
+                                            )
+                                    );
 
                                     // Commit all of the data in the batch
                                     batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {

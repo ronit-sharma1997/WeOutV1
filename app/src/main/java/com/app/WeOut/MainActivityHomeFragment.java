@@ -35,6 +35,7 @@ import utils.Event;
 import utils.EventHomeFeedRecyclerViewAdapter;
 import utils.PathEvaluator;
 import utils.PathPoint;
+import utils.Event_withID;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -55,7 +56,7 @@ public class MainActivityHomeFragment extends Fragment {
     private RecyclerView eventInvitesRecyclerView;
     private TextView emptyRecyclerViewText;
 
-    private ArrayList<Event> eventList = new ArrayList<>();
+    private  ArrayList<Event_withID> eventList = new ArrayList<>();
 
     private FloatingActionButton addEventFAB;
 

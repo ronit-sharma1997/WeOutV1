@@ -14,12 +14,11 @@ import com.app.WeOut.EventHomeFeedDetailsActivity;
 import com.app.WeOut.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
+
 import com.app.WeOut.MainActivityHomeFragment.OnListFragmentInteractionListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -27,8 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import javax.annotation.Nullable;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
  * {@link RecyclerView.Adapter} that can display a and makes a call to the
@@ -38,7 +35,7 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<EventHomeFeedRecyclerViewAdapter.ViewHolder> {
 
     // Arraylist to store events
-    private ArrayList<Event> eventsList;
+    private ArrayList<Event_withID> eventsList;
 
     private final OnListFragmentInteractionListener mListener;
 
@@ -50,7 +47,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
     FirebaseFirestore db;
 
     public EventHomeFeedRecyclerViewAdapter(
-            ArrayList<Event> items,
+            ArrayList<Event_withID> items,
             OnListFragmentInteractionListener listener,
             TextView emptyListTextView) {
 
@@ -75,8 +72,6 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.activity_event_invent, parent, false);
-
-
 
         return new ViewHolder(view);
     }
@@ -103,34 +98,63 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                 }
 
                 // Clear the events list because we are about to add events again
-                eventsList.clear();
+//                eventsList.clear();
 
                 Log.d(TAG, "Accepted Event Snapshot Listener");
 
                 // Else, if the data exists
                 if(documentSnapshot.exists() && documentSnapshot != null) {
 
-                    // Create an array list of all the event ID's the user has accepted
-                    ArrayList <String> eventID_List = new ArrayList<>(documentSnapshot.getData().keySet());
-                    Log.d(TAG, documentSnapshot.getData().keySet().toString());
+                    // Create a set of all the event ID's the user has accepted
+                    Set<String> eventID_Set = documentSnapshot.getData().keySet();
+//                    ArrayList <String> eventID_List = new ArrayList<>(documentSnapshot.getData().keySet());
+                    Log.d(TAG, "Events from DB: " + documentSnapshot.getData().keySet().toString());
 
                     // Delete the fake event if it exists
-                    if (eventID_List.contains("FakeEvent")) { eventID_List.remove("FakeEvent"); }
-                    Log.d(TAG, "List with FakeEvent Removed:" + eventID_List.toString());
+                    if (eventID_Set.contains("FakeEvent")) { eventID_Set.remove("FakeEvent"); }
+                    Log.d(TAG, "New Set with FakeEvent Removed:" + eventID_Set.toString());
 
                     // If the user doesn't have any accepted events
-                    if (eventID_List.size() == 0) {
-                        Log.d(TAG, "Clearing events list and leaving snapshot listener");
+                    if (eventID_Set.size() == 0) {
+                        Log.d(TAG, "No accepted events.");
                         eventsList.clear();
+                        emptyListTextView.setVisibility(View.VISIBLE);
                         return;
                     }
+                    // Else if I have an event locally that I do not have on the database
+                    // (In other words, if an event was deleted from the database)
+                    // Then clear the events list and the code after should re-populate it.
+                    else if (eventsList.size() > eventID_Set.size()) {
+                        Log.d(TAG, "Clearing event list to repopulate.");
+                        eventsList.clear();
+                    }
 
-                    // For every event in the accepted list
-                    for (int i = 0; i < eventID_List.size(); i++) {
+                    // Set the empty list text view as gone
+                    emptyListTextView.setVisibility(View.GONE);
+
+                    // Get only the Set of events that the user does NOT have
+                    for (int i = 0; i < eventsList.size(); i++) {
+                        // Retrieve the event ID in the list at the current index
+                        String eventID = eventsList.get(i).getEventID();
+
+                        // If the event ID is in the events list already, remove it from the set
+                        if (eventID_Set.contains(eventID)) {
+                            eventID_Set.remove(eventID);
+                        }
+                    }
+
+                    // Calculate expected event list size so I know when to notify the adapter
+                    // of a changed data set.
+                    final int expectedEventListSize = eventsList.size() + eventID_Set.size();
+                    Log.d(TAG, "ExpectedEventListSize: " + expectedEventListSize);
+                    Log.d(TAG, "EventID_Set Size: " + eventID_Set.size());
+
+                    // For every event in the accepted set
+                    for (String eventID : eventID_Set) {
 
                         // Create a reference for this current event object
                         final DocumentReference df_event = db
-                                .collection("events").document(eventID_List.get(i));
+                                .collection("events").document(eventID);
 
                         // Get the event object from the database
                         df_event.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -142,9 +166,19 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                                     Log.d(TAG, "#" + eventsList.size() + " :" + "Adding Doc ID: " + df_event.getId());
 
                                     // Add the event object to the events list
-                                    eventsList.add(documentSnapshot.toObject(Event.class));
-                                    // Add the event id to the view holder
-//                                    holder.eventID = df_event.getId();
+                                    eventsList.add(
+                                            new Event_withID
+                                                    (
+                                                    documentSnapshot.toObject(Event.class),
+                                                    df_event.getId()
+                                                    )
+                                    );
+
+                                    if (expectedEventListSize == eventsList.size()) {
+                                        Log.d(TAG, "Event List Size: " + eventsList.size() + " -> notifying change");
+                                        notifyDataSetChanged();
+                                    }
+
                                 }
 
                             }
@@ -155,10 +189,10 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                             }
                         });
 
-                        if (i == (eventID_List.size()-1)) {
-                            Log.d(TAG, "i: " + i + ", ID_List Size: " + eventID_List.size() + " -> notifying change");
-                            notifyDataSetChanged();
-                        }
+//                        if (expectedEventListSize == eventsList.size()) {
+//                            Log.d(TAG, "Event List Size: " + eventsList.size() + " -> notifying change");
+//                            notifyDataSetChanged();
+//                        }
 
                     }  // End of iterating through the event ID list
 
@@ -182,19 +216,19 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         Log.d(TAG, "OnBindViewHolder");
 
         // fill the holder with information for the corresponding event
-        holder.eventObject = this.eventsList.get(position);
+        holder.event_withID_Object = this.eventsList.get(position);
 
         // Set visible data based on event information
-        holder.eventTitle.setText(this.eventsList.get(position).getTitle());
-        holder.eventLocation.setText(this.eventsList.get(position).getLocation());
+        holder.eventTitle.setText(holder.event_withID_Object.getEvent().getTitle());
+        holder.eventLocation.setText(holder.event_withID_Object.getEvent().getLocation());
         holder.eventDate.setText(
-                this.eventsList.get(position).getEventDate() + " " +
-                this.eventsList.get(position).getEventTime()
+                holder.event_withID_Object.getEvent().getEventDate() + " " +
+                holder.event_withID_Object.getEvent().getEventTime()
         );
 
         // Only show the organizer badge if this event was created by the current user
         holder.organizer.setVisibility(View.GONE);
-        if(this.username.equals(this.eventsList.get(position).getOrganizer())) {
+        if(this.username.equals(holder.event_withID_Object.getEvent().getOrganizer())) {
             holder.organizer.setVisibility(View.VISIBLE);
         }
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -203,7 +237,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.eventObject, v);
+                    mListener.onListFragmentInteraction(holder.event_withID_Object.getEvent(), v);
                 }
             }
         });
@@ -227,8 +261,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         public final FrameLayout organizer;
 
         // Event object information
-        public Event eventObject;
-        public String eventID;
+        public Event_withID event_withID_Object;
 
         public ViewHolder(View view) {
             super(view);

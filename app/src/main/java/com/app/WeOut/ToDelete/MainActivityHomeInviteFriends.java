@@ -98,7 +98,6 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
             public void run() {
                 // Do something after 5s = 5000ms
                 setResult(Activity.RESULT_OK, intent);
-//                startActivity(intent);
                 finish();
             }
         }, 2000);

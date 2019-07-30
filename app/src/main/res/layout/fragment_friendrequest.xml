@@ -50,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin25dp"
         android:layout_alignTop="@id/pendingFriendFullName"
+        android:layout_alignLeft="@id/pendingFriendFullName"
         android:layout_toRightOf="@+id/pendingFriendRequestContainer"
         android:layout_alignStart="@+id/pendingFriendFullName"
         android:text="rsharma1997"

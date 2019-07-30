@@ -56,7 +56,7 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
     public void onBindViewHolder(@NonNull MyEventInvitesRecyclerViewAdapter.ViewHolder viewHolder, int i) {
         viewHolder.event = this.eventInvites.get(i);
         viewHolder.eventTitle.setText(viewHolder.event.getTitle());
-        viewHolder.eventDate.setText(viewHolder.event.getDate());
+        viewHolder.eventDate.setText(viewHolder.event.getEventDate() + " " + viewHolder.event.getEventTime());
         viewHolder.eventOrganizer.setText("Organizer: " + viewHolder.event.getOrganizer());
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

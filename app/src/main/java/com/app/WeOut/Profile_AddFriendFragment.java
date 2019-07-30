@@ -171,6 +171,7 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                     Map<String, Object> pendingFriendRequest = new HashMap<>();
                                                                     // Add the current user name to the map
                                                                     pendingFriendRequest.put(username, true);
+                                                                    
                                                                     // Add the friend request to the friendToAdd's received document
                                                                     db.collection("users").document(friendToAdd)
                                                                             .collection("friends").document("received")

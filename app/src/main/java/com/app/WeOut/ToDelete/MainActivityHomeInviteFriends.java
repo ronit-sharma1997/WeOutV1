@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -67,7 +68,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
 
         // Create intent to take you from Inviting Friends to Home Page
-        Intent intent = new Intent(MainActivityHomeInviteFriends.this, MainActivity.class);
+        final Intent intent = new Intent();
 
         // Get event information from previous intent
         String newEventJson = getIntent().getStringExtra("newEventJson");
@@ -90,10 +91,19 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
 
 //        // Feedback to show event has been created
 //        Toast.makeText(getApplicationContext(), "Event Created Successfully.", Toast.LENGTH_SHORT).show();
-//
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                setResult(Activity.RESULT_OK, intent);
+//                startActivity(intent);
+                finish();
+            }
+        }, 2000);
+
 //        // Switch activities
-//        setResult(Activity.RESULT_OK, intent);
-//        startActivity(intent);
-//        finish();
+
     }
 }

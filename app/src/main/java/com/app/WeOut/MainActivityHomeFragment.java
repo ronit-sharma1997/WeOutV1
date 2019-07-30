@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 
+
 import java.util.ArrayList;
 
 import utils.AnimatorPath;
@@ -33,6 +35,8 @@ import utils.Event;
 import utils.EventHomeFeedRecyclerViewAdapter;
 import utils.PathEvaluator;
 import utils.PathPoint;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
@@ -48,8 +52,8 @@ public class MainActivityHomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private RecyclerView eventInvites;
-    private TextView emptyRecyclerView;
+    private RecyclerView eventInvitesRecyclerView;
+    private TextView emptyRecyclerViewText;
 
     private ArrayList<Event> eventList = new ArrayList<>();
 
@@ -81,18 +85,21 @@ public class MainActivityHomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.mainactivity_fragment_tab1, container, false);
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
+
+        // Associate all XML components w/ their IDs
+        this.eventInvitesRecyclerView = view.findViewById(R.id.eventInvitesHomeFeed);
         this.addEventFAB = view.findViewById(R.id.addEventButton);
+        this.emptyRecyclerViewText = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
+
         this.createEventContainer = getActivity().findViewById(R.id.createEventScreen);
         this.createEventContentContainer = getActivity()
                 .findViewById(R.id.relativeLayoutEventCreateContainer);
+
         this.mFabSize = getResources().getDimensionPixelSize(R.dimen.fab_size);
-        this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
-        this.eventList.add(
-                new Event("Ron's Birthday", "Rons house", "5 PM", "7-17-19", "111111", "Getting Lit", "ronsharma"));
-        if (this.eventList.size() == 0) {
-            this.emptyRecyclerView.setVisibility(View.VISIBLE);
-        }
+
+        // Set the empty text to visible at the start
+        this.emptyRecyclerViewText.setVisibility(View.VISIBLE);
+
         //set on click listener for floating action button
         this.addEventFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +108,15 @@ public class MainActivityHomeFragment extends Fragment {
             }
         });
 
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
-        this.eventInvites.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(this.eventList, this.listListener);
+        // Set the layout manager for the Recycler View
+        this.eventInvitesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        this.eventInvites.setAdapter(this.myAdapter);
+        // Create the adapter
+        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(
+                this.eventList, this.listListener, this.emptyRecyclerViewText);
+
+        // Set the adapter
+        this.eventInvitesRecyclerView.setAdapter(this.myAdapter);
 
         //in the onCreateView the exact position of a view is not determined until much later on. Adding
         //a global layout listener so that once the view is constructed on the screen, we can get the exact
@@ -233,8 +244,9 @@ public class MainActivityHomeFragment extends Fragment {
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
 //                eventList.add(new Gson().fromJson(data.getStringExtra("newEventJson"), Event.class));
+                Log.d(TAG, "Size of event List: " + eventList.size());
 //                myAdapter.notifyItemInserted(eventList.size()-1);
-//                myAdapter.notifyDataSetChanged();
+                myAdapter.notifyDataSetChanged();
             }
         }
     }

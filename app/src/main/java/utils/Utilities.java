@@ -106,7 +106,7 @@ public class Utilities {
         if (currHour > hourSelected) {
             result = true;
         }
-        else if (currMinute > minuteSelected) {
+        else if (currHour == hourSelected && currMinute > minuteSelected) {
             result = true;
         }
 

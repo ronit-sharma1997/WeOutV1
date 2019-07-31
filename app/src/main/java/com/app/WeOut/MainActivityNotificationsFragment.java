@@ -52,11 +52,16 @@ public class MainActivityNotificationsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // Listeners
     private OnFragmentInteractionListener mListener;
     private OnListFragmentInteractionListener listListener;
     private AcceptRejectButtonListener acceptRejectListener;
+
+    // Event invites array list and adapter
     private ArrayList<Event_withID> eventInvites;
     private MyEventInvitesRecyclerViewAdapter myAdapter;
+
+    // Firebase and debugging variables
     private FirebaseFirestore db;
     private String TAG;
 
@@ -242,10 +247,13 @@ public class MainActivityNotificationsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_activity_notifications, container, false);
+
         RecyclerView recyclerView = view.findViewById(R.id.eventInviteList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         this.myAdapter = new MyEventInvitesRecyclerViewAdapter(this.eventInvites, this.listListener, this.acceptRejectListener);
         recyclerView.setAdapter(this.myAdapter);
+
 //        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
 //                DividerItemDecoration.VERTICAL);
 //        recyclerView.addItemDecoration(dividerItemDecoration);

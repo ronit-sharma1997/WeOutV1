@@ -56,15 +56,21 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
     }
 
     public void onClick_Finish(View view) {
-        // First check if any friends are selected
+
+        // Create a Hash Map for invited friends for the event
         HashMap <String, Boolean> friendsCheckedMap = new HashMap<>();
         Friend_withCheck friend;
 
+        // Check if any friends are selected. If they are, add them to the map.
         for (int i = 0; i < friendList.size(); i++) {
             friend = friendList.get(i);
             if (friend.isChecked()) friendsCheckedMap.put(friend.getUserName(), true);
         }
 
+        // Create a hash map for accepted friends for the event
+        HashMap <String, Boolean> acceptedFriendsMap = new HashMap<>();
+        // Add one entry to the map (the organizer)
+        acceptedFriendsMap.put(Utilities.getCurrentUsername(), true);
         Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
 
         // Create intent to take you from Inviting Friends to Home Page
@@ -74,20 +80,20 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         String newEventJson = getIntent().getStringExtra("newEventJson");
         // Convert this information into an event object
         Event event = new Gson().fromJson(newEventJson, Event.class);
+
         // Add friends checked map to the event object
         event.setInvitedMap(friendsCheckedMap);
+        // Add friends accepted map to the event object
+        event.setAttendingMap(acceptedFriendsMap);
 
         // Create the event in the database
         Utilities.createEventInDatabase(event, view, getApplicationContext());
 
-//
 //        // Create a new JSON to send to the next activity
 //        String updatedEventJson = new Gson().toJson(event);
 //        Log.d(TAG, updatedEventJson);
 //        // Pass this event info along to the next activity
 //        intent.putExtra("newEventJson", updatedEventJson);
-
-
 
 //        // Feedback to show event has been created
 //        Toast.makeText(getApplicationContext(), "Event Created Successfully.", Toast.LENGTH_SHORT).show();

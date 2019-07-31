@@ -1,5 +1,6 @@
 package com.app.WeOut;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -21,6 +27,7 @@ import utils.Event;
 import utils.Friend;
 import utils.Friend_withCheck;
 import utils.InviteFriendsRecyclerViewAdapter;
+import utils.User;
 import utils.Utilities;
 
 public class MainActivityHomeInviteFriends extends AppCompatActivity {
@@ -51,23 +58,56 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         recyclerView_InviteFriendsList.setAdapter(adapter);
     }
 
-    public void onClick_Finish(View view) {
+    public void onClick_Finish(final View view) {
 
         // Create a Hash Map for invited friends for the event
-        HashMap <String, Boolean> friendsCheckedMap = new HashMap<>();
+        HashMap <String, String> friendsCheckedMap = new HashMap<>();
         Friend_withCheck friend;
 
         // Check if any friends are selected. If they are, add them to the map.
         for (int i = 0; i < friendList.size(); i++) {
             friend = friendList.get(i);
-            if (friend.isChecked()) friendsCheckedMap.put(friend.getUserName(), true);
+            if (friend.isChecked()) {
+                friendsCheckedMap.put(friend.getUserName(), friend.getFullName());
+            }
         }
+        Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
 
         // Create a hash map for accepted friends for the event
-        HashMap <String, Boolean> acceptedFriendsMap = new HashMap<>();
-        // Add one entry to the map (the organizer)
-        acceptedFriendsMap.put(Utilities.getCurrentUsername(), true);
-        Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
+        final HashMap <String, String> acceptedFriendsMap = new HashMap<>();
+
+        // Get current username
+        final String currUsername = Utilities.getCurrentUsername();
+
+        // Get current user full name
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference df_currUser = db.collection("users").document(currUsername);
+
+        df_currUser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                    String currUserFullName = documentSnapshot.toObject(User.class).getFullName();
+
+                    // Add one entry to the accepted map (the organizer AKA curr user)
+                    acceptedFriendsMap.put(currUsername, currUserFullName);
+
+                    Log.d(TAG, "Getting full name from current user was successful. [" +
+                            currUsername + ", " + currUserFullName + "]");
+
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Failure to get " + currUsername + " 's full name. Error: " + e.getMessage());
+                Utilities.displaySnackBar(view, getApplicationContext(), "Error retrieving user information.");
+                acceptedFriendsMap.put(currUsername, "Error Name");
+            }
+        });
 
         // Create intent to take you from Inviting Friends to Home Page
         final Intent intent = new Intent();
@@ -102,7 +142,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
                 setResult(Activity.RESULT_OK, intent);
                 finish();
             }
-        }, 2000);
+        }, 1500);
 
 //        // Switch activities
 

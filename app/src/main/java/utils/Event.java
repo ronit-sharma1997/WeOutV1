@@ -16,10 +16,10 @@ public class Event {
     private String organizer;
 
     // Hashmaps to handle attendees / invitees
-    private HashMap <String, Boolean> attendingMap;
-    private HashMap <String, Boolean> invitedMap;
+    private HashMap <String, String> attendingMap;
+    private HashMap <String, String> invitedMap;
 
-    public Event(String title, String location, String eventDate, String eventTime, String dateCreated, String description, String organizer, HashMap<String, Boolean> attendingMap, HashMap<String, Boolean> invitedMap) {
+    public Event(String title, String location, String eventDate, String eventTime, String dateCreated, String description, String organizer, HashMap<String, String> attendingMap, HashMap<String, String> invitedMap) {
         this.title = title;
         this.location = location;
         this.eventDate = eventDate;
@@ -118,19 +118,19 @@ public class Event {
         this.organizer = organizer;
     }
 
-    public HashMap<String, Boolean> getAttendingMap() {
+    public HashMap<String, String> getAttendingMap() {
         return attendingMap;
     }
 
-    public void setAttendingMap(HashMap<String, Boolean> attendingMap) {
+    public void setAttendingMap(HashMap<String, String> attendingMap) {
         this.attendingMap = attendingMap;
     }
 
-    public HashMap<String, Boolean> getInvitedMap() {
+    public HashMap<String, String> getInvitedMap() {
         return invitedMap;
     }
 
-    public void setInvitedMap(HashMap<String, Boolean> invitedMap) {
+    public void setInvitedMap(HashMap<String, String> invitedMap) {
         this.invitedMap = invitedMap;
     }
 

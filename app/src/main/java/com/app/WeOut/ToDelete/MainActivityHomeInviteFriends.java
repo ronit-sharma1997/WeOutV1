@@ -66,7 +66,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
     public void onClick_Finish(final View view) {
 
         // Create a Hash Map for invited friends for the event
-        HashMap <String, String> friendsCheckedMap = new HashMap<>();
+        final HashMap <String, String> friendsCheckedMap = new HashMap<>();
         Friend_withCheck friend;
 
         // Check if any friends are selected. If they are, add them to the map.
@@ -102,6 +102,19 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
                     Log.d(TAG, "Getting full name from current user was successful. [" +
                             currUsername + ", " + currUserFullName + "]");
 
+                    // Get event information from previous intent
+                    String newEventJson = getIntent().getStringExtra("newEventJson");
+                    // Convert this information into an event object
+                    Event event = new Gson().fromJson(newEventJson, Event.class);
+
+                    // Add friends checked map to the event object
+                    event.setInvitedMap(friendsCheckedMap);
+                    // Add friends accepted map to the event object
+                    event.setAttendingMap(acceptedFriendsMap);
+
+                    // Create the event in the database
+                    Utilities.createEventInDatabase(event, view, getApplicationContext());
+
                 }
 
             }
@@ -117,28 +130,7 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
         // Create intent to take you from Inviting Friends to Home Page
         final Intent intent = new Intent();
 
-        // Get event information from previous intent
-        String newEventJson = getIntent().getStringExtra("newEventJson");
-        // Convert this information into an event object
-        Event event = new Gson().fromJson(newEventJson, Event.class);
-
-        // Add friends checked map to the event object
-        event.setInvitedMap(friendsCheckedMap);
-        // Add friends accepted map to the event object
-        event.setAttendingMap(acceptedFriendsMap);
-
-        // Create the event in the database
-        Utilities.createEventInDatabase(event, view, getApplicationContext());
-
-//        // Create a new JSON to send to the next activity
-//        String updatedEventJson = new Gson().toJson(event);
-//        Log.d(TAG, updatedEventJson);
-//        // Pass this event info along to the next activity
-//        intent.putExtra("newEventJson", updatedEventJson);
-
-//        // Feedback to show event has been created
-//        Toast.makeText(getApplicationContext(), "Event Created Successfully.", Toast.LENGTH_SHORT).show();
-
+        // Wait a bit to finish this activity
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -148,8 +140,6 @@ public class MainActivityHomeInviteFriends extends AppCompatActivity {
                 finish();
             }
         }, 1500);
-
-//        // Switch activities
 
     }
 }

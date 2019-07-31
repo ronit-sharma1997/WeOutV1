@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EventHomeFeedDetailsActivity"
+    android:background="@drawable/weoutbackground"
+    android:padding="@dimen/margin20dp">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/eventHomeFeedClickedCardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        app:cardCornerRadius="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/closeEventDetailButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/closescreen"
+                android:scaleY="2"
+                android:scaleX="2"
+                android:layout_marginLeft="@dimen/margin10dp"
+                android:layout_alignParentLeft="true"
+                android:background="?attr/selectableItemBackground"
+                android:layout_marginTop="@dimen/margin10dp"
+                />
+
+            <ImageButton
+                android:id="@+id/deleteEventButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/delete"
+                android:scaleY="2"
+                android:scaleX="2"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/margin10dp"
+                android:layout_marginTop="@dimen/margin10dp"
+                android:background="?attr/selectableItemBackground"/>
+
+            <ImageView
+                android:id="@+id/eventIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/eventicon"
+                android:layout_alignParentLeft="true"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:layout_marginTop="@dimen/margin20dp"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_below="@+id/deleteEventButton"/>
+
+        <TextView
+            android:id="@+id/eventHomeFeedClickedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/emptyViewFriendRequests"
+            android:transitionName="transitionEventTitle"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@+id/eventIcon"
+            android:layout_marginLeft="@dimen/margin30dp"
+            android:layout_below="@+id/deleteEventButton"
+            android:layout_marginTop="@dimen/margin20dp"/>
+
+
+            <ImageView
+                android:id="@+id/eventTimeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventHomeFeedClickedTitle"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/time" />
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eventHomeFeedClickedTitle"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_toRightOf="@id/eventTimeIcon"
+                android:text="Date"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/eventLocationIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventTimeIcon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/mapmarker" />
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eventHomeFeedClickedDate"
+                android:layout_alignStart="@+id/eventHomeFeedClickedTitle"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:text="Location"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:transitionName="transitionEventLocation" />
+
+            <ImageView
+                android:id="@+id/eventDescriptionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventLocationIcon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="35dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/description" />
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eventHomeFeedClickedLocation"
+                android:layout_alignStart="@+id/eventHomeFeedClickedTitle"
+                android:layout_marginTop="@dimen/margin30dp"
+                android:text="Description"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+
+            <ImageView
+                android:id="@+id/eventOrganizerIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventDescriptionIcon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/eventorganizericon" />
+
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedOrganizer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventHomeFeedClickedDescription"
+                android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:text="Ron Sharma"
+                android:textColor="@color/black"
+
+                />
+
+            <ImageView
+                android:id="@+id/eventHomeFeedClickedFriendsIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventOrganizerIcon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin30dp"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/people" />
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedTotalIntendees"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eventHomeFeedClickedOrganizer"
+                android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
+                android:layout_marginTop="@dimen/margin40dp"
+                android:text="10 guests"
+                android:textColor="@color/black"
+
+                />
+
+            <TextView
+                android:id="@+id/eventHomeFeedClickedAcceptedIntendees"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventHomeFeedClickedTotalIntendees"
+                android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
+                android:text="4 yes"
+
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/eventHomeFeedClickedAcceptedIntendees"
+                android:layout_marginLeft="@dimen/margin20dp"
+                android:layout_marginBottom="@dimen/margin10dp"
+                app:layoutManager="LinearLayoutManager"
+                tools:listitem="@layout/eventhomefeed_custom_adapter_item"></androidx.recyclerview.widget.RecyclerView>
+
+        </RelativeLayout>
+
+
+
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

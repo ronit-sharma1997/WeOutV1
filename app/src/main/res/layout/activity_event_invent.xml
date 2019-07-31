@@ -7,7 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true">
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -18,21 +20,23 @@
     <TextView
         android:id="@+id/eventInviteHomeFeedTitle"
         android:layout_width="@dimen/eventTitle"
+        android:transitionName="transitionEventTitle"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Watch Spider-Man Movie"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/eventInviteHomeFeedDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/eventInviteHomeFeedTitle"
+        android:layout_below="@id/eventInviteHomeFeedTitle"
         android:layout_centerHorizontal="true"
         android:text="7-20-2019 10:00 A.M."
+        android:transitionName="transitionEventDate"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="15sp" />
@@ -44,6 +48,7 @@
         android:layout_below="@+id/eventInviteHomeFeedDateTime"
         android:layout_centerHorizontal="true"
         android:text="AMC Theater"
+        android:transitionName="transitionEventLocation"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="15sp" />

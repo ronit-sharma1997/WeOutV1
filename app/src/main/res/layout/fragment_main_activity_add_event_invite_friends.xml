@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/weoutbackground">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/inviteFriendsCardView"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin20dp"
+        android:elevation="200dp"
+        card_view:cardCornerRadius="4dp"
+        >
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ToDelete.MainActivityHomeInviteFriends">
+
+            <ImageButton
+                android:id="@+id/closeScreenInviteFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/closescreen"
+                android:background="?attr/selectableItemBackground"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/margin10dp"
+                android:scaleX="2"
+                android:scaleY="2"/>
+
+            <ImageButton
+                android:id="@+id/backButtonInviteFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/backbutton"
+                android:background="?attr/selectableItemBackground"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/margin3dp"
+                android:scaleX="1.5"
+                android:scaleY="1.5"/>
+
+            <Button
+                android:id="@+id/inviteFriends_FinishButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inviteFriends_FinishButton"
+                android:onClick="onClick_Finish"
+                android:layout_alignParentBottom="true"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/friendInviteList"
+                android:name="com.example.sampletoolbar.MainActivityAddEventnviteFriendsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager"
+                android:layout_below="@+id/closeScreenInviteFriends"
+                android:layout_above="@+id/inviteFriends_FinishButton"/>
+
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

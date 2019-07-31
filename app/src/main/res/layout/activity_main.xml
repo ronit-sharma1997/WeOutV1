@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/wholeContainer">
 
 
     <com.google.android.material.tabs.TabLayout
@@ -29,5 +30,15 @@
         android:layout_above="@+id/mainToolbar">
 
     </androidx.viewpager.widget.ViewPager>
+
+    <FrameLayout
+        android:id="@+id/createEventScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:visibility="gone">
+
+    </FrameLayout>
 
 </RelativeLayout>

@@ -66,7 +66,10 @@
             android:layout_below="@+id/eventInviteInvitor"
             android:layout_alignStart="@+id/eventInviteTitle"
             android:text="@string/acceptButtonName"
+            android:textColor="@color/white"
+            android:background="@drawable/bluebutton"
             android:textAllCaps="false"
+            android:layout_marginTop="@dimen/margin10dp"
             android:textSize="20sp" />
 
         <Button
@@ -77,6 +80,9 @@
             android:layout_alignEnd="@+id/eventInviteTitle"
             android:text="@string/rejectButtonName"
             android:textAllCaps="false"
+            android:background="@drawable/whitebutton"
+            android:textColor="@color/lightBlue"
+            android:layout_marginTop="@dimen/margin10dp"
             android:textSize="20sp" />
 
     </RelativeLayout>

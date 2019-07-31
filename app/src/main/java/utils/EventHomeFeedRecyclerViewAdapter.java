@@ -7,6 +7,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.app.WeOut.EventHomeFeedDetailsActivity;
 import com.app.WeOut.R;
 import java.util.List;
 import com.app.WeOut.MainActivityHomeFragment.OnListFragmentInteractionListener;
@@ -46,18 +48,19 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         if(userName.equals(this.eventsList.get(position).getOrganizer())) {
             holder.organizer.setVisibility(View.VISIBLE);
         }
-
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onListFragmentInteraction(holder.eventInvite, v);
+                }
             }
         });
     }
+
+
 
     @Override
     public int getItemCount() {

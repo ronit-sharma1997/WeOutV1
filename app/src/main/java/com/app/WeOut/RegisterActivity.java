@@ -54,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private String TAG = "RegisterActivity_TAG";
 
-    // TODO: Decide if we will remove these buttons
+    // TODO: Decide if we will remove these bluebutton
     // private Button btnSignIn, btnResetPassword;
 
     @Override
@@ -90,33 +90,33 @@ public class RegisterActivity extends AppCompatActivity {
                 final String lastName = inputLastName.getText().toString().trim();
 
                 if (TextUtils.isEmpty(firstName)) {
-                    snackBar.display(v, getApplicationContext(),"Please enter First Name!", R.color.black);
+                    snackBar.display(v, getApplicationContext(),"Please enter First Name!", R.color.lightBlue);
                     return;
                 }
                 else if (TextUtils.isEmpty(lastName)) {
-                    snackBar.display(v, getApplicationContext(),"Please enter Last Name!", R.color.black);
+                    snackBar.display(v, getApplicationContext(),"Please enter Last Name!", R.color.lightBlue);
                     return;
                 }
                 else if (TextUtils.isEmpty(username)) {
-                    snackBar.display(v, getApplicationContext(),"Please enter username!", R.color.black);
+                    snackBar.display(v, getApplicationContext(),"Please enter username!", R.color.lightBlue);
                     return;
                 }
                 else if (TextUtils.isEmpty(password)) {
-                    snackBar.display(v, getApplicationContext(),"Please enter password!", R.color.black);
+                    snackBar.display(v, getApplicationContext(),"Please enter password!", R.color.lightBlue);
                     return;
                 }
                 else if (username.length() > 15) {
                     snackBar.display(v, getApplicationContext(),
-                            "Username is too long, maximum 15 characters!", R.color.black);
+                            "Username is too long, maximum 15 characters!", R.color.lightBlue);
                     return;
                 }
                 else if (password.length() < 6) {
                     snackBar.display(v, getApplicationContext(),
-                            "Password too short, enter minimum 6 characters!", R.color.black);
+                            "Password too short, enter minimum 6 characters!", R.color.lightBlue);
                     return;
                 }
                 else if (!password.equals(retype_password)) {
-                    snackBar.display(v, getApplicationContext(),"Passwords do not match!", R.color.black);
+                    snackBar.display(v, getApplicationContext(),"Passwords do not match!", R.color.lightBlue);
                     return;
                 }
 
@@ -128,14 +128,14 @@ public class RegisterActivity extends AppCompatActivity {
                         .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
+
 
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
                                     snackBar.display(v, getApplicationContext(),
-                                            "Error: Account creation failed:" + task.getException(), R.color.black);
+                                            "Error: Account creation failed:" + task.getException(), R.color.lightBlue);
                                 }
 
                                 // If task is successful,
@@ -175,14 +175,14 @@ public class RegisterActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "Database successfully written to with user info.");
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                                            snackBar.display(v, getApplicationContext(),"Account created successfully.", R.color.black);
-                                            finish();
+                                            snackBar.display(v, getApplicationContext(),"Account created successfully.", R.color.lightBlue);
+
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Log.d(TAG, "Database unsuccessfully written to with user info.");
-                                            snackBar.display(v, getApplicationContext(),"Error: Failure writing to database.", R.color.black);
+                                            snackBar.display(v, getApplicationContext(),"Error: Failure writing to database.", R.color.lightBlue);
                                         }
                                     });
                                 }
@@ -191,6 +191,8 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+        progressBar.setVisibility(View.INVISIBLE);
+        finish();
     }
 
     //checks if a potential email address is valid using regex
@@ -209,6 +211,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 }

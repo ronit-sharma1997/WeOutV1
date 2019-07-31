@@ -83,6 +83,9 @@
     <!--Event Invitations Strings-->
     <string name="acceptButtonName">Accept</string>
     <string name="rejectButtonName">Decline</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!--End of Event Invitations String-->
 
 </resources>

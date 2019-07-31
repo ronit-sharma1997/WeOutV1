@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <!--android:background="@drawable/friend_item_border"-->
+
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/eventHomeFeedProfilePin"
+        android:layout_width="46dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/margin4dp"
+        android:src="@drawable/personpin" />
+        <ImageView
+            android:id="@+id/eventHomeFeedCheckCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/checkcircle"
+            android:layout_marginLeft="@dimen/margin25dp"
+            android:layout_marginTop="@dimen/margin30dp"/>
+
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/myFriendsRecycleViewAdapter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="rsharma1997"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/margin16dp"
+        android:textSize="20sp" />
+
+
+</LinearLayout>

@@ -5,12 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.app.WeOut.Profile_FriendListFragment.OnListFragmentInteractionListener;
 import com.app.WeOut.R;
 import com.app.WeOut.dummy.DummyContent.DummyItem;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,14 +21,17 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRecyclerViewAdapter.ViewHolder> {
+public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRecyclerViewAdapter.ViewHolder> implements SectionIndexer {
 
     private List<String> friendsList;
     private final OnListFragmentInteractionListener mListener;
+    private ArrayList<Integer> mSectionPositions;
+
 
     public MyFriendRecyclerViewAdapter(List<String> items, OnListFragmentInteractionListener listener) {
         friendsList = items;
         mListener = listener;
+        Collections.sort(friendsList);
     }
 
     @Override
@@ -56,6 +62,30 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
     @Override
     public int getItemCount() {
         return friendsList.size();
+    }
+
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>();
+        mSectionPositions = new ArrayList<>();
+        for (int i = 0, size = friendsList.size(); i < size; i++) {
+            String section = String.valueOf(friendsList.get(i).charAt(0)).toUpperCase();
+            if (!sections.contains(section)) {
+                sections.add(section);
+                mSectionPositions.add(i);
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int i) {
+        return mSectionPositions.get(i);
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

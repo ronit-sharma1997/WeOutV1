@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import fastscroll.app.fastscrollalphabetindex.AlphabetIndexFastScrollRecyclerView;
 import utils.MyFriendRecyclerViewAdapter;
 
 /**
@@ -46,7 +47,8 @@ public class Profile_FriendListFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private ArrayList<String> friendList;
-    private RecyclerView myFriendsRecyclerView;
+    //custom alphabet index fast scroll recycler view
+    private AlphabetIndexFastScrollRecyclerView myFriendsRecyclerView;
     private TextView emptyRecyclerView;
     private MyFriendRecyclerViewAdapter myFriendRecyclerViewAdapter;
     private String TAG;
@@ -93,7 +95,12 @@ public class Profile_FriendListFragment extends Fragment {
                 DividerItemDecoration.VERTICAL);
         myFriendsRecyclerView.addItemDecoration(dividerItemDecoration);
 
-//        }
+        //set the color of the index bar to light blue
+        myFriendsRecyclerView.setIndexBarColor(R.color.lightBlue);
+
+        //set the transparent value so that it's fully visible
+        myFriendsRecyclerView.setIndexBarTransparentValue((float) 1);
+
         return view;
     }
 

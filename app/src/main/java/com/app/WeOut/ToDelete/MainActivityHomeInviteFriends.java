@@ -1,4 +1,4 @@
-package com.app.WeOut;
+package com.app.WeOut.ToDelete;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.app.WeOut.R;
 
 import java.util.ArrayList;
 

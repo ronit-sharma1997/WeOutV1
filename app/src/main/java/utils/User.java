@@ -47,6 +47,10 @@ public class User {
         return joinedDate;
     }
 
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
 }
 
 

@@ -111,7 +111,7 @@ public class MainActivityHomeFragment extends Fragment {
 
         // Set the layout manager for the Recycler View
         this.eventInvitesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        
+
         // Create the adapter
         this.myAdapter = new EventHomeFeedRecyclerViewAdapter(
                 this.eventList, this.listListener, this.emptyRecyclerViewText);

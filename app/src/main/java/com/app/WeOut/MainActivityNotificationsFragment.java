@@ -18,6 +18,7 @@ import com.app.WeOut.dummy.DummyContent;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -31,6 +32,7 @@ import utils.Event;
 import utils.AcceptRejectButtonListener;
 import utils.Event_withID;
 import utils.MyEventInvitesRecyclerViewAdapter;
+import utils.User;
 import utils.Utilities;
 
 
@@ -116,7 +118,7 @@ public class MainActivityNotificationsFragment extends Fragment {
                 // Get event ID by position
                 String eventID = eventInvites.get(position).getEventID();
                 // Get username
-                String username = Utilities.getCurrentUsername();
+                final String username = Utilities.getCurrentUsername();
 
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // Remove this eventID from current user's "events/invited" document
@@ -160,8 +162,37 @@ public class MainActivityNotificationsFragment extends Fragment {
                 // Add this user's username to the "events/eventID/acceptedMap"
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                HashMap <String, Object> addUserToEventID_acceptedMap = new HashMap<>();
-                addUserToEventID_acceptedMap.put("attendingMap." + username, true);
+                final HashMap <String, Object> addUserToEventID_acceptedMap = new HashMap<>();
+                // TODO: hashmapChanges
+
+                // Get current user's full name
+                DocumentReference df_currUser = db.collection("users").document(username);
+
+                df_currUser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                            String currUserFullName = documentSnapshot.toObject(User.class).getFullName();
+
+                            // Add one entry to the accepted map (the organizer AKA curr user)
+                            addUserToEventID_acceptedMap.put("attendingMap." + username, currUserFullName);
+
+                            Log.d(TAG, "Getting full name from current user was successful. [" +
+                                    username + ", " + currUserFullName + "]");
+
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Failure to get " + username + " 's full name. Error: " + e.getMessage());
+//                        Utilities.displaySnackBar(view, getApplicationContext(), "Error retrieving user information.");
+                        addUserToEventID_acceptedMap.put(username, "Error Name");
+                    }
+                });
 
                 batch.update(df_events_eventID, addUserToEventID_acceptedMap);
 

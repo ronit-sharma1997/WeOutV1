@@ -200,6 +200,7 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
         viewHolder.eventTitle.setText(viewHolder.event.getTitle());
         viewHolder.eventDate.setText(viewHolder.event.getEventDate() + " " + viewHolder.event.getEventTime());
         viewHolder.eventOrganizer.setText("Organizer: " + viewHolder.event.getOrganizer());
+        viewHolder.eventLocation.setText(viewHolder.event.getLocation());
 
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,22 +222,30 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public WeakReference<AcceptRejectButtonListener> listener;
         public final View mView;
+
         public final TextView eventTitle;
         public final TextView eventDate;
         public final TextView eventOrganizer;
+        public final TextView eventLocation;
+
         public final Button accept;
         public final Button reject;
+
         public Event event;
         public String eventID;
 
         public ViewHolder(@NonNull View itemView, AcceptRejectButtonListener listener) {
             super(itemView);
             this.mView = itemView;
+
             this.eventTitle = this.mView.findViewById(R.id.eventInviteTitle);
             this.eventDate = this.mView.findViewById(R.id.eventInviteDateTime);
             this.eventOrganizer = this.mView.findViewById(R.id.eventInviteInvitor);
+            this.eventLocation = this.mView.findViewById(R.id.eventInviteLocation);
+
             this.accept = this.mView.findViewById(R.id.eventInviteAcceptButton);
             this.reject = this.mView.findViewById(R.id.eventInviteRejectButton);
+
             this.listener = new WeakReference<>(listener);
 
             this.accept.setOnClickListener(this);
@@ -256,7 +265,6 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
                     break;
             }
         }
-
 
     }
 }

@@ -119,6 +119,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                         Log.d(TAG, "No accepted events.");
                         eventsList.clear();
                         emptyListTextView.setVisibility(View.VISIBLE);
+                        notifyDataSetChanged();
                         return;
                     }
                     // Else if I have an event locally that I do not have on the database

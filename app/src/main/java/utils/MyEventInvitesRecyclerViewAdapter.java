@@ -13,15 +13,16 @@ import com.app.WeOut.MainActivityNotificationsFragment.OnListFragmentInteraction
 import com.app.WeOut.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEventInvitesRecyclerViewAdapter.ViewHolder> {
 
-    private List<Event> eventInvites;
+    private ArrayList<Event_withID> eventInvites;
     private OnListFragmentInteractionListener myListener;
     private AcceptRejectButtonListener buttonListener;
 
-    public MyEventInvitesRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener buttonListener) {
+    public MyEventInvitesRecyclerViewAdapter(ArrayList<Event_withID> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener buttonListener) {
         this.eventInvites = items;
         this.myListener = listener;
         this.buttonListener = buttonListener;
@@ -54,10 +55,16 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
 
     @Override
     public void onBindViewHolder(@NonNull MyEventInvitesRecyclerViewAdapter.ViewHolder viewHolder, int i) {
-        viewHolder.event = this.eventInvites.get(i);
+
+        // Set values based on Event_withID Object from List
+        viewHolder.event = this.eventInvites.get(i).getEvent();
+        viewHolder.eventID = this.eventInvites.get(i).getEventID();
+
+        // Set values based on event from Event_withID Object
         viewHolder.eventTitle.setText(viewHolder.event.getTitle());
         viewHolder.eventDate.setText(viewHolder.event.getEventDate() + " " + viewHolder.event.getEventTime());
         viewHolder.eventOrganizer.setText("Organizer: " + viewHolder.event.getOrganizer());
+
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +91,8 @@ public class MyEventInvitesRecyclerViewAdapter extends RecyclerView.Adapter<MyEv
         public final Button accept;
         public final Button reject;
         public Event event;
+        public String eventID;
+
         public ViewHolder(@NonNull View itemView, AcceptRejectButtonListener listener) {
             super(itemView);
             this.mView = itemView;

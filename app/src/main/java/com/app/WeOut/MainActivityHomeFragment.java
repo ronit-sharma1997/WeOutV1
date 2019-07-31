@@ -118,10 +118,6 @@ public class MainActivityHomeFragment extends Fragment {
 //        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layoutanimationelementsfalldown);
 //        recyclerView.setLayoutAnimation(animation);
 
-//        this.eventList.add(new Event(
-//                "Title", "Location", "Date", "Time",
-//                "WhenCreated", "Description", "Organizer" ));
-
         // Create the adapter
         this.myAdapter = new EventHomeFeedRecyclerViewAdapter(
                 this.eventList, this.listListener, this.emptyRecyclerViewText);

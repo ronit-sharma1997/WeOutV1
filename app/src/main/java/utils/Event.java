@@ -1,7 +1,5 @@
 package utils;
 
-import android.os.Parcel;
-
 import java.util.HashMap;
 
 public class Event {

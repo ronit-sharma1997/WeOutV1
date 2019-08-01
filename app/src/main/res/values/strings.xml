@@ -31,8 +31,7 @@
     <!--End of Event Creation Strings-->
 
     <!--Login/Register Screen Strings-->
-    <string name="WeOut">𝓦𝓮 𝓞𝓾𝓽</string>
-    <string name="SignUp">𝓢𝓲𝓰𝓷 𝓤𝓹</string>
+    <string name="SignUp">Sign Up</string>
     <string name="firstNameHint">First Name</string>
     <string name="lastNameHint">Last Name</string>
     <string name="emailAddressHint">Email Address</string>

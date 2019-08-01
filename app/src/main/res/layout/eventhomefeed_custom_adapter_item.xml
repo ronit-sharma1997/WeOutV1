@@ -29,7 +29,7 @@
 
 
     <TextView
-        android:id="@+id/myFriendsRecycleViewAdapter"
+        android:id="@+id/eventHomeFeedClickedUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="rsharma1997"

@@ -1,6 +1,7 @@
 package com.app.WeOut;
 
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.core.content.res.ResourcesCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -30,7 +32,7 @@ import utils.CustomSnackBar;
 public class LoginActivity extends AppCompatActivity {
 
     // XML Variables
-    private TextView registerTextView;
+    private TextView registerTextView, loginHeader;
     private EditText inputUsername, inputPassword;
     private ProgressBar progressBar;
     private Button btnLogin;
@@ -65,15 +67,16 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         registerTextView = findViewById(R.id.btn_signup);
         btnLogin = findViewById(R.id.btn_login);
+        loginHeader = findViewById(R.id.loginHeader);
+        loginHeader.setTypeface(ResourcesCompat.getFont(this, R.font.lobster));
 
         //if user needs to sign up, go to Register activity and end current activity
-        registerTextView.setOnClickListener(new OnClickListener() {
+        this.registerTextView.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                // TODO: Decide if you want to fully remove this
-                // Removed so that user can press back when fully logged in
-                //finish();
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 

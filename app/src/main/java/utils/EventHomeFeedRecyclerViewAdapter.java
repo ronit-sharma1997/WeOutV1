@@ -238,14 +238,12 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.event_withID_Object.getEvent(), v);
+                    mListener.onListFragmentInteraction(holder.event_withID_Object, v);
                 }
             }
         });
 
     }
-
-
 
     @Override
     public int getItemCount() {

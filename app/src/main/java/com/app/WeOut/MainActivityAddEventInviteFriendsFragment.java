@@ -6,6 +6,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.View.OnClickListener;
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,13 +23,23 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.app.WeOut.dummy.DummyContent;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
-import utils.InviteFriendRecyclerViewAdapter;
+import utils.Event;
+import utils.Friend_withCheck;
+import utils.InviteFriendsRecyclerViewAdapter;
+import utils.User;
+import utils.Utilities;
 
 
 /**
@@ -35,18 +48,33 @@ import utils.InviteFriendRecyclerViewAdapter;
  */
 public class MainActivityAddEventInviteFriendsFragment extends Fragment {
 
-    private RecyclerView listView_DisplayFriends;
+
+    private ArrayList<Friend_withCheck> friendList;
+
+    //Buttons for Screen
     private Button btn_Finish;
-    private List<String> friends;
-    private InviteFriendRecyclerViewAdapter myFriendRecyclerViewAdapter;
-    private OnListFragmentInteractionListener mListener;
     private ImageButton closeScreen, backButton;
-    private CardView inviteFriendsList;
-    private final static int ANIMATION_DURATION = 150;
-    private FrameLayout createEventContainer;
     private FloatingActionButton addEventFAB;
+
+    //listener for List
+    private OnListFragmentInteractionListener mListener;
+
+    //Components of Recycler View
+    private RecyclerView recyclerView_InviteFriendsList;
+    private InviteFriendsRecyclerViewAdapter myFriendRecyclerViewAdapter;
+
+    //Components of Screen
+    private CardView inviteFriendsList;
+    private FrameLayout createEventContainer;
+
+    private final static int ANIMATION_DURATION = 150;
+
+
     private float fabOriginX;
     private float fabOriginY;
+
+    // Private variables
+    private String TAG = "EventCreation: ";
 
 
     public MainActivityAddEventInviteFriendsFragment() {
@@ -61,11 +89,17 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
         View view = inflater
                 .inflate(R.layout.fragment_main_activity_add_event_invite_friends, container, false);
         this.btn_Finish = view.findViewById(R.id.inviteFriends_FinishButton);
-        this.friends = new ArrayList<>();
-        this.friends.add("Saif");
-        this.friends.add("Ronit");
-        this.listView_DisplayFriends = view.findViewById(R.id.friendInviteList);
+
+        // Associate XML components by ID
+        this.recyclerView_InviteFriendsList = view.findViewById(R.id.friendInviteList);
         this.inviteFriendsList = view.findViewById(R.id.inviteFriendsCardView);
+        this.btn_Finish =view.findViewById(R.id.inviteFriends_FinishButton);
+        this.btn_Finish.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClick_Finish(view);
+            }
+        });
         this.closeScreen = view.findViewById(R.id.closeScreenInviteFriends);
         this.backButton = view.findViewById(R.id.backButtonInviteFriends);
         this.backButton.setOnClickListener(new View.OnClickListener() {
@@ -81,9 +115,12 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
                 closeScreen();
             }
         });
-        this.listView_DisplayFriends.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.myFriendRecyclerViewAdapter = new InviteFriendRecyclerViewAdapter(friends, mListener);
-        this.listView_DisplayFriends.setAdapter(myFriendRecyclerViewAdapter);
+
+        this.friendList = new ArrayList<>();
+
+        this.recyclerView_InviteFriendsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        this.myFriendRecyclerViewAdapter = new InviteFriendsRecyclerViewAdapter(friendList);
+        this.recyclerView_InviteFriendsList.setAdapter(myFriendRecyclerViewAdapter);
 
         return view;
     }
@@ -141,7 +178,7 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
         //we restablish the floating action button by setting its original x and y coordinates
         addEventFAB.setX(this.fabOriginX);
         addEventFAB.setY(this.fabOriginY);
-        addEventFAB.setImageResource(R.drawable.ic_add_black_24dp);
+        addEventFAB.setImageResource(R.drawable.plus);
         addEventFAB.show();
 
         //we restablish the tab layout by making it visible again
@@ -159,6 +196,75 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
         getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out)
                 .replace(R.id.createEventScreen, fragment).commit();
+    }
+
+
+    private void onClick_Finish(final View view) {
+
+        // Create a Hash Map for invited friends for the event
+        final HashMap<String, String> friendsCheckedMap = new HashMap<>();
+        Friend_withCheck friend;
+
+        // Check if any friends are selected. If they are, add them to the map.
+        for (int i = 0; i < friendList.size(); i++) {
+            friend = friendList.get(i);
+            if (friend.isChecked()) {
+                friendsCheckedMap.put(friend.getUserName(), friend.getFullName());
+            }
+        }
+        Log.d(TAG, "Checked Friends: " + friendsCheckedMap.keySet().toString());
+
+        // Create a hash map for accepted friends for the event
+        final HashMap<String, String> acceptedFriendsMap = new HashMap<>();
+
+        // Get current username
+        final String currUsername = Utilities.getCurrentUsername();
+
+        // Get current user full name
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference df_currUser = db.collection("users").document(currUsername);
+
+        df_currUser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                if (documentSnapshot.exists() && documentSnapshot != null) {
+
+                    String currUserFullName = documentSnapshot.toObject(User.class).getFullName();
+
+                    // Add one entry to the accepted map (the organizer AKA curr user)
+                    acceptedFriendsMap.put(currUsername, currUserFullName);
+
+                    Log.d(TAG, "Getting full name from current user was successful. [" +
+                        currUsername + ", " + currUserFullName + "]");
+
+                    // Get event information from previous intent
+                    String newEventJson = getArguments().getString("newEventJson");
+                    // Convert this information into an event object
+                    Event event = new Gson().fromJson(newEventJson, Event.class);
+
+                    // Add friends checked map to the event object
+                    event.setInvitedMap(friendsCheckedMap);
+                    // Add friends accepted map to the event object
+                    event.setAttendingMap(acceptedFriendsMap);
+
+                    // Create the event in the database
+                    Utilities.createEventInDatabase(event, view, getActivity());
+                    closeScreen();
+
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG,
+                    "Failure to get " + currUsername + " 's full name. Error: " + e.getMessage());
+                Utilities.displaySnackBar(view, getActivity(),
+                    "Error retrieving user information.");
+                acceptedFriendsMap.put(currUsername, "Error Name");
+            }
+        });
     }
 
     /**

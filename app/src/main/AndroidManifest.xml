@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ToDelete.MainActivityHomeInviteFriends" />
-        <activity android:name=".MainActivityAddEvent" />
+        <activity android:name=".ToDelete.MainActivityAddEvent" />
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"></activity>

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,6 +69,8 @@ public class MainActivityNotificationsFragment extends Fragment {
     private FirebaseFirestore db;
     private String TAG;
 
+    private TextView eventNotificationsHeader;
+
     public MainActivityNotificationsFragment() {
         // Required empty public constructor
     }
@@ -112,7 +116,7 @@ public class MainActivityNotificationsFragment extends Fragment {
                 System.out.println("Event Invite " + eventInvites.get(position).getEvent().getTitle() + " was accepted!");
 
                 // Create Batch to write all your changes
-                WriteBatch batch = db.batch();
+                final WriteBatch batch = db.batch();
 
                 // Variables to work with
                 // Get event ID by position
@@ -150,7 +154,7 @@ public class MainActivityNotificationsFragment extends Fragment {
                 // Remove this user's username from the "events/eventID/invitedMap"
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                DocumentReference df_events_eventID = db
+                final DocumentReference df_events_eventID = db
                         .collection("events").document(eventID);
 
                 HashMap <String, Object> removeUserFromEventID_invitedMap = new HashMap<>();
@@ -182,6 +186,23 @@ public class MainActivityNotificationsFragment extends Fragment {
                             Log.d(TAG, "Getting full name from current user was successful. [" +
                                     username + ", " + currUserFullName + "]");
 
+                            batch.update(df_events_eventID, addUserToEventID_acceptedMap);
+
+                            // Finished adding all the values to the batch. Now commit all this data.
+                            batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "Accept Event batch writing successful!");
+                                    Utilities.displaySnackBar(getView(), getContext(), "Successfully accepted event!");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "Error writing batch: " + e.getMessage());
+                                    Utilities.displaySnackBar(getView(), getContext(), "Error accepting event.");
+                                }
+                            });
+
                         }
 
                     }
@@ -194,22 +215,6 @@ public class MainActivityNotificationsFragment extends Fragment {
                     }
                 });
 
-                batch.update(df_events_eventID, addUserToEventID_acceptedMap);
-
-                // Finished adding all the values to the batch. Now commit all this data.
-                batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Accept Event batch writing successful!");
-                        Utilities.displaySnackBar(getView(), getContext(), "Successfully accepted event!");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing batch: " + e.getMessage());
-                        Utilities.displaySnackBar(getView(), getContext(), "Error accepting event.");
-                    }
-                });
 
             }
 
@@ -285,9 +290,9 @@ public class MainActivityNotificationsFragment extends Fragment {
         this.myAdapter = new MyEventInvitesRecyclerViewAdapter(this.eventInvites, this.listListener, this.acceptRejectListener);
         recyclerView.setAdapter(this.myAdapter);
 
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                DividerItemDecoration.VERTICAL);
-//        recyclerView.addItemDecoration(dividerItemDecoration);
+        this.eventNotificationsHeader = view.findViewById(R.id.notificationTitle);
+        this.eventNotificationsHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
+
         return view;
 
     }

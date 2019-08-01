@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,13 +26,11 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.Gson;
 
 
 import java.util.ArrayList;
 
 import utils.AnimatorPath;
-import utils.Event;
 import utils.EventHomeFeedRecyclerViewAdapter;
 import utils.PathEvaluator;
 import utils.PathPoint;
@@ -62,6 +61,8 @@ public class MainActivityHomeFragment extends Fragment {
 
     private FrameLayout createEventContainer;
     private RelativeLayout createEventContentContainer;
+
+    private TextView homeHeader;
 
     private final static float SCALE_FACTOR = 20f;
     private final static int ANIMATION_DURATION = 300;
@@ -118,6 +119,10 @@ public class MainActivityHomeFragment extends Fragment {
 
         // Set the adapter
         this.eventInvitesRecyclerView.setAdapter(this.myAdapter);
+
+        //Set the font for the header
+        this.homeHeader = view.findViewById(R.id.home_TextView);
+        this.homeHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
 
         //in the onCreateView the exact position of a view is not determined until much later on. Adding
         //a global layout listener so that once the view is constructed on the screen, we can get the exact
@@ -268,7 +273,7 @@ public class MainActivityHomeFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
 
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Event event, View v);
+        void onListFragmentInteraction(Event_withID event, View v);
     }
 
 

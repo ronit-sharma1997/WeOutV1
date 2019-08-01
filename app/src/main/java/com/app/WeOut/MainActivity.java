@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import com.app.WeOut.dummy.DummyContent;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
@@ -13,9 +14,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.app.WeOut.dummy.DummyContent;
-
+import com.google.gson.Gson;
 import utils.Event;
+import utils.Event_withID;
 import utils.MainActivityPagerAdapter;
 
 /**
@@ -96,12 +97,19 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
-  public void onListFragmentInteraction(Event event, View v) {
-    Log.d(TAG, event.getTitle() + " was clicked");
+  public void onListFragmentInteraction(Event_withID event, View v) {
+    Log.d(TAG, event.getEvent().getTitle() + " was clicked");
 
     //Create an intent and prepare to send event information to EventHomeFeedDetailsActivity
     //to display the information
     Intent intent = new Intent(this, EventHomeFeedDetailsActivity.class);
+
+    // Convert the event information into a JSON
+    Gson gson = new Gson();
+    String eventJson = gson.toJson(event);
+
+    intent.putExtra("eventDetails", eventJson);
+
     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
   }
 

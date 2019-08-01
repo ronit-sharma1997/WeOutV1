@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/weoutbackground">
+    android:background="@color/lightBlue">
 
 
     <androidx.cardview.widget.CardView
@@ -42,6 +42,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin3dp"
+                android:layout_marginTop="@dimen/margin3dp"
                 android:scaleX="1.5"
                 android:scaleY="1.5"/>
 

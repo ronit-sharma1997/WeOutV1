@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.content.res.ResourcesCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -45,7 +46,7 @@ public class MainActivityMyProfileFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextView userLogo, userName, fullName;
+    private TextView userLogo, userName, fullName, profileHeader;
 
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
@@ -128,6 +129,10 @@ public class MainActivityMyProfileFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("Added Me"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
+
+        //set font for Title Section
+        this.profileHeader = view.findViewById(R.id.welcomeTitle);
+        this.profileHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
 
         final ViewPager viewPager = view.findViewById(R.id.myProfilePager);
         final FriendActivityPagerAdapter myAdapter = new FriendActivityPagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());

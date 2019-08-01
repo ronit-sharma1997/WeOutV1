@@ -26,8 +26,14 @@ import android.widget.TimePicker;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import java.util.Calendar;
-
+import java.util.Date;
+import utils.CustomSnackBar;
+import utils.Event;
+import utils.Utilities;
 
 
 /**
@@ -48,6 +54,10 @@ public class MainActivityAddEventFragment extends Fragment {
   String TAG = "MainActivityAddEventFragment";
   private float fabOriginX;
   private float fabOriginY;
+  private int _year, _month, _day, _hour, _minute;
+  private int currentYear, currentMonth, currentDay, currentHour, currentMinute;
+  private CustomSnackBar customSnackBar = new CustomSnackBar();
+  private Bundle savedState = null;
 
   public MainActivityAddEventFragment() {
     // Required empty public constructor
@@ -74,7 +84,7 @@ public class MainActivityAddEventFragment extends Fragment {
       @Override
       public void onClick(View view) {
         Log.d(TAG, "Clicked on Invite Friends");
-        switchCardViews();
+        onClick_InviteFriends(view);
       }
     });
 
@@ -110,6 +120,17 @@ public class MainActivityAddEventFragment extends Fragment {
     eventCreationDescription = view.findViewById(R.id.eventCreationDescriptionTextInputEditText);
     eventCreationDescription.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
+    if(savedInstanceState != null && savedState == null) {
+      this.savedState = savedInstanceState.getBundle("storedBundle");
+    }
+    if(savedState != null) {
+        this.textView_Time.setText(savedState.getString("eventTime"));
+        this.textView_Date.setText(savedState.getString("eventDate"));
+        this.eventCreationLocation.setText(savedState.getString("eventLocation"));
+        this.eventCreationDescription.setText(savedState.getString("eventDescription"));
+        this.eventCreationTitle.setText(savedState.getString("eventTitle"));
+    }
+
     return view;
   }
 
@@ -137,7 +158,7 @@ public class MainActivityAddEventFragment extends Fragment {
     //we restablish the floating action button by setting its original x and y coordinates
     addEventFAB.setX(this.fabOriginX);
     addEventFAB.setY(this.fabOriginY);
-    addEventFAB.setImageResource(R.drawable.ic_add_black_24dp);
+    addEventFAB.setImageResource(R.drawable.plus);
     addEventFAB.show();
     //we restablish the tab layout by making it visible again
     TabLayout tabBar = getActivity().findViewById(R.id.mainToolbar);
@@ -147,8 +168,9 @@ public class MainActivityAddEventFragment extends Fragment {
   /**
    * Helper function to rotate the card views so that the Invite Friend List appears.
    */
-  private void switchCardViews() {
+  private void switchCardViews(Bundle bundle) {
     MainActivityAddEventInviteFriendsFragment fragment = new MainActivityAddEventInviteFriendsFragment();
+    fragment.setArguments(bundle);
     //pass the floating action button pointer to the next fragment along with its original x and y coordinates
     fragment.setAddEventFAB(this.addEventFAB, this.fabOriginX, this.fabOriginY);
     //set a custom animation to transition from this fragment to
@@ -157,6 +179,56 @@ public class MainActivityAddEventFragment extends Fragment {
         .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out)
         .replace(R.id.createEventScreen, fragment).commit();
 
+  }
+
+  private void onClick_InviteFriends(View view) {
+    Log.d(TAG, "Invite Friends Clicked");
+
+    // Check for issues in the fields
+    int checkFieldsResult = checkFields();
+    if (checkFieldsResult != 0) {
+      String errorMessage = "Error: Incorrect Fields";
+
+      if (checkFieldsResult == 1) {
+        errorMessage = "Error: Fields are empty.";
+      }
+      else if (checkFieldsResult == 2) {
+        errorMessage = "Error: Your event occurs in the past.";
+      }
+
+      customSnackBar.display(view, getActivity(), errorMessage);
+      return;
+    }
+
+    // Get current user's username
+    String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+    String username = email.substring(0, email.indexOf("@weout.com"));
+
+
+    // Create an event object with the received information
+    Event event = new Event(
+        this.eventCreationTitle.getText().toString(),
+        this.eventCreationLocation.getText().toString(),
+        this.textView_Date.getText().toString(),
+        this.textView_Time.getText().toString(),
+        String.valueOf(new Timestamp(new Date()).getSeconds()),
+        this.eventCreationDescription.getText().toString(),
+        username
+    );
+
+    // Convert the event information into a JSON
+    Gson gson = new Gson();
+    String eventJson = gson.toJson(event);
+    // Log json for debugging
+    Log.d(TAG, eventJson);
+
+    //Create Bundle to pass an argument to the next fragment
+    Bundle bundle = new Bundle();
+
+    // Attach the JSON as a string to the Bundle
+    bundle.putString("newEventJson", eventJson);
+
+    switchCardViews(bundle);
   }
 
   /**
@@ -177,23 +249,26 @@ public class MainActivityAddEventFragment extends Fragment {
   private void onClick_DatePicker() {
     Log.d(TAG, "Date Picker Clicked");
 
-    int currentYear, currentMonth, currentDay;
-
     Calendar cal = Calendar.getInstance();
-    currentYear = cal.get(Calendar.YEAR);
-    currentMonth = cal.get(Calendar.MONTH);
-    currentDay = cal.get(Calendar.DAY_OF_MONTH);
+    this.currentYear = cal.get(Calendar.YEAR);
+    this.currentMonth = cal.get(Calendar.MONTH);
+    this.currentDay = cal.get(Calendar.DAY_OF_MONTH);
 
-    DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.DialogTheme,
+    DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),R.style.DialogTheme,
         new DatePickerDialog.OnDateSetListener() {
 
           @Override
           public void onDateSet(DatePicker view, int year, int month, int day) {
-
-            textView_Date.setText((month + 1) + "-" + (day) + "-" + year);
+            textView_Date.setText((month+1) + "-" + (day) + "-" + year);
+            _year = year;
+            _month = month+1;
+            _day = day;
           }
-        }, currentYear, currentMonth, currentDay);
 
+        }, this.currentYear, this.currentMonth, this.currentDay);
+
+    // Make sure you can only select future dates.
+    datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
     datePickerDialog.show();
   }
 
@@ -203,12 +278,10 @@ public class MainActivityAddEventFragment extends Fragment {
   private void onClick_TimePicker() {
     Log.d(TAG, "Time Picker Clicked");
 
-    int currentHour, currentMinute;
-
     // Get Current Time
     Calendar c = Calendar.getInstance();
-    currentHour = c.get(Calendar.HOUR_OF_DAY);
-    currentMinute = c.get(Calendar.MINUTE);
+    this.currentHour = c.get(Calendar.HOUR_OF_DAY);
+    this.currentMinute = c.get(Calendar.MINUTE);
 
     // Launch Time Picker Dialog
     TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), R.style.DialogTheme,
@@ -216,10 +289,13 @@ public class MainActivityAddEventFragment extends Fragment {
 
           @Override
           public void onTimeSet(TimePicker view, int hour, int minute) {
-
             textView_Time.setText(convertTimeToString(hour, minute));
+            _hour = hour;
+            _minute = minute;
           }
-        }, currentHour, currentMinute, false);
+
+        }, this.currentHour, this.currentMinute, false);
+
     timePickerDialog.show();
   }
 
@@ -246,14 +322,58 @@ public class MainActivityAddEventFragment extends Fragment {
     return returnTimeString;
   }
 
+  // Check the fields given to the event creation activity
+  // TODO: Add enums for result values
+  private int checkFields() {
+    int result = 0;
+
+    // Check each field to see if it's empty first
+    if (Utilities.isEmpty(eventCreationTitle)) {
+      result = 1;
+    }
+    else if (Utilities.isEmpty(eventCreationLocation)) {
+      result = 1;
+    }
+    else if (Utilities.isEmpty(eventCreationDescription)) {
+      result = 1;
+    }
+    else if (Utilities.isEmpty(textView_Date)) {
+      result = 1;
+    }
+    else if (Utilities.isEmpty(textView_Time)) {
+      result = 1;
+    }
+
+    // Can add checking for date/time conflict or past date time here.
+    else if (Utilities.isToday(_year, _month, _day) && Utilities.isPastCurrentTime(_hour, _minute)) {
+      result = 2;
+    }
+
+    return result;
+  }
+
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putString("eventTitle", this.eventCreationTitle.getText().toString());
-    outState.putString("eventDescription", this.eventCreationDescription.getText().toString());
-    outState.putString("eventLocation", this.eventCreationLocation.getText().toString());
-    outState.putString("eventDate", this.textView_Date.getText().toString());
-    outState.putString("eventTime", this.textView_Time.getText().toString());
+    outState.putBundle("storedBundle", (savedState != null) ? savedState : saveState());
+
+  }
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    savedState = saveState();
+
+  }
+
+  private Bundle saveState() {
+    Bundle state = new Bundle();
+    state.putString("eventTime", this.textView_Time.getText().toString());
+    state.putString("eventDate", this.textView_Date.getText().toString());
+    state.putString("eventLocation", this.eventCreationLocation.getText().toString());
+    state.putString("eventDescription", this.eventCreationDescription.getText().toString());
+    state.putString("eventTitle", this.eventCreationTitle.getText().toString());
+
+    return state;
   }
 
 

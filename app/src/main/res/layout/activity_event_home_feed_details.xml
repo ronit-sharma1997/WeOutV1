@@ -188,7 +188,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/eventHomeFeedClickedOrganizer"
                 android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:text="10 guests"
                 android:textColor="@color/black"
 

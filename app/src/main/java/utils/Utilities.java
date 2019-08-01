@@ -1,6 +1,7 @@
 package utils;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -8,10 +9,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.app.WeOut.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -202,6 +205,119 @@ public class Utilities {
             }
         });
 
+    }
+
+    public static void deleteEventAsOrganizer(final Event_withID eventWithID, final View view, final Context context) {
+        // Get database variable instance from firebase
+        FirebaseFirestore dbReference = FirebaseFirestore.getInstance();
+
+        //Get Event stored in extended class Event_withID
+        Event eventDetail = eventWithID.getEvent();
+
+        WriteBatch batchDeleteEvent = dbReference.batch();
+
+        //delete 'attendingMap' field from document with corresponding event ID
+        HashMap<String, Object> deleteAttendingInvitees = new HashMap<>();
+        deleteAttendingInvitees.put("attendingMap", FieldValue.delete());
+
+        DocumentReference currentEventAttendingRef = dbReference.collection("events")
+            .document(eventWithID.getEventID());
+        batchDeleteEvent.update(currentEventAttendingRef, deleteAttendingInvitees);
+
+        //delete 'invitedMap' field from document with corresponding event ID
+        HashMap<String, Object> deleteInvitedGuests = new HashMap<>();
+        deleteAttendingInvitees.put("invitedMap", FieldValue.delete());
+
+        DocumentReference currentEventInvitedRef = dbReference.collection("events")
+            .document(eventWithID.getEventID());
+        batchDeleteEvent.update(currentEventInvitedRef, deleteInvitedGuests);
+
+        //now delete the event id document
+        DocumentReference currentEventRef = dbReference.collection("events")
+            .document(eventWithID.getEventID());
+        batchDeleteEvent.delete(currentEventRef);
+
+        //now we need to delete the event from each users invited and accepted document
+        HashMap<String, Object> deleteInviteInUserInvites = new HashMap<>();
+        deleteInviteInUserInvites.put(eventWithID.getEventID(), FieldValue.delete());
+
+        //traverse each invited user and delete from their event invites
+        for(String username : eventDetail.getInvitedMap().keySet()) {
+
+            batchDeleteEvent.update(dbReference.collection("users")
+                .document(username).collection("events")
+                .document("invited"), deleteInviteInUserInvites);
+        }
+
+        //traverse each invited user and delete from their event home feed
+        for(String username : eventDetail.getAttendingMap().keySet()) {
+
+            batchDeleteEvent.update(dbReference.collection("users")
+                .document(username).collection("events")
+                .document("accepted"), deleteInviteInUserInvites);
+        }
+
+        batchDeleteEvent.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Successfully Deleted Event: " + eventWithID.getEventID());
+                Utilities.displaySnackBar(view, context, "Event Deleted", R.color.lightBlue);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Unable to delete Event: " + eventWithID.getEventID());
+                Utilities.displaySnackBar(view, context, "Error: Can't delete Event at this time", R.color.lightBlue);
+                throw new IllegalStateException("Error deleting event from database");
+            }
+        });
+
+    }
+
+    public static void deleteEventNonOrganizer(final Event_withID eventDetails, final View view, final Context context) {
+        // Get database variable instance from firebase
+        FirebaseFirestore dbReference = FirebaseFirestore.getInstance();
+
+        WriteBatch batchDeleteEvent = dbReference.batch();
+
+        String currentUsername = getCurrentUsername();
+
+        //create a reference to the user's events collection under the accepted document
+        DocumentReference dbUserAcceptedRef = dbReference.collection("users")
+            .document(currentUsername).collection("events").document("accepted");
+
+        //delete the eventID from the user's accepted document
+        HashMap<String, Object> deleteAcceptedEvent = new HashMap<>();
+        deleteAcceptedEvent.put(eventDetails.getEventID(), FieldValue.delete());
+
+        batchDeleteEvent.update(dbUserAcceptedRef, deleteAcceptedEvent);
+
+        //create a reference to the event's attendingMap Field
+        DocumentReference dbEventAttending = dbReference.collection("events")
+            .document(eventDetails.getEventID());
+
+        //delete the username key from the attendingMap Map
+        HashMap<String, Object> deleteUsernameFromAttendingMap = new HashMap<>();
+        deleteUsernameFromAttendingMap.put("attendingMap." + currentUsername, FieldValue.delete());
+
+        batchDeleteEvent.update(dbEventAttending,deleteUsernameFromAttendingMap);
+
+        batchDeleteEvent.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Successfully Deleted Event: " + eventDetails.getEventID());
+                Utilities.displaySnackBar(view, context, "Event Deleted", R.color.lightBlue);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Unable to delete Event: " + eventDetails.getEventID());
+                Utilities.displaySnackBar(view, context, "Error: Can't delete Event at this time", R.color.lightBlue);
+                throw new IllegalStateException("Error with deleting the event");
+            }
+        });
     }
 
     public static void displaySnackBar (View view, Context context, String message) {

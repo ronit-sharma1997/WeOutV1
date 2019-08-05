@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:fitsSystemWindows="true"
+  android:background="@drawable/weoutbackground"
+  tools:context=".RegisterActivity">
+
+  <androidx.cardview.widget.CardView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
-    android:background="@color/lightBlue"
-    android:gravity="center"
-    android:paddingHorizontal="@dimen/margin16dp"
-    >
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    app:cardCornerRadius="@dimen/margin10dp"
+    android:layout_marginLeft="@dimen/margin95dp">
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="@dimen/activity_horizontal_margin">
 
         <TextView
+            android:id="@+id/signUpHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="@dimen/margin30dp"
             android:text="@string/SignUp"
-            android:textColor="@color/white"
-            android:textSize="50sp" />
+            android:textColor="@color/black"
+            android:textSize="40sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/LoginTextInput"
             app:counterEnabled="true"
-            app:counterMaxLength="30">
+            app:counterMaxLength="25">
 
             <EditText
                 android:id="@+id/firstName"
@@ -35,16 +47,16 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textCursorDrawable="@null"
-                android:textColor="@color/white" />
+                android:textCursorDrawable="@null"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:counterEnabled="true"
-            app:counterMaxLength="30"
+          android:theme="@style/LoginTextInput"
+          app:counterEnabled="true"
+          app:counterMaxLength="25"
             >
 
             <EditText
@@ -55,16 +67,16 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textCursorDrawable="@null"
-                android:textColor="@color/white" />
+                android:textCursorDrawable="@null"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:counterEnabled="true"
-            app:counterMaxLength="15"
+          android:theme="@style/LoginTextInput"
+          app:counterEnabled="true"
+          app:counterMaxLength="15"
             >
 
             <EditText
@@ -75,15 +87,16 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textCursorDrawable="@null"
-                android:textColor="@color/white" />
+                android:textCursorDrawable="@null"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+          android:theme="@style/LoginTextInput"
+          >
 
             <EditText
                 android:id="@+id/password"
@@ -96,7 +109,6 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textCursorDrawable="@null"
-                android:textColor="@color/white"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -104,7 +116,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+          android:theme="@style/LoginTextInput">
 
             <EditText
                 android:id="@+id/retype_password"
@@ -117,7 +130,6 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textCursorDrawable="@null"
-                android:textColor="@color/white"
                 android:layout_marginTop="@dimen/margin10dp"
                 />
 
@@ -125,22 +137,25 @@
 
         <Button
             android:id="@+id/sign_up_button"
-            style="?android:textAppearanceSmall"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin16dp"
-            android:background="@color/darkBlue"
+            android:background="@drawable/bluebutton"
             android:text="@string/action_sign_in_short"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
             />
 
     <ProgressBar
+        android:indeterminateTint="@color/black"
         android:id="@+id/progressBar"
         android:layout_width="@dimen/progressBarWidth"
         android:layout_height="@dimen/progressBarHeight"
         android:layout_gravity="center|bottom"
-        android:layout_marginTop="@dimen/margin20dp"
-        android:visibility="gone" />
+        android:layout_marginTop="@dimen/margin3dp"
+        android:visibility="invisible" />
 </LinearLayout>
+  </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -61,6 +61,9 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
         // Reference the current user by their username within the "users" collection
         DocumentReference dr = db.collection("users").document(usernameByPosition);
 
+        // Test what the document id is
+        Log.d(TAG, "Document ID " + dr.getId());
+
         // Get the data from the current document
         dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -157,6 +160,7 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
 
         @Override
         public void onClick(View view) {
+            Log.d(TAG, "Friend request item clicked");
 
             // TODO: See if this is necessary
 //            if (pendingFriendsList.get(getLayoutPosition()).equals("demoFriend")){

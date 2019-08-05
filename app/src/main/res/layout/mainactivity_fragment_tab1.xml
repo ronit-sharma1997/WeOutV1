@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivityHomeFragment">
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:orientation="vertical"
+  tools:context=".MainActivityHomeFragment"
+  >
 
     <TextView
         android:id="@+id/home_TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:textAlignment="center"
         android:text="@string/home_Title"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:fontFamily="monospace"
+        android:textColor="@color/white"
         android:textSize="40sp"
-        android:background="@drawable/toptitleborder"
+        android:background="@color/lightBlue"
+        android:layout_alignParentTop="true"
+        android:paddingTop="@dimen/margin3dp"
         />
 
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,7 +33,7 @@
         app:layoutManager="LinearLayoutManager"
         android:layout_below="@+id/home_TextView"
         tools:listitem="@layout/activity_event_invent"
-        android:layoutAnimation="@anim/layoutanimationelementsfalldown"/>
+        />
 
     <TextView
         android:id="@+id/emptyRecyclerViewEventHomeFeed"
@@ -50,7 +51,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lightBlue"
-        android:src="@drawable/ic_add_black_24dp"
+        android:src="@drawable/plus"
+        app:borderWidth="@dimen/margin3dp"
+        app:backgroundTint="@color/white"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/margin10dp"

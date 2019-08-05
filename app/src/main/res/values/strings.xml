@@ -10,14 +10,14 @@
 
     <!--Create an Event-->
     <string name="eventCreationActionBar">Create an Event</string>
-    <string name="eventCreationTitle">Event Title</string>
+    <string name="eventCreationTitle">Title</string>
     <string name="eventCreationTitleHint">Please enter the title of your event.</string>
-    <string name="eventCreationDateTime">Event Date and Time</string>
+    <string name="eventCreationDateTime">Date and Time</string>
     <string name="eventCreationDateHint">Date</string>
     <string name="eventCreationTimeHint">Time</string>
-    <string name="eventCreationLocation">Event Location</string>
+    <string name="eventCreationLocation">Location</string>
     <string name="eventCreationLocationHint">Please be descriptive!</string>
-    <string name="eventCreationDescription">Event Description</string>
+    <string name="eventCreationDescription">Description</string>
     <string name="eventCreationDescriptionHint">What will you and your friends be doing?</string>
 
     <string name="eventCreationInviteFriendsButton">Invite Friends</string>
@@ -31,8 +31,7 @@
     <!--End of Event Creation Strings-->
 
     <!--Login/Register Screen Strings-->
-    <string name="WeOut">𝓦𝓮 𝓞𝓾𝓽</string>
-    <string name="SignUp">𝓢𝓲𝓰𝓷 𝓤𝓹</string>
+    <string name="SignUp">Sign Up</string>
     <string name="firstNameHint">First Name</string>
     <string name="lastNameHint">Last Name</string>
     <string name="emailAddressHint">Email Address</string>
@@ -83,6 +82,9 @@
     <!--Event Invitations Strings-->
     <string name="acceptButtonName">Accept</string>
     <string name="rejectButtonName">Decline</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!--End of Event Invitations String-->
 
 </resources>

@@ -14,11 +14,11 @@
         android:layout_alignParentTop="true"
         android:text="Event Invites"
         android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:fontFamily="monospace"
+        android:textColor="@color/white"
+        android:paddingTop="@dimen/margin3dp"
         android:textSize="40sp"
-        android:background="@drawable/toptitleborder"/>
+        android:background="@color/lightBlue"
+        />
 
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

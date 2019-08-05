@@ -3,21 +3,39 @@ package com.app.WeOut;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.WeOut.dummy.DummyContent;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import utils.Event;
 import utils.AcceptRejectButtonListener;
+import utils.Event_withID;
 import utils.MyEventInvitesRecyclerViewAdapter;
+import utils.User;
+import utils.Utilities;
 
 
 /**
@@ -38,11 +56,20 @@ public class MainActivityNotificationsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // Listeners
     private OnFragmentInteractionListener mListener;
     private OnListFragmentInteractionListener listListener;
     private AcceptRejectButtonListener acceptRejectListener;
-    private List<Event> eventInvites;
+
+    // Event invites array list and adapter
+    private ArrayList<Event_withID> eventInvites;
     private MyEventInvitesRecyclerViewAdapter myAdapter;
+
+    // Firebase and debugging variables
+    private FirebaseFirestore db;
+    private String TAG;
+
+    private TextView eventNotificationsHeader;
 
     public MainActivityNotificationsFragment() {
         // Required empty public constructor
@@ -74,20 +101,181 @@ public class MainActivityNotificationsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        // Handle event invites
         this.eventInvites = new ArrayList<>();
-        this.addDummyEventInvites();
+//        this.addDummyEventInvites();
+
+        TAG = "EventInvites: ";
+
+        // Instantiate db
+        db = FirebaseFirestore.getInstance();
+
         this.acceptRejectListener = new AcceptRejectButtonListener() {
             @Override
             public void onAccept(int position) {
-                System.out.println("Event Invite " + eventInvites.get(position).getTitle() + " was accepted!");
+                System.out.println("Event Invite " + eventInvites.get(position).getEvent().getTitle() + " was accepted!");
+
+                // Create Batch to write all your changes
+                final WriteBatch batch = db.batch();
+
+                // Variables to work with
+                // Get event ID by position
+                String eventID = eventInvites.get(position).getEventID();
+                // Get username
+                final String username = Utilities.getCurrentUsername();
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Remove this eventID from current user's "events/invited" document
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                DocumentReference df_users_username_events_invited = db
+                        .collection("users").document(username)
+                        .collection("events").document("invited");
+
+                HashMap <String, Object> removeEventID_fromUserMap = new HashMap<>();
+                removeEventID_fromUserMap.put(eventID, FieldValue.delete());
+
+                batch.update(df_users_username_events_invited, removeEventID_fromUserMap);
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Add this eventID to current user's "events/accepted" document
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                DocumentReference df_users_username_events_accepted = db
+                        .collection("users").document(username)
+                        .collection("events").document("accepted");
+
+                HashMap <String, Object> addEventID_toUserMap = new HashMap<>();
+                addEventID_toUserMap.put(eventID, true);
+
+                batch.set(df_users_username_events_accepted, addEventID_toUserMap, SetOptions.merge());
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Remove this user's username from the "events/eventID/invitedMap"
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                final DocumentReference df_events_eventID = db
+                        .collection("events").document(eventID);
+
+                HashMap <String, Object> removeUserFromEventID_invitedMap = new HashMap<>();
+                removeUserFromEventID_invitedMap.put("invitedMap." + username, FieldValue.delete());
+
+                batch.update(df_events_eventID, removeUserFromEventID_invitedMap);
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Add this user's username to the "events/eventID/acceptedMap"
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                final HashMap <String, Object> addUserToEventID_acceptedMap = new HashMap<>();
+                // TODO: hashmapChanges
+
+                // Get current user's full name
+                DocumentReference df_currUser = db.collection("users").document(username);
+
+                df_currUser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                            String currUserFullName = documentSnapshot.toObject(User.class).getFullName();
+
+                            // Add one entry to the accepted map (the organizer AKA curr user)
+                            addUserToEventID_acceptedMap.put("attendingMap." + username, currUserFullName);
+
+                            Log.d(TAG, "Getting full name from current user was successful. [" +
+                                    username + ", " + currUserFullName + "]");
+
+                            batch.update(df_events_eventID, addUserToEventID_acceptedMap);
+
+                            // Finished adding all the values to the batch. Now commit all this data.
+                            batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "Accept Event batch writing successful!");
+                                    Utilities.displaySnackBar(getView(), getContext(), "Successfully accepted event!");
+                                    myAdapter.notifyDataSetChanged();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "Error writing batch: " + e.getMessage());
+                                    Utilities.displaySnackBar(getView(), getContext(), "Error accepting event.");
+                                }
+                            });
+
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Failure to get " + username + " 's full name. Error: " + e.getMessage());
+//                        Utilities.displaySnackBar(view, getApplicationContext(), "Error retrieving user information.");
+                        addUserToEventID_acceptedMap.put(username, "Error Name");
+                    }
+                });
+
+
             }
 
             @Override
             public void onReject(int position) {
-                System.out.println("Event Invite " + eventInvites.get(position).getTitle() + " was rejected!");
-                eventInvites.remove(position);
-                myAdapter.notifyItemRemoved(position);
-                myAdapter.notifyItemRangeChanged(position, eventInvites.size());
+                System.out.println("Event Invite " + eventInvites.get(position).getEvent().getTitle() + " was rejected!");
+
+                // Create Batch to write all your changes
+                WriteBatch batch = db.batch();
+
+                // Variables to work with
+                // Get event ID by position
+                String eventID = eventInvites.get(position).getEventID();
+                // Get username
+                String username = Utilities.getCurrentUsername();
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Remove this eventID from current user's "events/invited" document
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                DocumentReference df_users_username_events_invited = db
+                        .collection("users").document(username)
+                        .collection("events").document("invited");
+
+                HashMap <String, Object> removeEventID_fromUserMap = new HashMap<>();
+                removeEventID_fromUserMap.put(eventID, FieldValue.delete());
+
+                batch.update(df_users_username_events_invited, removeEventID_fromUserMap);
+
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // Remove this username from the "events/eventID/invitedMap"
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                DocumentReference df_events_eventID = db
+                        .collection("events").document(eventID);
+
+                HashMap <String, Object> removeUserFromEventID_invitedMap = new HashMap<>();
+                removeUserFromEventID_invitedMap.put("invitedMap." + username, FieldValue.delete());
+
+                batch.update(df_events_eventID, removeUserFromEventID_invitedMap);
+
+                // Finished adding all the values to the batch. Now commit all this data.
+                batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Accept Event batch writing successful!");
+                        Utilities.displaySnackBar(getView(), getContext(), "Success declining event.");
+                        myAdapter.notifyDataSetChanged();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error writing batch: " + e.getMessage());
+                        Utilities.displaySnackBar(getView(), getContext(), "Error declining event.");
+                    }
+                });
+
+//                eventInvites.remove(position);
+//                myAdapter.notifyItemRemoved(position);
+//                myAdapter.notifyItemRangeChanged(position, eventInvites.size());
             }
         };
     }
@@ -97,13 +285,16 @@ public class MainActivityNotificationsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_activity_notifications, container, false);
+
         RecyclerView recyclerView = view.findViewById(R.id.eventInviteList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         this.myAdapter = new MyEventInvitesRecyclerViewAdapter(this.eventInvites, this.listListener, this.acceptRejectListener);
         recyclerView.setAdapter(this.myAdapter);
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                DividerItemDecoration.VERTICAL);
-//        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        this.eventNotificationsHeader = view.findViewById(R.id.notificationTitle);
+        this.eventNotificationsHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
+
         return view;
 
     }
@@ -152,8 +343,7 @@ public class MainActivityNotificationsFragment extends Fragment {
     }
 
     private void addDummyEventInvites(){
-        this.eventInvites.add(new Event("Watch Spider-Man", "7/18/2019 10:00 P.M.", "sbillah1969", "", ""));
-        this.eventInvites.add(new Event("Complete App Dev Project", "7/19/2019 10:00 P.M.", "sbillah1969", "", ""));
-        this.eventInvites.add(new Event("Watch Venom", "7/20/2019 10:00 P.M.", "sbillah1969", "", ""));
+        Event dummyEvent = new Event("Watch Spider-Man", "", "7/18/2019", "10:00 P.M.", "", "", "saif");
+        this.eventInvites.add(new Event_withID(dummyEvent, "fakeID"));
     }
 }

@@ -3,6 +3,7 @@ package com.app.WeOut;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import fastscroll.app.fastscrollalphabetindex.AlphabetIndexFastScrollRecyclerView;
 import utils.MyFriendRecyclerViewAdapter;
 
 /**
@@ -46,7 +50,8 @@ public class Profile_FriendListFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private ArrayList<String> friendList;
-    private RecyclerView myFriendsRecyclerView;
+    //custom alphabet index fast scroll recycler view
+    private AlphabetIndexFastScrollRecyclerView myFriendsRecyclerView;
     private TextView emptyRecyclerView;
     private MyFriendRecyclerViewAdapter myFriendRecyclerViewAdapter;
     private String TAG;
@@ -93,7 +98,12 @@ public class Profile_FriendListFragment extends Fragment {
                 DividerItemDecoration.VERTICAL);
         myFriendsRecyclerView.addItemDecoration(dividerItemDecoration);
 
-//        }
+        //set the color of the index bar to light blue
+        myFriendsRecyclerView.setIndexBarColor(R.color.lightBlue);
+
+        //set the transparent value so that it's fully visible
+        myFriendsRecyclerView.setIndexBarTransparentValue((float) 1);
+
         return view;
     }
 
@@ -103,6 +113,7 @@ public class Profile_FriendListFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         DocumentReference df = db.collection("users").document(shortenUserName).collection("friends").document("current");
+
 //        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 //            @Override
 //            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -113,7 +124,6 @@ public class Profile_FriendListFragment extends Fragment {
 //                        friendList = new ArrayList<>(documentSnapshot.getData().keySet());
 //                        emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
 //                    }
-//
 //
 //                }
 //                else {
@@ -136,10 +146,20 @@ public class Profile_FriendListFragment extends Fragment {
                     return;
                 }
                 if(documentSnapshot.exists() && documentSnapshot != null) {
+                    // Store the friends in an arraylist
                     friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+//                    if (friendList.contains("FakeFriend")) { };
+
+                    // For debugging
                     Log.d(TAG, "FriendList Size: " + friendList.size());
+                    Log.d(TAG, "Friends: " + documentSnapshot.getData().keySet());
+
+                    // Make the empty text visible based on friends list size
                     emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
+
+                    // Set up the adapter
                     myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
+                    myFriendRecyclerViewAdapter.notifyDataSetChanged();
                     myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
                 }
 

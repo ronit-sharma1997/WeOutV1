@@ -14,11 +14,10 @@
         android:layout_alignParentTop="true"
         android:text="@string/profileMainText"
         android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:fontFamily="monospace"
+        android:textColor="@color/white"
+        android:paddingTop="@dimen/margin3dp"
         android:textSize="40sp"
-        android:background="@drawable/toptitleborder"/>
+        android:background="@color/lightBlue"/>
 
 
     <FrameLayout

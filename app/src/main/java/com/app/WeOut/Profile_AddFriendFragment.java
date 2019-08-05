@@ -171,6 +171,7 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                     Map<String, Object> pendingFriendRequest = new HashMap<>();
                                                                     // Add the current user name to the map
                                                                     pendingFriendRequest.put(username, true);
+                                                                    
                                                                     // Add the friend request to the friendToAdd's received document
                                                                     db.collection("users").document(friendToAdd)
                                                                             .collection("friends").document("received")
@@ -178,6 +179,8 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
                                                                             snackBar.display(view, getActivity(), "Friend request successfully sent");
+                                                                            // Clear the text box if successful
+                                                                            addFriendByUsername.getText().clear();
                                                                         }
                                                                     }).addOnFailureListener(new OnFailureListener() {
                                                                         @Override

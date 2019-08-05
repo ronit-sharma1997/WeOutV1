@@ -1,5 +1,10 @@
 package com.app.WeOut;
 
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.core.content.res.ResourcesCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,9 +32,10 @@ import utils.CustomSnackBar;
 public class LoginActivity extends AppCompatActivity {
 
     // XML Variables
+    private TextView registerTextView, loginHeader;
     private EditText inputUsername, inputPassword;
     private ProgressBar progressBar;
-    private Button btnSignup, btnLogin;
+    private Button btnLogin;
 
     private CustomSnackBar snackBar;
     private FirebaseAuth auth;
@@ -58,22 +65,24 @@ public class LoginActivity extends AppCompatActivity {
         inputUsername = findViewById(R.id.username_input);
         inputPassword = findViewById(R.id.password);
         progressBar = findViewById(R.id.progressBar);
-        btnSignup = findViewById(R.id.btn_signup);
+        registerTextView = findViewById(R.id.btn_signup);
         btnLogin = findViewById(R.id.btn_login);
+        loginHeader = findViewById(R.id.loginHeader);
+        loginHeader.setTypeface(ResourcesCompat.getFont(this, R.font.lobster));
 
         //if user needs to sign up, go to Register activity and end current activity
-        btnSignup.setOnClickListener(new View.OnClickListener() {
+        this.registerTextView.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                // TODO: Decide if you want to fully remove this
-                // Removed so that user can press back when fully logged in
-                //finish();
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+//                finish();
             }
         });
 
+
         //attempt to login with input from EditText Views
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 String username = inputUsername.getText().toString();
@@ -102,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
-                                progressBar.setVisibility(View.GONE);
                                 if (!task.isSuccessful()) {
                                     // there was an error
                                     if (password.length() < 6) {
@@ -113,8 +121,10 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                    finish();
+
                                 }
+//                                progressBar.setVisibility(View.GONE);
+                                finish();
                             }
                         });
             }

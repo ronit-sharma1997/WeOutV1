@@ -1,4 +1,4 @@
-package com.app.WeOut;
+package com.app.WeOut.ToDelete;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,20 +15,31 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.app.WeOut.R;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import utils.Event;
+import utils.Utilities;
+import utils.CustomSnackBar;
 
 public class MainActivityAddEvent extends AppCompatActivity {
+
+    // Declare variables for XML components
     Button btn_DatePicker, btn_TimePicker;
     Button btn_InviteFriends;
     TextView textView_Date, textView_Time;
     EditText eventCreationDescription, eventCreationTitle, eventCreationLocation;
 
-    String TAG = "EventCreation";
+    // Private variables
+    private String TAG = "EventCreation: ";
+    private int _year, _month, _day, _hour, _minute;
+    private int currentYear, currentMonth, currentDay, currentHour, currentMinute;
+    private CustomSnackBar customSnackBar = new CustomSnackBar();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,48 +61,110 @@ public class MainActivityAddEvent extends AppCompatActivity {
 
     public void onClick_InviteFriends(View view) {
         Log.d(TAG, "Invite Friends Clicked");
-        String userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String shortenUserName = userName.substring(0, userName.indexOf("@weout.com"));
+
+        // Check for issues in the fields
+        int checkFieldsResult = checkFields();
+        if (checkFieldsResult != 0) {
+            String errorMessage = "Error: Incorrect Fields";
+
+            if (checkFieldsResult == 1) {
+                errorMessage = "Error: Fields are empty.";
+            }
+            else if (checkFieldsResult == 2) {
+                errorMessage = "Error: Your event occurs in the past.";
+            }
+
+            customSnackBar.display(view, getApplicationContext(), errorMessage);
+            return;
+        }
+
+        // Get current user's username
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String username = email.substring(0, email.indexOf("@weout.com"));
 
         // Create intent to switch to new activity to invite friends
         Intent intent = new Intent(MainActivityAddEvent.this, MainActivityHomeInviteFriends.class);
-        Event newEvent = new Event(this.eventCreationTitle.getText().toString(),
-                this.textView_Date.getText().toString() + " " + this.textView_Time.getText()
-                        .toString(),shortenUserName, this.eventCreationLocation.getText().toString(),
-                this.eventCreationDescription.getText().toString());
 
+        // Create an event object with the received information
+        Event event = new Event(
+                this.eventCreationTitle.getText().toString(),
+                this.eventCreationLocation.getText().toString(),
+                this.textView_Date.getText().toString(),
+                this.textView_Time.getText().toString(),
+                String.valueOf(new Timestamp(new Date()).getSeconds()),
+                this.eventCreationDescription.getText().toString(),
+                username
+        );
+
+        // Convert the event information into a JSON
         Gson gson = new Gson();
-        String object = gson.toJson(newEvent);
-        intent.putExtra("newEvent", object);
+        String eventJson = gson.toJson(event);
+        // Log json for debugging
+        Log.d(TAG, eventJson);
+
+        // Attach the JSON as a string to the intent
+        intent.putExtra("newEventJson", eventJson);
         intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
 
         // Switch to new activity
         startActivity(intent);
         finish();
+    }
 
+    // Check the fields given to the event creation activity
+    // TODO: Add enums for result values
+    private int checkFields() {
+        int result = 0;
+
+        // Check each field to see if it's empty first
+        if (Utilities.isEmpty(eventCreationTitle)) {
+            result = 1;
+        }
+        else if (Utilities.isEmpty(eventCreationLocation)) {
+            result = 1;
+        }
+        else if (Utilities.isEmpty(eventCreationDescription)) {
+            result = 1;
+        }
+        else if (Utilities.isEmpty(textView_Date)) {
+            result = 1;
+        }
+        else if (Utilities.isEmpty(textView_Time)) {
+            result = 1;
+        }
+
+        // Can add checking for date/time conflict or past date time here.
+        else if (Utilities.isToday(_year, _month, _day) && Utilities.isPastCurrentTime(_hour, _minute)) {
+            result = 2;
+        }
+
+        return result;
     }
 
     // Function called when Date Picker button is clicked
     public void onClick_DatePicker(View view) {
         Log.d(TAG, "Date Picker Clicked");
 
-        int currentYear, currentMonth, currentDay;
-
         Calendar cal = Calendar.getInstance();
-        currentYear = cal.get(Calendar.YEAR);
-        currentMonth = cal.get(Calendar.MONTH);
-        currentDay = cal.get(Calendar.DAY_OF_MONTH);
+        this.currentYear = cal.get(Calendar.YEAR);
+        this.currentMonth = cal.get(Calendar.MONTH);
+        this.currentDay = cal.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,R.style.DialogTheme,
                 new DatePickerDialog.OnDateSetListener() {
 
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int day) {
-
                         textView_Date.setText((month+1) + "-" + (day) + "-" + year);
+                        _year = year;
+                        _month = month+1;
+                        _day = day;
                     }
-                }, currentYear, currentMonth, currentDay);
 
+                }, this.currentYear, this.currentMonth, this.currentDay);
+
+        // Make sure you can only select future dates.
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
 
@@ -99,12 +172,10 @@ public class MainActivityAddEvent extends AppCompatActivity {
     public void onClick_TimePicker(View view) {
         Log.d(TAG, "Time Picker Clicked");
 
-        int currentHour, currentMinute;
-
         // Get Current Time
         Calendar c = Calendar.getInstance();
-        currentHour = c.get(Calendar.HOUR_OF_DAY);
-        currentMinute = c.get(Calendar.MINUTE);
+        this.currentHour = c.get(Calendar.HOUR_OF_DAY);
+        this.currentMinute = c.get(Calendar.MINUTE);
 
         // Launch Time Picker Dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, R.style.DialogTheme,
@@ -112,10 +183,13 @@ public class MainActivityAddEvent extends AppCompatActivity {
 
                     @Override
                     public void onTimeSet(TimePicker view, int hour, int minute) {
-
                         textView_Time.setText(convertTimeToString(hour, minute));
+                        _hour = hour;
+                        _minute = minute;
                     }
-                }, currentHour, currentMinute, false);
+
+                }, this.currentHour, this.currentMinute, false);
+
         timePickerDialog.show();
     }
 

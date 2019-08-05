@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivityHomeInviteFriends">
+    tools:context=".ToDelete.MainActivityHomeInviteFriends">
 
     <TextView
         android:id="@+id/inviteFriends_TextView"
@@ -37,7 +37,8 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         android:layout_below="@+id/inviteFriends_TextView"
-        android:layout_above="@+id/inviteFriends_FinishButton"/>
-
+        android:layout_above="@+id/inviteFriends_FinishButton"
+        android:background="@color/white"
+        />
 
 </RelativeLayout>

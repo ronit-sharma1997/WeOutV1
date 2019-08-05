@@ -27,5 +27,6 @@
     <dimen name="userLogoHeight">100dp</dimen>
     <dimen name="maxWidthUsername">280dp</dimen>
     <dimen name="maxHeightUsername">50dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
 
 </resources>

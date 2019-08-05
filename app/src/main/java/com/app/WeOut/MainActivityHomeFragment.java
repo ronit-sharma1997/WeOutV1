@@ -1,55 +1,78 @@
 package com.app.WeOut;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.app.WeOut.dummy.DummyContent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
+import com.google.android.material.tabs.TabLayout;
+
 
 import java.util.ArrayList;
 
-import utils.Event;
+import utils.AnimatorPath;
 import utils.EventHomeFeedRecyclerViewAdapter;
+import utils.PathEvaluator;
+import utils.PathPoint;
+import utils.Event_withID;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MainActivityHomeFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MainActivityHomeFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * MainActivityHomeFragment extends {@link Fragment} subclass. {@link MainActivity} contains this
+ * fragment and implements the {@link MainActivityHomeFragment.OnFragmentInteractionListener}
+ * interface to handle interaction events and the {@link MainActivityHomeFragment.OnListFragmentInteractionListener}
+ * interface to handle interaction with Recycler View in the fragment.
  */
 public class MainActivityHomeFragment extends Fragment {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private RecyclerView eventInvites;
-    private TextView emptyRecyclerView;
+    private RecyclerView eventInvitesRecyclerView;
+    private TextView emptyRecyclerViewText;
 
-    private  ArrayList<Event> eventList = new ArrayList<>();
+    private  ArrayList<Event_withID> eventList = new ArrayList<>();
 
     private FloatingActionButton addEventFAB;
 
-    private OnListFragmentInteractionListener listListener;
+    private FrameLayout createEventContainer;
+    private RelativeLayout createEventContentContainer;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView homeHeader;
+
+    private final static float SCALE_FACTOR = 20f;
+    private final static int ANIMATION_DURATION = 300;
+    private final static int MINIMUN_X_DISTANCE = 200;
+    private boolean mRevealFlag;
+    private float mFabSize;
+    private float fabOriginX;
+    private float fabOriginY;
+
+    private OnListFragmentInteractionListener listListener;
 
     private OnFragmentInteractionListener mListener;
     private EventHomeFeedRecyclerViewAdapter myAdapter;
@@ -58,91 +81,65 @@ public class MainActivityHomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainActivityHomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MainActivityHomeFragment newInstance(String param1, String param2) {
-        MainActivityHomeFragment fragment = new MainActivityHomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.mainactivity_fragment_tab1, container, false);
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
+        final View view = inflater.inflate(R.layout.mainactivity_fragment_tab1, container, false);
+
+        // Associate all XML components w/ their IDs
+        this.eventInvitesRecyclerView = view.findViewById(R.id.eventInvitesHomeFeed);
         this.addEventFAB = view.findViewById(R.id.addEventButton);
-        this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
-        if(this.eventList.size() == 0) {
-            this.emptyRecyclerView.setVisibility(View.VISIBLE);
-        }
+        this.emptyRecyclerViewText = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
+
+        this.createEventContainer = getActivity().findViewById(R.id.createEventScreen);
+        this.createEventContentContainer = getActivity()
+                .findViewById(R.id.relativeLayoutEventCreateContainer);
+
+        this.mFabSize = getResources().getDimensionPixelSize(R.dimen.fab_size);
+
+        // Set the empty text to visible at the start
+        this.emptyRecyclerViewText.setVisibility(View.VISIBLE);
+
+        //set on click listener for floating action button
         this.addEventFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(getActivity(), MainActivityAddEvent.class);
-                startActivityForResult(myIntent, 1);
-
+                fabPressed();
             }
         });
 
-        this.eventInvites = view.findViewById(R.id.eventInvitesHomeFeed);
-        this.eventInvites.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layoutanimationelementsfalldown);
-//        recyclerView.setLayoutAnimation(animation);
-        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(this.eventList, this.listListener);
-        this.myAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkEmpty();
-            }
+        // Set the layout manager for the Recycler View
+        this.eventInvitesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                checkEmpty();
-            }
+        // Create the adapter
+        this.myAdapter = new EventHomeFeedRecyclerViewAdapter(
+                this.eventList, this.listListener, this.emptyRecyclerViewText);
 
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                checkEmpty();
-            }
-            void checkEmpty() {
-                emptyRecyclerView.setVisibility(myAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
-        this.eventInvites.setAdapter(this.myAdapter);
+        // Set the adapter
+        this.eventInvitesRecyclerView.setAdapter(this.myAdapter);
 
+        //Set the font for the header
+        this.homeHeader = view.findViewById(R.id.home_TextView);
+        this.homeHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
+
+        //in the onCreateView the exact position of a view is not determined until much later on. Adding
+        //a global layout listener so that once the view is constructed on the screen, we can get the exact
+        //coordinates of the floating action button
+        view.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        int[] originalFABPostion = new int[2];
+                        addEventFAB.getLocationOnScreen(originalFABPostion);
+                        fabOriginX = originalFABPostion[0];
+                        fabOriginY = originalFABPostion[1] + addEventFAB.getHeight() / 2;
+                    }
+                });
 
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -154,6 +151,7 @@ public class MainActivityHomeFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        listListener = (OnListFragmentInteractionListener) context;
     }
 
     @Override
@@ -162,34 +160,137 @@ public class MainActivityHomeFragment extends Fragment {
         mListener = null;
     }
 
-    @Override
+    /**
+     * Helper method to complete the process of clicking on the add event floating action button and
+     * opening the event input screen
+     */
+    private void fabPressed() {
+        final float startX = this.addEventFAB.getX();
+        //when we animate the floating action button, we want the icon in the FAB to disappear
+        this.addEventFAB.setImageResource(0);
+
+        //create an AnimatorPath for the floating action button to follow in its animation
+        AnimatorPath path = new AnimatorPath();
+        path.moveTo(0, 0);
+        //the floating action button will curve to following end point with following control points
+        path.curveTo(-300, -200, -300, -300, -400, -600);
+
+        //instantiate an ObjectAnimator with AnimatorPath path and attach to floating action button
+        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "fabLoc",
+                new PathEvaluator(), path.getPoints().toArray());
+
+        anim.setInterpolator(new AccelerateInterpolator());
+        anim.setDuration(ANIMATION_DURATION);
+        anim.start();
+        //remove the tab layout view so that the event input screen can be seen in full screen
+        TabLayout tabLayout = getActivity().findViewById(R.id.mainToolbar);
+        tabLayout.setVisibility(View.GONE);
+
+        //add an update listener to listen to the ObjectAnimator
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                //if the floating action button has moved more than our minimum required distance
+                if (Math.abs(startX - addEventFAB.getX()) > MINIMUN_X_DISTANCE) {
+                    //if the event input screen hasn't been revealed yet, make the floating action button
+                    //grow to cover the screen and then replace with eventCreationContainer
+                    if (!mRevealFlag) {
+                        //make the floating action button very large
+                        addEventFAB.animate()
+                                .scaleXBy(SCALE_FACTOR)
+                                .scaleYBy(SCALE_FACTOR)
+                                .setListener(mEndRevealListener)
+                                .setDuration(ANIMATION_DURATION);
+
+                        mRevealFlag = true;
+
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * AnimatorListenerAdapter to listen for when the floating action button is done growing
+     */
+    private AnimatorListenerAdapter mEndRevealListener = new AnimatorListenerAdapter() {
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            super.onAnimationEnd(animation);
+
+            //begin transaction process to MainActivityAddEventFragment
+            MainActivityAddEventFragment fragment = new MainActivityAddEventFragment();
+            //pass a reference of the floating action button to the next fragment
+            fragment.setAddEventFAB(addEventFAB, fabOriginX, fabOriginY);
+            //replace the fragment container with the new fragment MainActivityAddEventFragment
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.createEventScreen, fragment).commit();
+
+            //animate the container so that it reveals itself almost immediately
+            createEventContainer.animate().scaleX(1).scaleY(1).setDuration(1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            //once the animation is done, set the container to visible and hide the floating action
+                            //button
+                            createEventContainer.setVisibility(View.VISIBLE);
+                            addEventFAB.hide();
+                        }
+                    }).start();
+
+            mRevealFlag = false;
+
+        }
+    };
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
-                eventList.add(new Gson().fromJson(data.getStringExtra("newEvent"), Event.class));
-                myAdapter.notifyItemInserted(eventList.size()-1);
+//                eventList.add(new Gson().fromJson(data.getStringExtra("newEventJson"), Event.class));
+                Log.d(TAG, "Size of event List: " + eventList.size());
+//                myAdapter.notifyItemInserted(eventList.size()-1);
                 myAdapter.notifyDataSetChanged();
             }
         }
     }
-
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
+     * This interface must be implemented by activities that contain this fragment to allow an
+     * interaction in this fragment to be communicated to the activity and potentially other fragments
+     * contained in that activity.
      * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * See the Android Training lesson <a href= "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
     public interface OnListFragmentInteractionListener {
+
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyContent.DummyItem item);
+        void onListFragmentInteraction(Event_withID event, View v);
     }
+
+
+    /**
+     * We need this setter to translate between the information the animator produces (a new
+     * "PathPoint" describing the current animated location) and the information that the button
+     * requires (an xy location). The setter will be called by the ObjectAnimator given the 'fabLoc'
+     * property string.
+     */
+    public void setFabLoc(PathPoint newLoc) {
+        addEventFAB.setTranslationX(newLoc.mX);
+
+        if (mRevealFlag) {
+            addEventFAB.setTranslationY(newLoc.mY - (mFabSize / 2));
+        } else {
+            addEventFAB.setTranslationY(newLoc.mY);
+        }
+    }
+
 }

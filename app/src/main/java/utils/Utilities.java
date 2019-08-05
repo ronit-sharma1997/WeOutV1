@@ -216,21 +216,21 @@ public class Utilities {
 
         WriteBatch batchDeleteEvent = dbReference.batch();
 
-        //delete 'attendingMap' field from document with corresponding event ID
-        HashMap<String, Object> deleteAttendingInvitees = new HashMap<>();
-        deleteAttendingInvitees.put("attendingMap", FieldValue.delete());
-
-        DocumentReference currentEventAttendingRef = dbReference.collection("events")
-            .document(eventWithID.getEventID());
-        batchDeleteEvent.update(currentEventAttendingRef, deleteAttendingInvitees);
-
-        //delete 'invitedMap' field from document with corresponding event ID
-        HashMap<String, Object> deleteInvitedGuests = new HashMap<>();
-        deleteAttendingInvitees.put("invitedMap", FieldValue.delete());
-
-        DocumentReference currentEventInvitedRef = dbReference.collection("events")
-            .document(eventWithID.getEventID());
-        batchDeleteEvent.update(currentEventInvitedRef, deleteInvitedGuests);
+//        //delete 'attendingMap' field from document with corresponding event ID
+//        HashMap<String, Object> deleteAttendingInvitees = new HashMap<>();
+//        deleteAttendingInvitees.put("attendingMap", FieldValue.delete());
+//
+//        DocumentReference currentEventAttendingRef = dbReference.collection("events")
+//            .document(eventWithID.getEventID());
+//        batchDeleteEvent.update(currentEventAttendingRef, deleteAttendingInvitees);
+//
+//        //delete 'invitedMap' field from document with corresponding event ID
+//        HashMap<String, Object> deleteInvitedGuests = new HashMap<>();
+//        deleteAttendingInvitees.put("invitedMap", FieldValue.delete());
+//
+//        DocumentReference currentEventInvitedRef = dbReference.collection("events")
+//            .document(eventWithID.getEventID());
+//        batchDeleteEvent.update(currentEventInvitedRef, deleteInvitedGuests);
 
         //now delete the event id document
         DocumentReference currentEventRef = dbReference.collection("events")

@@ -194,6 +194,7 @@ public class MainActivityNotificationsFragment extends Fragment {
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "Accept Event batch writing successful!");
                                     Utilities.displaySnackBar(getView(), getContext(), "Successfully accepted event!");
+                                    myAdapter.notifyDataSetChanged();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -262,6 +263,7 @@ public class MainActivityNotificationsFragment extends Fragment {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Accept Event batch writing successful!");
                         Utilities.displaySnackBar(getView(), getContext(), "Success declining event.");
+                        myAdapter.notifyDataSetChanged();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

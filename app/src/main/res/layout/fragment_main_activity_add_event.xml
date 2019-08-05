@@ -29,7 +29,9 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:paddingHorizontal="@dimen/margin10dp"
+                >
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -109,7 +111,7 @@
                         android:layout_column="0"
                         android:layout_columnWeight="1"
                         android:layout_gravity="fill_horizontal"
-                        android:paddingVertical="@dimen/margin20dp"
+                        android:paddingVertical="@dimen/margin10dp"
                         android:gravity="center"
                         android:textColor="#000000"
                         android:textSize="20sp" />
@@ -123,7 +125,7 @@
                         android:layout_columnWeight="1"
                         android:layout_rowWeight=".75"
                         android:layout_gravity="fill_horizontal"
-                        android:paddingVertical="@dimen/margin20dp"
+                        android:paddingVertical="@dimen/margin10dp"
                         android:textSize="20sp"
                         android:textColor="#000000"
                         android:gravity="center"/>

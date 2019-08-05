@@ -179,6 +179,8 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
                                                                             snackBar.display(view, getActivity(), "Friend request successfully sent");
+                                                                            // Clear the text box if successful
+                                                                            addFriendByUsername.getText().clear();
                                                                         }
                                                                     }).addOnFailureListener(new OnFailureListener() {
                                                                         @Override

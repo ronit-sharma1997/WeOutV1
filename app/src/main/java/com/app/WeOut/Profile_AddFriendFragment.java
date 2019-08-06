@@ -116,7 +116,11 @@ public class Profile_AddFriendFragment extends Fragment {
                 progressBar.setVisibility(View.VISIBLE);
                 if (TextUtils.isEmpty(addFriendByUsername.getText()) || addFriendByUsername.getText().toString().equals(username)) {
                     snackBar.display(view, getActivity(), "Please enter a valid username!");
-                } else {
+                }
+                else if (addFriendByUsername.getText().toString().contains(" ")) {
+                    snackBar.display(view, getActivity(), "Username cannot contain spaces!");
+                }
+                else {
 
                     final String friendToAdd = addFriendByUsername.getText().toString().trim();
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();

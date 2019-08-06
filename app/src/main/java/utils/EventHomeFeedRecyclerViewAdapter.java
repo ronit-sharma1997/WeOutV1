@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.WeOut.EventHomeFeedDetailsActivity;
 import com.app.WeOut.R;
 
 import java.util.ArrayList;
@@ -36,13 +35,17 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
 
     // Arraylist to store events
     private ArrayList<Event_withID> eventsList;
-
     private final OnListFragmentInteractionListener mListener;
 
     // Private variables
     private String username;
     private String TAG;
     private TextView emptyListTextView;
+
+    // FINAL VARIABLES FOR EVENT TEXT SIZE TO DISPLAY
+    private final int EVENT_TITLE_MAX_LENGTH = 30;
+    private final int EVENT_LOCATION_MAX_LENGTH = 40;
+
     // Instance of DB
     FirebaseFirestore db;
 
@@ -218,18 +221,26 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
 
         // fill the holder with information for the corresponding event
         holder.event_withID_Object = this.eventsList.get(position);
+        Event event = holder.event_withID_Object.getEvent();
 
         // Set visible data based on event information
-        holder.eventTitle.setText(holder.event_withID_Object.getEvent().getTitle());
-        holder.eventLocation.setText(holder.event_withID_Object.getEvent().getLocation());
-        holder.eventDate.setText(
-                holder.event_withID_Object.getEvent().getEventDate() + " " +
-                holder.event_withID_Object.getEvent().getEventTime()
-        );
+        if (event.getTitle().length() > EVENT_TITLE_MAX_LENGTH) {
+            holder.eventTitle.setText(event.getTitle().substring(0, EVENT_TITLE_MAX_LENGTH) + "...");
+        } else {
+            holder.eventTitle.setText(event.getTitle());
+        }
+
+        if (event.getTitle().length() > EVENT_LOCATION_MAX_LENGTH) {
+            holder.eventLocation.setText(event.getLocation().substring(0, EVENT_LOCATION_MAX_LENGTH) + "...");
+        } else {
+            holder.eventLocation.setText(event.getLocation());
+        }
+
+        holder.eventDate.setText(event.getEventDate() + " " + event.getEventTime());
 
         // Only show the organizer badge if this event was created by the current user
         holder.organizer.setVisibility(View.GONE);
-        if(this.username.equals(holder.event_withID_Object.getEvent().getOrganizer())) {
+        if(this.username.equals(event.getOrganizer())) {
             holder.organizer.setVisibility(View.VISIBLE);
         }
         holder.mView.setOnClickListener(new View.OnClickListener() {

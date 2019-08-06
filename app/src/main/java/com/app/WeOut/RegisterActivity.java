@@ -107,6 +107,9 @@ public class RegisterActivity extends AppCompatActivity {
         } else if (TextUtils.isEmpty(username)) {
           snackBar.display(v, getApplicationContext(), "Please enter username!", R.color.lightBlue);
           return;
+        } else if (username.contains(" ")) {
+          snackBar.display(v, getApplicationContext(), "Username cannot contain spaces!", R.color.lightBlue);
+          return;
         } else if (TextUtils.isEmpty(password)) {
           snackBar.display(v, getApplicationContext(), "Please enter password!", R.color.lightBlue);
           return;

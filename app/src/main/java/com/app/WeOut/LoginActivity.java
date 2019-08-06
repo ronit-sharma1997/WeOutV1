@@ -92,6 +92,10 @@ public class LoginActivity extends AppCompatActivity {
                     snackBar.display(v, getApplicationContext(),"Enter username!", R.color.black);
                     return;
                 }
+                else if (username.contains(" ")) {
+                    snackBar.display(v, getApplicationContext(),"Username cannot contain spaces!", R.color.black);
+                    return;
+                }
                 else if (TextUtils.isEmpty(password)) {
                     snackBar.display(v, getApplicationContext(),"Enter password!", R.color.black);
                     return;

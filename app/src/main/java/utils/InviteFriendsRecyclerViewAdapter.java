@@ -134,6 +134,13 @@ public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <Invi
                 Friend_withCheck friend_withCheck = inviteFriendsList.get(position);
                 friend_withCheck.setChecked(isChecked);
 
+                if (friend_withCheck.isChecked()) {
+                    holder.mView.setBackgroundColor(ContextCompat.getColor(holder.mView.getContext(), R.color.veryLightGray));
+                }
+                else {
+                    holder.mView.setBackgroundColor(ContextCompat.getColor(holder.mView.getContext(), R.color.white));
+                }
+
                 Log.d(TAG, inviteFriendsList.get(position).getUserName() + " checked: " + inviteFriendsList.get(position).isChecked());
             }
         });

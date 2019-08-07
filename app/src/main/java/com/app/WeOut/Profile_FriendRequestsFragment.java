@@ -207,6 +207,7 @@ public class Profile_FriendRequestsFragment extends Fragment {
                 .collection("users").document(userName)
                 .collection("friends").document("received");
 
+        /*
         df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -237,7 +238,7 @@ public class Profile_FriendRequestsFragment extends Fragment {
 
             }
         });
-
+        */
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

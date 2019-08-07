@@ -28,12 +28,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 
 import java.util.ArrayList;
-
+import java.util.Map;
 
 
 import javax.annotation.Nullable;
 
 import fastscroll.app.fastscrollalphabetindex.AlphabetIndexFastScrollRecyclerView;
+import utils.Friend;
 import utils.MyFriendRecyclerViewAdapter;
 
 /**
@@ -48,8 +49,10 @@ public class Profile_FriendListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<String> friendList;
+    private ArrayList<Friend> friendList;
+
     //custom alphabet index fast scroll recycler view
     private AlphabetIndexFastScrollRecyclerView myFriendsRecyclerView;
     private TextView emptyRecyclerView;
@@ -89,30 +92,33 @@ public class Profile_FriendListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
+
         View view = inflater.inflate(R.layout.fragment_friend_list, container, false);
+
         this.myFriendsRecyclerView = view.findViewById(R.id.recyclerViewMyFriends);
         this.emptyRecyclerView = view.findViewById(R.id.emptyRecyclerViewMyFriendsList);
+
         this.myFriendsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         setUpListenerAdapter();
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(myFriendsRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
         myFriendsRecyclerView.addItemDecoration(dividerItemDecoration);
 
         //set the color of the index bar to light blue
         myFriendsRecyclerView.setIndexBarColor(R.color.lightBlue);
-
         //set the transparent value so that it's fully visible
-        myFriendsRecyclerView.setIndexBarTransparentValue((float) 1);
+        myFriendsRecyclerView.setIndexBarTransparentValue(0);
 
         return view;
     }
 
     private void setUpListenerAdapter() {
-        String userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String shortenUserName = userName.substring(0, userName.indexOf("@weout.com"));
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String username = email.substring(0, email.indexOf("@weout.com"));
 
-        DocumentReference df = db.collection("users").document(shortenUserName).collection("friends").document("current");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 //        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 //            @Override
@@ -136,6 +142,9 @@ public class Profile_FriendListFragment extends Fragment {
 //            }
 //        });
 
+        DocumentReference df = db
+                .collection("users").document(username)
+                .collection("friends").document("current");
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -147,7 +156,13 @@ public class Profile_FriendListFragment extends Fragment {
                 }
                 if(documentSnapshot.exists() && documentSnapshot != null) {
                     // Store the friends in an arraylist
-                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+//                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
+
+                    for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
+                        friendList.add(
+                                new Friend(entry.getKey(), entry.getValue().toString()));
+                    }
+
 //                    if (friendList.contains("FakeFriend")) { };
 
                     // For debugging
@@ -156,6 +171,7 @@ public class Profile_FriendListFragment extends Fragment {
 
                     // Make the empty text visible based on friends list size
                     emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
+                    myFriendsRecyclerView.setIndexBarTransparentValue(friendList.size() != 0 ? 1 : 0);
 
                     // Set up the adapter
                     myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);

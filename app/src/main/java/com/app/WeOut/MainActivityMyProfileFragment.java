@@ -1,6 +1,7 @@
 package com.app.WeOut;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -20,6 +21,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -48,6 +50,8 @@ public class MainActivityMyProfileFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private TextView userLogo, userName, fullName, profileHeader;
+
+    private Button logOutButton;
 
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
@@ -90,6 +94,16 @@ public class MainActivityMyProfileFragment extends Fragment {
         this.userLogo = view.findViewById(R.id.userLogo);
         this.userName = view.findViewById(R.id.userName);
         this.fullName = view.findViewById(R.id.fullName);
+
+        this.logOutButton = view.findViewById(R.id.logoutButton);
+
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Display Friend Tabs within the user's profile
         final TabLayout tabLayout = view.findViewById(R.id.friendToolbar);

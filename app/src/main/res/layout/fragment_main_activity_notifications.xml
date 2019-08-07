@@ -34,4 +34,15 @@
         android:layout_below="@+id/notificationTitle"
         tools:listitem="@layout/fragment_event" />
 
+    <TextView
+        android:id="@+id/TextView_NoInvites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/emptyEventInviteList"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
 </RelativeLayout>

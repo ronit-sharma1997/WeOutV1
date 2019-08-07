@@ -48,7 +48,6 @@ import utils.Utilities;
  */
 public class MainActivityAddEventInviteFriendsFragment extends Fragment {
 
-
     private ArrayList<Friend_withCheck> friendList;
 
     //Buttons for Screen

@@ -9,6 +9,11 @@ public class Friend_withCheck extends Friend {
         this.checked = false;
     }
 
+    public Friend_withCheck(String username, String fullName) {
+        super(username, fullName);
+        this.checked = false;
+    }
+
     public boolean isChecked() {
         return checked;
     }

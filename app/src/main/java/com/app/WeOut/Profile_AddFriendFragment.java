@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import utils.CustomSnackBar;
+import utils.User;
 
 
 /**
@@ -62,8 +63,11 @@ public class Profile_AddFriendFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Profile_AddFriendFragment() {
-        // Required empty public constructor
+    // User info
+    private static String currUserFullName;
+
+    public Profile_AddFriendFragment(String currUserFullName) {
+        this.currUserFullName = currUserFullName;
     }
 
     /**
@@ -76,7 +80,7 @@ public class Profile_AddFriendFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static Profile_AddFriendFragment newInstance(String param1, String param2) {
-        Profile_AddFriendFragment fragment = new Profile_AddFriendFragment();
+        Profile_AddFriendFragment fragment = new Profile_AddFriendFragment(currUserFullName);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -113,7 +117,9 @@ public class Profile_AddFriendFragment extends Fragment {
         this.addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                // Initially set the progress bar to visible
                 progressBar.setVisibility(View.VISIBLE);
+
                 if (TextUtils.isEmpty(addFriendByUsername.getText()) || addFriendByUsername.getText().toString().equals(username)) {
                     snackBar.display(view, getActivity(), "Please enter a valid username!");
                 }
@@ -122,18 +128,169 @@ public class Profile_AddFriendFragment extends Fragment {
                 }
                 else {
 
-                    final String friendToAdd = addFriendByUsername.getText().toString().trim();
+                    final String usernameOfFriendToAdd = addFriendByUsername.getText().toString().trim();
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                    /*
+                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        Steps to add a friend:
+                            1. Check if friendToAdd's username exists.
+                            2. Check if the friendToAdd is already friends with the current user,
+                                OR if the friendToAdd already has a friend request from the current user.
+                            3. Check if the current user is already friends with the friendToAdd,
+                                OR if the current user already has a friend request from the friendToAdd.
+                            4. Add the friend.
+                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    */
+
+                    /*
+                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        Step 1. Check if friendToAdd's username exists.
+                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    */
+
+                    db.collection("users").document(usernameOfFriendToAdd).get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                    // If the username exists,
+                                    if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                                        // Get the full name of the friend to use later (when updating the database)
+                                        final String friendToAddFullName = documentSnapshot.toObject(User.class).getFullName();
+
+                                        /*
+                                          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                            Step 2. Check if the friendToAdd is already friends with the current user,
+                                                    OR if the friendToAdd already has a friend request from the current user.
+                                          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        */
+
+                                        Query query_friendToAdd = db
+                                                .collection("users").document(usernameOfFriendToAdd)
+                                                .collection("friends").whereEqualTo(username, currUserFullName);
+
+                                        query_friendToAdd.get()
+                                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(QuerySnapshot queryDocumentSnapshot_friendToAdd) {
+
+                                                        // If the currentUser is somewhere in the friendToAdd's friends document already,
+                                                        if (!queryDocumentSnapshot_friendToAdd.isEmpty()) {
+                                                            snackBar.display(view, getActivity(), "You're already friends with this person, or you've already sent a friend request to them!");
+                                                        }
+
+                                                        // The friendToAdd does not have anything to do with the currentUser (yet)
+                                                        else {
+
+                                                            /*
+                                                              @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                Step 3. Check if the current user is already friends with the friendToAdd,
+                                                                        OR if the current user already has a friend request from the friendToAdd.
+                                                              @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                            */
+
+                                                            Query query_currentUser = db
+                                                                    .collection("users").document(username)
+                                                                    .collection("friends").whereEqualTo(usernameOfFriendToAdd, friendToAddFullName);
+
+                                                            query_currentUser.get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshot_currentUser) {
+
+                                                                            // If the friendToAdd is somewhere in the currentUser's friends document already,
+                                                                            if (!queryDocumentSnapshot_currentUser.isEmpty()) {
+                                                                                snackBar.display(view, getActivity(), "You're already friends with this person, or you have a friend request from them already!");
+                                                                            }
+
+                                                                            // The friendToAdd does not have anything to do with the currentUser (yet)
+                                                                            else {
+
+                                                                                /*
+                                                                                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                                    Step 4. Add the friend.
+                                                                                            Specifically, add the currentUser to the friendToAdd/friends/received document
+                                                                                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                                */
+
+                                                                                // Create a hashmap for data to be sent
+                                                                                Map<String, Object> friendToAddHashMap = new HashMap<>();
+
+                                                                                // Add the current user name to the map
+                                                                                friendToAddHashMap.put(username, currUserFullName);
+
+                                                                                // Add the friend request to the friendToAdd's received document
+                                                                                db.collection("users").document(usernameOfFriendToAdd)
+                                                                                        .collection("friends").document("received")
+                                                                                        .set(friendToAddHashMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        snackBar.display(view, getActivity(), "Friend request successfully sent");
+                                                                                        // Clear the text box if successful
+                                                                                        addFriendByUsername.getText().clear();
+                                                                                    }
+                                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                        snackBar.display(view, getActivity(), "Friend request failed to send");
+                                                                                    }
+                                                                                });
+
+
+                                                                            }
+
+                                                                        }
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            snackBar.display(view, getActivity(), "Error connecting to database.");
+                                                                            Log.d(TAG, e.getMessage());
+                                                                        }
+                                                                    });
+
+                                                        }
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        snackBar.display(view, getActivity(), "Error connecting to database.");
+                                                        Log.d(TAG, e.getMessage());
+                                                    }
+                                                });
+
+                                    }
+                                    // Else, the username does not exist,
+                                    else {
+                                        snackBar.display(view, getActivity(), "Username doesn't exist.");
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    snackBar.display(view, getActivity(), "Error connecting to database.");
+                                    Log.d(TAG, e.getMessage());
+                                }
+                            });
+
+
+                    /*
 
                     // Check if friendToAdd is already friends with current user
                     // or if the friendToAdd already has a friend request from current user
-                    Query query = db.collection("users").document(friendToAdd).collection("friends").whereEqualTo(username, true);
+                    Query query = db
+                            .collection("users").document(usernameOfFriendToAdd)
+                            .collection("friends").whereEqualTo(username, currUserFullName);
 
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if(task.isSuccessful()) {
-                                QuerySnapshot queryDocumentSnapshot = task.getResult();
+                                final QuerySnapshot queryDocumentSnapshot = task.getResult();
 
                                 // If query is not empty, then two scenarios:
                                     // 1. friendToAdd is already friends with current user
@@ -144,8 +301,10 @@ public class Profile_AddFriendFragment extends Fragment {
                                 else {
                                     // Check to see if the current user is:
                                         // Friends with the friendToAdd already
-                                        // OR has the friendToAdd in his or her addedMe list
-                                    Query query1 = db.collection("users").document(username).collection("friends").whereEqualTo(friendToAdd, true);
+                                        // OR already has a friend request from the friendToAdd
+                                    Query query1 = db
+                                            .collection("users").document(username)
+                                            .collection("friends").whereEqualTo(usernameOfFriendToAdd, true);
 
                                     query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -163,7 +322,9 @@ public class Profile_AddFriendFragment extends Fragment {
                                                 // Finally, send friend request, as all tests have passed
                                                 else {
                                                     // First, make sure that the username exists
-                                                    db.collection("users").document(friendToAdd).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                    db
+                                                            .collection("users").document(usernameOfFriendToAdd)
+                                                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                             if (task.isSuccessful()) {
@@ -171,13 +332,16 @@ public class Profile_AddFriendFragment extends Fragment {
                                                                 // if username exists
                                                                 if (snapshot.exists()) {
 
+                                                                    // Get the full name of the friend
+                                                                    String friendToAddFullName = snapshot.toObject(User.class).getFullName();
+
                                                                     // Create a hashmap for data to be sent
                                                                     Map<String, Object> pendingFriendRequest = new HashMap<>();
                                                                     // Add the current user name to the map
-                                                                    pendingFriendRequest.put(username, true);
+                                                                    pendingFriendRequest.put(username, currUserFullName);
                                                                     
                                                                     // Add the friend request to the friendToAdd's received document
-                                                                    db.collection("users").document(friendToAdd)
+                                                                    db.collection("users").document(usernameOfFriendToAdd)
                                                                             .collection("friends").document("received")
                                                                             .set(pendingFriendRequest, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
@@ -214,7 +378,11 @@ public class Profile_AddFriendFragment extends Fragment {
 
                     });
 
+                    */
+
                 }
+
+                // Set the progress bar to gone after running all on-click functionality
                 progressBar.setVisibility(View.GONE);
             }
         });

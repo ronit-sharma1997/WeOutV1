@@ -36,6 +36,7 @@ import java.util.Map;
 
 import utils.AcceptRejectButtonListener;
 import utils.CustomSnackBar;
+import utils.Friend;
 import utils.MyFriendRequestRecyclerViewAdapter;
 
 /**
@@ -51,7 +52,7 @@ public class Profile_FriendRequestsFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<String> pendingFriendRequests;
+    private ArrayList<Friend> pendingFriendRequests;
     private RecyclerView myFriendRequestsRecyclerView;
     private TextView emptyRecyclerViewFriendRequests;
     private MyFriendRequestRecyclerViewAdapter myFriendRequestRecyclerViewAdapter;
@@ -65,18 +66,23 @@ public class Profile_FriendRequestsFragment extends Fragment {
     // User Information from database
     private String email;
     private String userName;
+    private static String currUserFullName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public Profile_FriendRequestsFragment() {
+    public Profile_FriendRequestsFragment(String currUserFullName) {
+        TAG = "Profile_FriendRequestsFragment";
+
+        this.currUserFullName = currUserFullName;
+        Log.d(TAG, "User Full Name: " + this.currUserFullName);
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static Profile_FriendRequestsFragment newInstance(int columnCount) {
-        Profile_FriendRequestsFragment fragment = new Profile_FriendRequestsFragment();
+        Profile_FriendRequestsFragment fragment = new Profile_FriendRequestsFragment(currUserFullName);
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -89,9 +95,11 @@ public class Profile_FriendRequestsFragment extends Fragment {
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+//            Log.d(TAG, "User Full Name: " + getArguments().getString("userFullName"));
         }
+
         this.pendingFriendRequests = new ArrayList<>();
-        this.TAG = "Profile_FriendRequestsFragment";
+
         this.db = FirebaseFirestore.getInstance();
         this.email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         this.userName = email.substring(0, email.indexOf("@weout.com"));
@@ -105,28 +113,46 @@ public class Profile_FriendRequestsFragment extends Fragment {
             public void onAccept(int position) {
 
                 WriteBatch stepsToAcceptFriendRequest = db.batch();
-                final String acceptedFriendRequest = pendingFriendRequests.get(position);
-                Log.d(TAG, "User clicked Accepted Button: " + acceptedFriendRequest);
+                final String friendRequestUsernameToAccept = pendingFriendRequests.get(position).getUserName();
+                Log.d(TAG, "User clicked Accepted Button: " + friendRequestUsernameToAccept);
+
+                // Get the friend to add's full name
+                String fullNameOfFriendToAccept = pendingFriendRequests.get(position).getFullName();
+
+
                 Map<String, Object> receivedFriendRequest = new HashMap<>();
-                receivedFriendRequest.put(acceptedFriendRequest, FieldValue.delete());
-                DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName).collection("friends").document("received");
+                receivedFriendRequest.put(friendRequestUsernameToAccept, FieldValue.delete());
+
+                DocumentReference dfReceivedFriendRequest = db
+                        .collection("users").document(userName)
+                        .collection("friends").document("received");
+
                 stepsToAcceptFriendRequest.update(dfReceivedFriendRequest, new HashMap<>(receivedFriendRequest));
-                DocumentReference dfCurrentFriends = db.collection("users").document(userName).collection("friends").document("current");
-                receivedFriendRequest.put(acceptedFriendRequest, true);
+
+                DocumentReference dfCurrentFriends = db
+                        .collection("users").document(userName)
+                        .collection("friends").document("current");
+
+                receivedFriendRequest.put(friendRequestUsernameToAccept, fullNameOfFriendToAccept);
                 stepsToAcceptFriendRequest.set(dfCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
-                DocumentReference dfAddedFriendCurrentFriends = db.collection("users").document(acceptedFriendRequest).collection("friends").document("current");
-                receivedFriendRequest.put(userName, true);
-                receivedFriendRequest.remove(acceptedFriendRequest);
+                receivedFriendRequest.remove(friendRequestUsernameToAccept);
+
+                DocumentReference dfAddedFriendCurrentFriends = db
+                        .collection("users").document(friendRequestUsernameToAccept)
+                        .collection("friends").document("current");
+
+                receivedFriendRequest.put(userName, currUserFullName);
                 stepsToAcceptFriendRequest.set(dfAddedFriendCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
+
                 stepsToAcceptFriendRequest.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "Database successfully updated with friend connection " + userName + " : " + acceptedFriendRequest);
-                            snackBar.display(getView(), getActivity().getApplicationContext(), "Accepted " + acceptedFriendRequest);
+                            Log.d(TAG, "Database successfully updated with friend connection " + userName + " : " + friendRequestUsernameToAccept);
+                            snackBar.display(getView(), getActivity().getApplicationContext(), "Accepted " + friendRequestUsernameToAccept);
                         } else {
-                            Log.d(TAG, "Database failed to update with friend connection " + userName + " : " + acceptedFriendRequest);
-                            snackBar.display(getView(), getActivity().getApplicationContext(), "Error accepting " + acceptedFriendRequest);
+                            Log.d(TAG, "Database failed to update with friend connection " + userName + " : " + friendRequestUsernameToAccept);
+                            snackBar.display(getView(), getActivity().getApplicationContext(), "Error accepting " + friendRequestUsernameToAccept);
                         }
                     }
                 });
@@ -136,19 +162,23 @@ public class Profile_FriendRequestsFragment extends Fragment {
             @Override
             public void onReject(int position) {
                 Log.d(TAG, "User Clicked Rejected Button: " + pendingFriendRequests.get(position));
-                final String rejectedFriendRequest = pendingFriendRequests.get(position);
+                final String usernameOfFriendToReject = pendingFriendRequests.get(position).getUserName();
+
                 Map<String, Object> receivedFriendRequest = new HashMap<>();
-                receivedFriendRequest.put(rejectedFriendRequest, FieldValue.delete());
-                DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName).collection("friends").document("received");
+                receivedFriendRequest.put(usernameOfFriendToReject, FieldValue.delete());
+
+                DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName)
+                        .collection("friends").document("received");
+
                 dfReceivedFriendRequest.update(receivedFriendRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "Database successfully removed friend request " + rejectedFriendRequest);
-                            snackBar.display(getView(), getActivity().getApplicationContext(), "Rejected " + rejectedFriendRequest);
+                            Log.d(TAG, "Database successfully removed friend request " + usernameOfFriendToReject);
+                            snackBar.display(getView(), getActivity().getApplicationContext(), "Rejected " + usernameOfFriendToReject);
                         } else {
-                            Log.d(TAG, "Database failed to remove friend request " + rejectedFriendRequest);
-                            snackBar.display(getView(), getActivity().getApplicationContext(), "Error: Failed to reject " + rejectedFriendRequest);
+                            Log.d(TAG, "Database failed to remove friend request " + usernameOfFriendToReject);
+                            snackBar.display(getView(), getActivity().getApplicationContext(), "Error: Failed to reject " + usernameOfFriendToReject);
                         }
                     }
                 });
@@ -173,14 +203,26 @@ public class Profile_FriendRequestsFragment extends Fragment {
     }
 
     private void setUpListenerAdapter() {
-        DocumentReference df = this.db.collection("users").document(userName).collection("friends").document("received");
+        final DocumentReference df = this.db
+                .collection("users").document(userName)
+                .collection("friends").document("received");
+
         df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if(documentSnapshot.exists() && documentSnapshot != null) {
-                        pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
+//                        pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
+
+                        pendingFriendRequests = new ArrayList<>();
+
+                        // Adds the username (key) and full name (value) to the pendingFriendRequests list
+                        for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
+                            pendingFriendRequests.add(
+                                    new Friend(entry.getKey(), entry.getValue().toString()));
+                        }
+
                         emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
                     }
 
@@ -206,7 +248,13 @@ public class Profile_FriendRequestsFragment extends Fragment {
                     return;
                 }
                 if(documentSnapshot.exists() && documentSnapshot != null) {
-                    pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
+                    pendingFriendRequests = new ArrayList<>();
+
+                    for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
+                        pendingFriendRequests.add(
+                                new Friend(entry.getKey(), entry.getValue().toString()));
+                    }
+
                     emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
                     myFriendRequestRecyclerViewAdapter = new MyFriendRequestRecyclerViewAdapter(pendingFriendRequests, mListener, acceptRejectButtonListener);
                     myFriendRequestsRecyclerView.setAdapter(myFriendRequestRecyclerViewAdapter);

@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -30,12 +31,12 @@ import java.util.List;
  */
 public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRequestRecyclerViewAdapter.ViewHolder> {
 
-    private List<String> pendingFriendsList;
+    private List<Friend> pendingFriendsList;
     private final OnListFragmentInteractionListener mListener;
     private AcceptRejectButtonListener acceptRejectButtonListener;
     private String TAG;
 
-    public MyFriendRequestRecyclerViewAdapter(List<String> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener acceptRejectButtonListener) {
+    public MyFriendRequestRecyclerViewAdapter(List<Friend> items, OnListFragmentInteractionListener listener, AcceptRejectButtonListener acceptRejectButtonListener) {
         this.pendingFriendsList = items;
         this.mListener = listener;
         this.acceptRejectButtonListener = acceptRejectButtonListener;
@@ -50,55 +51,60 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         // Extract user full name from the database
-        final String usernameByPosition = pendingFriendsList.get(position);
+//        final String usernameByPosition = pendingFriendsList.get(position).getUserName();
 
-        // Get instance of Database
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Reference the current user by their username within the "users" collection
-        DocumentReference dr = db.collection("users").document(usernameByPosition);
-
-        // Test what the document id is
-        Log.d(TAG, "Document ID " + dr.getId());
-
-        // Get the data from the current document
-        dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                // Log successful data retrieval
-                Log.d(TAG, "Friend Request User Specific Info successfully retrieved.");
-
-                // If successful and the snapshot contains data
-                if(documentSnapshot.exists() && documentSnapshot != null) {
-                    // Use this data to create a User object, and set holder TextViews accordingly
-                    User userByPosition = documentSnapshot.toObject(User.class);
-
-                    // Create Strings for the full name and initials of the user by position
-                    String userFullName = userByPosition.getFirstName() + " " + userByPosition.getLastName();
-                    String userInitials =
-                                    String.valueOf(Character.toUpperCase(userByPosition.getFirstName().charAt(0))) +
-                                    String.valueOf(Character.toUpperCase(userByPosition.getLastName().charAt(0)));
-
-                    // Set Holder Text Views based on user by position
-                    holder.fullName.setText(userFullName);
-                    holder.personLogo.setText(userInitials);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // Log fail data retrieval
-                Log.d(TAG, "Friend Request User Specific Info failed to retrieve.");
-            }
-        });
+//        // Get instance of Database
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//
+//        // Reference this user by their username within the "users" collection
+//        DocumentReference dr = db.collection("users").document(usernameByPosition);
+//
+//        // Test what the document id is
+//        Log.d(TAG, "Document ID " + dr.getId());
+//
+//        // Get the data from the current document
+//        dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//
+//                // Log successful data retrieval
+//                Log.d(TAG, "Friend Request User Specific Info successfully retrieved.");
+//
+//                // If successful and the snapshot contains data
+//                if(documentSnapshot.exists() && documentSnapshot != null) {
+//                    // Use this data to create a User object, and set holder TextViews accordingly
+//                    User userByPosition = documentSnapshot.toObject(User.class);
+//
+//                    // Create Strings for the full name and initials of the user by position
+//                    String userFullName = userByPosition.getFirstName() + " " + userByPosition.getLastName();
+//                    String userInitials =
+//                                    String.valueOf(Character.toUpperCase(userByPosition.getFirstName().charAt(0))) +
+//                                    String.valueOf(Character.toUpperCase(userByPosition.getLastName().charAt(0)));
+//
+//                    // Set Holder Text Views based on user by position
+//                    holder.fullName.setText(userFullName);
+//                    holder.personLogo.setText(userInitials);
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                // Log fail data retrieval
+//                Log.d(TAG, "Friend Request User Specific Info failed to retrieve.");
+//            }
+//        });
 
         // Set the text of each textView in the viewHolder to initial values
 //        holder.personLogo.setText(String.valueOf(Character.toUpperCase(pendingFriendsList.get(position).charAt(0))));
-        holder.userName.setText(pendingFriendsList.get(position));
+
+        Friend friend = pendingFriendsList.get(position);
+
+        holder.userName.setText(friend.getUserName());
+        holder.fullName.setText(friend.getFullName());
+        holder.personLogo.setText(friend.getLogo());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

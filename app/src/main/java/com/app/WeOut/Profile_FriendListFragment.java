@@ -160,6 +160,8 @@ public class Profile_FriendListFragment extends Fragment {
                     // Store the friends in an arraylist
 //                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
 
+                    friendList.clear();
+
                     for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
                         friendList.add(
                                 new Friend(entry.getKey(), entry.getValue().toString()));

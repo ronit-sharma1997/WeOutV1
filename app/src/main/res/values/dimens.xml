@@ -21,8 +21,8 @@
     <dimen name="progressBarHeight">30dp</dimen>
     <dimen name="tabIndicationHeightSelected">5dp</dimen>
     <dimen name="eventTitle">301dp</dimen>
-    <dimen name="eventButtonWidth">100dp</dimen>
-    <dimen name="eventButtonHeight">45dp</dimen>
+    <dimen name="eventButtonWidth">80dp</dimen>
+    <dimen name="eventButtonHeight">36dp</dimen>
     <dimen name="userLogoWidth">100dp</dimen>
     <dimen name="userLogoHeight">100dp</dimen>
     <dimen name="maxWidthUsername">280dp</dimen>

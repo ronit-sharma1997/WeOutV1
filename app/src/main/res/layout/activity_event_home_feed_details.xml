@@ -33,10 +33,10 @@
                 android:src="@drawable/closescreen"
                 android:scaleY="2"
                 android:scaleX="2"
-                android:layout_marginLeft="@dimen/margin10dp"
+                android:layout_marginLeft="@dimen/margin16dp"
                 android:layout_alignParentLeft="true"
                 android:background="?attr/selectableItemBackground"
-                android:layout_marginTop="@dimen/margin10dp"
+                android:layout_marginTop="@dimen/margin16dp"
                 />
 
             <ImageButton
@@ -47,8 +47,8 @@
                 android:scaleY="2"
                 android:scaleX="2"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/margin10dp"
-                android:layout_marginTop="@dimen/margin10dp"
+                android:layout_marginRight="@dimen/margin16dp"
+                android:layout_marginTop="@dimen/margin16dp"
                 android:background="?attr/selectableItemBackground"/>
 
             <ImageView

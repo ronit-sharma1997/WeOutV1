@@ -122,7 +122,7 @@
         android:textAllCaps="false"
         android:textColor="@color/lightBlue"
         android:gravity="center"
-        android:layout_marginBottom="@dimen/margin10dp"
+        android:layout_marginVertical="@dimen/margin10dp"
         android:background="@drawable/whitebutton"
         />
 

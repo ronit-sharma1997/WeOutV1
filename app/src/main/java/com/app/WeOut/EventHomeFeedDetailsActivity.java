@@ -62,6 +62,7 @@ public class EventHomeFeedDetailsActivity extends AppCompatActivity {
         this.eventLocation = findViewById(R.id.eventHomeFeedClickedLocation);
         this.eventDate = findViewById(R.id.eventHomeFeedClickedDate);
         this.eventGuests = findViewById(R.id.recyclerViewEventHomeFeedClickedInvitees);
+        this.eventGuests.setNestedScrollingEnabled(false);
         this.totalInvitees = findViewById(R.id.eventHomeFeedClickedTotalIntendees);
         this.totalAcceptedInvitees = findViewById(R.id.eventHomeFeedClickedAcceptedIntendees);
         this.eventDescription = findViewById(R.id.eventHomeFeedClickedDescription);
@@ -122,55 +123,60 @@ public class EventHomeFeedDetailsActivity extends AppCompatActivity {
             }
         });
 
-        this.deleteEvent.setOnClickListener(new OnClickListener() {
+        //check if the event details should have the delete button. If not hide it
+        if (!getIntent().getBooleanExtra("deleteEvents", false)) {
+          this.deleteEvent.setVisibility(View.GONE);
+        } else {
+          this.deleteEvent.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View view) {
-                //get Current Username of device
-                String userName = Utilities.getCurrentUsername();
+              //get Current Username of device
+              String userName = Utilities.getCurrentUsername();
 
-                //if we are the organizer for the event and delete, need to remove from the rest of
-                //the invitees
-                if (userName.equals(eventDetailFromFeed.getOrganizer())) {
-                    try {
-                        Utilities.deleteEventAsOrganizer(eventWithIDDetailFromFeed, view,
-                            getApplicationContext());
-                        // Wait a bit to finish this activity
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Do something after 5s = 5000ms
-                                finish();
-                            }
-                        }, 1000);
-                    } catch (IllegalStateException e) {
-
+              //if we are the organizer for the event and delete, need to remove from the rest of
+              //the invitees
+              if (userName.equals(eventDetailFromFeed.getOrganizer())) {
+                try {
+                  Utilities.deleteEventAsOrganizer(eventWithIDDetailFromFeed, view,
+                      getApplicationContext());
+                  // Wait a bit to finish this activity
+                  final Handler handler = new Handler();
+                  handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                      // Do something after 5s = 5000ms
+                      finish();
                     }
-
+                  }, 1000);
+                } catch (IllegalStateException e) {
 
                 }
-                //we need to delete the event from the user's events collection under the accepted document and we need to delete the event
-                //from the event's attendingMap
-                else {
-                    try {
-                        Utilities.deleteEventNonOrganizer(eventWithIDDetailFromFeed, view,
-                            getApplicationContext());
-                        // Wait a bit to finish this activity
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Do something after 5s = 5000ms
-                                finish();
-                            }
-                        }, 1000);
-                    } catch (IllegalStateException e) {
 
+
+              }
+              //we need to delete the event from the user's events collection under the accepted document and we need to delete the event
+              //from the event's attendingMap
+              else {
+                try {
+                  Utilities.deleteEventNonOrganizer(eventWithIDDetailFromFeed, view,
+                      getApplicationContext());
+                  // Wait a bit to finish this activity
+                  final Handler handler = new Handler();
+                  handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                      // Do something after 5s = 5000ms
+                      finish();
                     }
+                  }, 1000);
+                } catch (IllegalStateException e) {
 
                 }
+
+              }
             }
-        });
+          });
+        }
     }
 }
 

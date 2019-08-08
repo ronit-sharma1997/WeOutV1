@@ -97,12 +97,13 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
-  public void onListFragmentInteraction(Event_withID event, View v) {
-    Log.d(TAG, event.getEvent().getTitle() + " was clicked");
+  public void onListFragmentInteraction(Event_withID event, View v, String adapterType) {
+    Log.d(TAG, event.getEvent().getTitle() + " was clicked from " + adapterType);
 
     //Create an intent and prepare to send event information to EventHomeFeedDetailsActivity
     //to display the information
     Intent intent = new Intent(this, EventHomeFeedDetailsActivity.class);
+    intent.putExtra("deleteEvents", adapterType.equals("eventInvites") ? false : true);
 
     // Convert the event information into a JSON
     Gson gson = new Gson();

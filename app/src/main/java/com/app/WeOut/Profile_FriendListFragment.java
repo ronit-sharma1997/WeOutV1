@@ -104,6 +104,8 @@ public class Profile_FriendListFragment extends Fragment {
         //set the transparent value so that it's fully visible
         myFriendsRecyclerView.setIndexBarTransparentValue((float) 1);
 
+        myFriendsRecyclerView.setIndexBarVisibility(false);
+
         return view;
     }
 
@@ -157,10 +159,15 @@ public class Profile_FriendListFragment extends Fragment {
                     // Make the empty text visible based on friends list size
                     emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
 
+                    myFriendsRecyclerView.setIndexBarVisibility(friendList.size() == 0 ? false : true);
+
+                    //Make the alphabetic index bar visible based on friends list size
+
                     // Set up the adapter
                     myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
                     myFriendRecyclerViewAdapter.notifyDataSetChanged();
                     myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
+
                 }
 
             }

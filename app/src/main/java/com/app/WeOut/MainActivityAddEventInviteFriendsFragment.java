@@ -48,7 +48,6 @@ import utils.Utilities;
  */
 public class MainActivityAddEventInviteFriendsFragment extends Fragment {
 
-
     private ArrayList<Friend_withCheck> friendList;
 
     //Buttons for Screen
@@ -66,9 +65,9 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
     //Components of Screen
     private CardView inviteFriendsList;
     private FrameLayout createEventContainer;
+    private RecyclerView eventHomeFeedRecyclerView;
 
     private final static int ANIMATION_DURATION = 150;
-
 
     private float fabOriginX;
     private float fabOriginY;
@@ -157,6 +156,14 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
     }
 
     /**
+     * Method to set a reference to the event home feed recycler view
+     * @param recyclerView - reference to Event Home Feed Recycler View
+     */
+    public void setEventHomeFeedRecyclerView(RecyclerView recyclerView) {
+        this.eventHomeFeedRecyclerView = recyclerView;
+    }
+
+    /**
      * Helper function to complete the process of Closing the current screen.
      */
     private void closeScreen() {
@@ -184,6 +191,9 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
         //we restablish the tab layout by making it visible again
         TabLayout tabBar = getActivity().findViewById(R.id.mainToolbar);
         tabBar.setVisibility(View.VISIBLE);
+
+        //we restablish event home feed recycler view
+        this.eventHomeFeedRecyclerView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -192,6 +202,10 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
     private void goToPreviousScreen() {
         MainActivityAddEventFragment fragment = new MainActivityAddEventFragment();
         fragment.setAddEventFAB(this.addEventFAB, this.fabOriginX, this.fabOriginY);
+
+        fragment.setEventHomeFeedRecyclerView(this.eventHomeFeedRecyclerView);
+
+        fragment.setArguments(this.getArguments());
         //begin transaction and create custom animation
         getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out)
@@ -250,7 +264,12 @@ public class MainActivityAddEventInviteFriendsFragment extends Fragment {
 
                     // Create the event in the database
                     Utilities.createEventInDatabase(event, view, getActivity());
+
+                    //we restablish event home feed recycler view
+                    eventHomeFeedRecyclerView.setVisibility(View.VISIBLE);
+
                     closeScreen();
+
 
                 }
 

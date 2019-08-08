@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.password);
         progressBar = findViewById(R.id.progressBar);
         registerTextView = findViewById(R.id.btn_signup);
+        registerTextView.setPaintFlags(registerTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         btnLogin = findViewById(R.id.btn_login);
         loginHeader = findViewById(R.id.loginHeader);
         loginHeader.setTypeface(ResourcesCompat.getFont(this, R.font.lobster));

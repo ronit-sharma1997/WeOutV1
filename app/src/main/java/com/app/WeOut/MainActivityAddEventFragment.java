@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.Timestamp;
@@ -46,6 +47,7 @@ public class MainActivityAddEventFragment extends Fragment {
     private TextView textView_Date, textView_Time;
     private EditText eventCreationDescription, eventCreationTitle, eventCreationLocation;
     private FloatingActionButton addEventFAB;
+    private RecyclerView eventHomeFeedRecyclerView;
     private final static int ANIMATION_DURATION = 150;
     private CardView cardView;
     private FrameLayout createEventContainer;
@@ -57,7 +59,6 @@ public class MainActivityAddEventFragment extends Fragment {
     private int _year, _month, _day, _hour, _minute;
     private int currentYear, currentMonth, currentDay, currentHour, currentMinute;
     private CustomSnackBar customSnackBar = new CustomSnackBar();
-    private Bundle savedState = null;
 
     public MainActivityAddEventFragment() {
         // Required empty public constructor
@@ -120,15 +121,25 @@ public class MainActivityAddEventFragment extends Fragment {
         eventCreationDescription = view.findViewById(R.id.eventCreationDescriptionTextInputEditText);
         eventCreationDescription.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
-        if(savedInstanceState != null && savedState == null) {
-            this.savedState = savedInstanceState.getBundle("storedBundle");
-        }
-        if(savedState != null) {
-            this.textView_Time.setText(savedState.getString("eventTime"));
-            this.textView_Date.setText(savedState.getString("eventDate"));
-            this.eventCreationLocation.setText(savedState.getString("eventLocation"));
-            this.eventCreationDescription.setText(savedState.getString("eventDescription"));
-            this.eventCreationTitle.setText(savedState.getString("eventTitle"));
+        //get Arguments passed from Fragment Transaction. If it's not null, that means this is not the
+        //first time we are coming back to the event details screen. Therefore restore what was there
+        //originally
+        Bundle bundleFromPreviousFragment = getArguments();
+
+        if (bundleFromPreviousFragment != null) {
+
+            // Convert the JSON Object into an Event Object
+            Gson gson = new Gson();
+            String eventDetails = bundleFromPreviousFragment.getString("newEventJson");
+            Event restoreEventDetails = gson.fromJson(eventDetails, Event.class);
+            // Log json for debugging
+            Log.d(TAG, eventDetails);
+
+            this.textView_Time.setText(restoreEventDetails.getEventTime());
+            this.textView_Date.setText(restoreEventDetails.getEventDate());
+            this.eventCreationLocation.setText(restoreEventDetails.getLocation());
+            this.eventCreationDescription.setText(restoreEventDetails.getDescription());
+            this.eventCreationTitle.setText(restoreEventDetails.getTitle());
         }
 
         return view;
@@ -163,6 +174,9 @@ public class MainActivityAddEventFragment extends Fragment {
         //we restablish the tab layout by making it visible again
         TabLayout tabBar = getActivity().findViewById(R.id.mainToolbar);
         tabBar.setVisibility(View.VISIBLE);
+
+        //we restablish event home feed recycler view
+        this.eventHomeFeedRecyclerView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -173,6 +187,9 @@ public class MainActivityAddEventFragment extends Fragment {
         fragment.setArguments(bundle);
         //pass the floating action button pointer to the next fragment along with its original x and y coordinates
         fragment.setAddEventFAB(this.addEventFAB, this.fabOriginX, this.fabOriginY);
+
+        //pass the recycler view for event home feed to the next fragment
+        fragment.setEventHomeFeedRecyclerView(this.eventHomeFeedRecyclerView);
         //set a custom animation to transition from this fragment to
         // MainActivityAddEventInviteFriendsFragment and start the transaction
         getFragmentManager().beginTransaction()
@@ -241,6 +258,14 @@ public class MainActivityAddEventFragment extends Fragment {
         this.addEventFAB = fab;
         this.fabOriginX = x;
         this.fabOriginY = y;
+    }
+
+    /**
+     * Method to set a reference to the event home feed recycler view
+     * @param recyclerView - reference to Event Home Feed Recycler View
+     */
+    public void setEventHomeFeedRecyclerView(RecyclerView recyclerView) {
+        this.eventHomeFeedRecyclerView = recyclerView;
     }
 
     /**
@@ -351,30 +376,5 @@ public class MainActivityAddEventFragment extends Fragment {
 
         return result;
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBundle("storedBundle", (savedState != null) ? savedState : saveState());
-
-    }
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        savedState = saveState();
-
-    }
-
-    private Bundle saveState() {
-        Bundle state = new Bundle();
-        state.putString("eventTime", this.textView_Time.getText().toString());
-        state.putString("eventDate", this.textView_Date.getText().toString());
-        state.putString("eventLocation", this.eventCreationLocation.getText().toString());
-        state.putString("eventDescription", this.eventCreationDescription.getText().toString());
-        state.putString("eventTitle", this.eventCreationTitle.getText().toString());
-
-        return state;
-    }
-
 
 }

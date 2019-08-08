@@ -17,7 +17,12 @@
         app:cardCornerRadius="4dp"
         >
 
+      <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
         <RelativeLayout
+            android:id="@+id/eventDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -56,19 +61,20 @@
                 android:scaleY="2"
                 android:layout_marginTop="@dimen/margin20dp"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_below="@+id/deleteEventButton"/>
+                android:layout_below="@+id/closeEventDetailButton"/>
 
         <TextView
             android:id="@+id/eventHomeFeedClickedTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="275dp"
             android:text="@string/eventCreationTitle"
             android:transitionName="transitionEventTitle"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:layout_toRightOf="@+id/eventIcon"
             android:layout_marginLeft="@dimen/margin30dp"
-            android:layout_below="@+id/deleteEventButton"
+            android:layout_below="@id/closeEventDetailButton"
             android:layout_marginTop="@dimen/margin20dp"/>
 
 
@@ -79,7 +85,7 @@
                 android:layout_below="@id/eventHomeFeedClickedTitle"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:scaleX="2"
                 android:scaleY="2"
                 android:src="@drawable/time" />
@@ -90,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/eventHomeFeedClickedTitle"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:layout_toRightOf="@id/eventTimeIcon"
                 android:text="Date"
                 android:textColor="@color/black"
@@ -103,7 +109,7 @@
                 android:layout_below="@id/eventTimeIcon"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:scaleX="2"
                 android:scaleY="2"
                 android:src="@drawable/mapmarker" />
@@ -112,9 +118,10 @@
                 android:id="@+id/eventHomeFeedClickedLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="275dp"
                 android:layout_below="@+id/eventHomeFeedClickedDate"
                 android:layout_alignStart="@+id/eventHomeFeedClickedTitle"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:text="Location"
                 android:textColor="@color/black"
                 android:textSize="20sp"
@@ -124,10 +131,10 @@
                 android:id="@+id/eventDescriptionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/eventLocationIcon"
+                android:layout_below="@id/eventHomeFeedClickedLocation"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:scaleX="2"
                 android:scaleY="2"
                 android:src="@drawable/description" />
@@ -136,6 +143,7 @@
                 android:id="@+id/eventHomeFeedClickedDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="275dp"
                 android:layout_below="@+id/eventHomeFeedClickedLocation"
                 android:layout_alignStart="@+id/eventHomeFeedClickedTitle"
                 android:layout_marginTop="@dimen/margin30dp"
@@ -148,10 +156,10 @@
                 android:id="@+id/eventOrganizerIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/eventDescriptionIcon"
+                android:layout_below="@id/eventHomeFeedClickedDescription"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:scaleX="2"
                 android:scaleY="2"
                 android:src="@drawable/eventorganizericon" />
@@ -161,9 +169,10 @@
                 android:id="@+id/eventHomeFeedClickedOrganizer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="275dp"
                 android:layout_below="@id/eventHomeFeedClickedDescription"
                 android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:text="Ron Sharma"
                 android:textSize="20sp"
                 android:textColor="@color/black"
@@ -174,10 +183,10 @@
                 android:id="@+id/eventHomeFeedClickedFriendsIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/eventOrganizerIcon"
+                android:layout_below="@id/eventHomeFeedClickedOrganizer"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/margin30dp"
-                android:layout_marginTop="@dimen/margin40dp"
+                android:layout_marginTop="@dimen/margin30dp"
                 android:scaleX="2"
                 android:scaleY="2"
                 android:src="@drawable/people" />
@@ -191,7 +200,7 @@
                 android:layout_marginTop="@dimen/margin30dp"
                 android:text="10 guests"
                 android:textColor="@color/black"
-
+                android:textSize="15dp"
                 />
 
             <TextView
@@ -200,11 +209,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/eventHomeFeedClickedTotalIntendees"
                 android:layout_alignStart="@+id/eventHomeFeedClickedLocation"
+                android:textSize="15dp"
                 android:text="4 yes"
 
                 />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="15dp"
                 android:id="@+id/recyclerViewEventHomeFeedClickedInvitees"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -215,7 +226,7 @@
                 tools:listitem="@layout/eventhomefeed_custom_adapter_item"></androidx.recyclerview.widget.RecyclerView>
 
         </RelativeLayout>
-
+      </androidx.core.widget.NestedScrollView>
 
 
 

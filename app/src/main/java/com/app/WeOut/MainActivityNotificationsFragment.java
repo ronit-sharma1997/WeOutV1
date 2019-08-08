@@ -315,6 +315,7 @@ public class MainActivityNotificationsFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        listListener = (OnListFragmentInteractionListener) context;
     }
 
     @Override
@@ -339,11 +340,7 @@ public class MainActivityNotificationsFragment extends Fragment {
     }
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyContent.DummyItem item);
+        void onListFragmentInteraction(Event_withID event, View v, String adapterType);
     }
 
-    private void addDummyEventInvites(){
-        Event dummyEvent = new Event("Watch Spider-Man", "", "7/18/2019", "10:00 P.M.", "", "", "saif");
-        this.eventInvites.add(new Event_withID(dummyEvent, "fakeID"));
-    }
 }

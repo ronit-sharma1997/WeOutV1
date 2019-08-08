@@ -33,7 +33,7 @@
 
     <Button
         android:id="@+id/addFriendButton"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/addUsername_text_input_layout"
         android:layout_centerHorizontal="true"
@@ -41,7 +41,9 @@
         android:drawableLeft="@drawable/addfriend"
         android:text="@string/addButton"
         android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:paddingHorizontal="@dimen/margin10dp"
+        />
 
     <ProgressBar
         android:id="@+id/progressBarAddFriend"

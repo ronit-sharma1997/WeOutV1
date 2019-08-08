@@ -24,7 +24,7 @@
         android:id="@+id/accountLogoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin40dp"
+        android:layout_marginTop="@dimen/margin30dp"
         android:layout_marginLeft="@dimen/margin30dp"
         android:layout_below="@+id/welcomeTitle">
 
@@ -88,7 +88,7 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/accountLogoContainer"
-        android:layout_marginTop="@dimen/margin40dp"
+        android:layout_marginTop="@dimen/margin30dp"
         android:background="@drawable/friends_tab_layout_background"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -106,11 +106,25 @@
         android:layout_marginTop="@dimen/margin10dp"
         android:layout_height="match_parent"
         android:layout_below="@id/friendToolbar"
+        android:layout_above="@id/logoutButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/margin10dp"
         >
 
     </androidx.viewpager.widget.ViewPager>
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="Log Out"
+        android:textAllCaps="false"
+        android:textColor="@color/lightBlue"
+        android:gravity="center"
+        android:layout_marginVertical="@dimen/margin10dp"
+        android:background="@drawable/whitebutton"
+        />
 
 
 </RelativeLayout>

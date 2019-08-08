@@ -26,6 +26,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +66,7 @@ public class MainActivityNotificationsFragment extends Fragment {
     // Event invites array list and adapter
     private ArrayList<Event_withID> eventInvites;
     private MyEventInvitesRecyclerViewAdapter myAdapter;
+    private TextView noEventInvitesTextView;
 
     // Firebase and debugging variables
     private FirebaseFirestore db;
@@ -289,7 +292,12 @@ public class MainActivityNotificationsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.eventInviteList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        this.myAdapter = new MyEventInvitesRecyclerViewAdapter(this.eventInvites, this.listListener, this.acceptRejectListener);
+        // Get the text view to display when you dont have events
+        this.noEventInvitesTextView = view.findViewById(R.id.TextView_NoInvites);
+        this.noEventInvitesTextView.setVisibility(View.VISIBLE);
+
+        // Create and set adapter
+        this.myAdapter = new MyEventInvitesRecyclerViewAdapter(this.eventInvites, this.listListener, this.acceptRejectListener, this.noEventInvitesTextView);
         recyclerView.setAdapter(this.myAdapter);
 
         this.eventNotificationsHeader = view.findViewById(R.id.notificationTitle);
@@ -315,6 +323,7 @@ public class MainActivityNotificationsFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        listListener = (OnListFragmentInteractionListener) context;
     }
 
     @Override
@@ -339,11 +348,7 @@ public class MainActivityNotificationsFragment extends Fragment {
     }
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyContent.DummyItem item);
+        void onListFragmentInteraction(Event_withID event, View v, String adapterType);
     }
 
-    private void addDummyEventInvites(){
-        Event dummyEvent = new Event("Watch Spider-Man", "", "7/18/2019", "10:00 P.M.", "", "", "saif");
-        this.eventInvites.add(new Event_withID(dummyEvent, "fakeID"));
-    }
 }

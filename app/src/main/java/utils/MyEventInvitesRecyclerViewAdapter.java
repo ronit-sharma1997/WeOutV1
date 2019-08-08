@@ -21,7 +21,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,6 +40,9 @@ public class MyEventInvitesRecyclerViewAdapter extends
   private OnListFragmentInteractionListener myListener;
   private AcceptRejectButtonListener buttonListener;
 
+  // Text view to display when you dont have any invites
+  private TextView noEventInvitesTextView;
+
   // Variables for database and debugging
   private String username;
   FirebaseFirestore db;
@@ -43,10 +51,12 @@ public class MyEventInvitesRecyclerViewAdapter extends
 
   public MyEventInvitesRecyclerViewAdapter(ArrayList<Event_withID> items,
       OnListFragmentInteractionListener listener,
-      AcceptRejectButtonListener buttonListener) {
+      AcceptRejectButtonListener buttonListener, TextView noEventInvitesTextView) {
+
     this.eventInvites = items;
     this.myListener = listener;
     this.buttonListener = buttonListener;
+    this.noEventInvitesTextView = noEventInvitesTextView;
 
     // Instantiate Database variables
     username = Utilities.getCurrentUsername();
@@ -95,8 +105,8 @@ public class MyEventInvitesRecyclerViewAdapter extends
           // then log this and return.
           if (setOfEventsInvitedTo.size() == 0) {
             Log.d(TAG, "No events invited to");
-            // TODO: Set visibility of textview when you are not invited to any events
             eventInvites.clear();
+            noEventInvitesTextView.setVisibility(View.VISIBLE);
             notifyDataSetChanged();
             return;
           }
@@ -154,10 +164,50 @@ public class MyEventInvitesRecyclerViewAdapter extends
                       )
                   );
 
+                  //sort the event list when we add a new event. Pass a comparator to handle what defines
+                  //greater than for Java objects
+                  Collections.sort(eventInvites, new Comparator<Event_withID>() {
+                    @Override
+                    public int compare(Event_withID event_withID, Event_withID t1) {
+                      //sort by event created time
+                      int result = 0;
+                      try {
+                        result = new SimpleDateFormat("MM-dd-yyyy").parse(event_withID.getEvent()
+                            .getEventDate()).compareTo(new SimpleDateFormat("MM-dd-yyyy")
+                            .parse(t1.getEvent().getEventDate()));
+                        //if the dates are the same break the tie breaker by time
+                        if (result == 0) {
+                          result = new SimpleDateFormat("hh:mm a").parse(event_withID.getEvent()
+                              .getEventTime()).compareTo(new SimpleDateFormat("hh:mm a")
+                              .parse(t1.getEvent().getEventTime()));
+                        }
+                        //break tie by title of event
+                        if (result == 0) {
+                          result = event_withID.getEvent().getTitle().trim().compareTo(t1.getEvent().getTitle().trim());
+                        }
+
+                        //break tie by location of event
+                        if (result == 0) {
+                          result = event_withID.getEvent().getLocation().trim().compareTo(t1.getEvent().getLocation().trim());
+                        }
+
+                        //last resort break tie by description of event
+                        if (result == 0) {
+                          result = event_withID.getEvent().getDescription().trim().compareTo(t1.getEvent().getDescription().trim());
+                        }
+                      } catch (ParseException e1) {
+                        e1.printStackTrace();
+                      }
+
+                      return result;
+                    }
+                  });
+
                   if (expectedEventInvitesSize == eventInvites.size()) {
                     Log.d(TAG,
                         "Event Invites Size: " + eventInvites.size() + " -> notifying change");
                     notifyDataSetChanged();
+                    noEventInvitesTextView.setVisibility(View.GONE);
                   }
 
                 }
@@ -172,7 +222,6 @@ public class MyEventInvitesRecyclerViewAdapter extends
           }
 
         }
-
       }
     });
 
@@ -196,12 +245,14 @@ public class MyEventInvitesRecyclerViewAdapter extends
   }
 
   @Override
-  public void onBindViewHolder(@NonNull MyEventInvitesRecyclerViewAdapter.ViewHolder viewHolder,
+  public void onBindViewHolder(@NonNull final MyEventInvitesRecyclerViewAdapter.ViewHolder viewHolder,
       int i) {
 
     // Set values based on Event_withID Object from List
-    viewHolder.event = this.eventInvites.get(i).getEvent();
+    viewHolder.eventWithID = this.eventInvites.get(i);
     viewHolder.eventID = this.eventInvites.get(i).getEventID();
+    viewHolder.event = viewHolder.eventWithID.getEvent();
+
 
     // Set values based on event from Event_withID Object
     viewHolder.eventTitle.setText(viewHolder.event.getTitle());
@@ -213,11 +264,11 @@ public class MyEventInvitesRecyclerViewAdapter extends
     viewHolder.mView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
+                if (null != myListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    myListener.onListFragmentInteraction(viewHolder.eventWithID, v, "eventInvites");
+                }
       }
     });
   }
@@ -240,6 +291,7 @@ public class MyEventInvitesRecyclerViewAdapter extends
     public final Button accept;
     public final Button reject;
 
+    public Event_withID eventWithID;
     public Event event;
     public String eventID;
 

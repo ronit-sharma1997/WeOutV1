@@ -72,7 +72,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="text"
                         android:hint="@string/eventCreationTitleHint"
-                        android:maxLength="100"
+                        android:maxLength="75"
                         android:singleLine="true"
                         android:imeOptions="actionDone"/>
 
@@ -179,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/eventCreationLocationHint"
                         android:textColor="@color/black"
-                        android:maxLength="100"
+                        android:maxLength="75"
                         android:singleLine="true"
                         android:imeOptions="actionDone"
                         />
@@ -213,7 +213,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/eventCreationDescriptionHint"
                         android:textColor="@color/black"
-                        android:maxLength="200"
+                        android:maxLength="150"
                         android:inputType="textMultiLine"
                         android:imeOptions="actionDone"
                         />

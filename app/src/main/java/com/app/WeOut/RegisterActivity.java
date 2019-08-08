@@ -163,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
                   // Create map for initial friend to store for the user
                   Map<String, Object> demoFriendData = new HashMap<>();
                   // Store one username in the map
-                  demoFriendData.put("pratheepk", true);
+                  demoFriendData.put("sf0", "Sai Bill");
 
                   // Commented out because the user does not need friends to start.
                   // Get the new user's current friend document

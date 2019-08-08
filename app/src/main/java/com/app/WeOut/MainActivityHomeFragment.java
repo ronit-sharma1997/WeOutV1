@@ -4,9 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.content.res.ResourcesCompat;
@@ -14,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -35,8 +34,6 @@ import utils.EventHomeFeedRecyclerViewAdapter;
 import utils.PathEvaluator;
 import utils.PathPoint;
 import utils.Event_withID;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
@@ -55,7 +52,7 @@ public class MainActivityHomeFragment extends Fragment {
     private RecyclerView eventInvitesRecyclerView;
     private TextView emptyRecyclerViewText;
 
-    private  ArrayList<Event_withID> eventList = new ArrayList<>();
+    private ArrayList<Event_withID> eventList = new ArrayList<>();
 
     private FloatingActionButton addEventFAB;
 
@@ -71,6 +68,8 @@ public class MainActivityHomeFragment extends Fragment {
     private float mFabSize;
     private float fabOriginX;
     private float fabOriginY;
+
+    private SwipeRefreshLayout swipeContainerEventHomeFeed;
 
     private OnListFragmentInteractionListener listListener;
 
@@ -92,6 +91,17 @@ public class MainActivityHomeFragment extends Fragment {
         this.eventInvitesRecyclerView = view.findViewById(R.id.eventInvitesHomeFeed);
         this.addEventFAB = view.findViewById(R.id.addEventButton);
         this.emptyRecyclerViewText = view.findViewById(R.id.emptyRecyclerViewEventHomeFeed);
+        this.swipeContainerEventHomeFeed = view.findViewById(R.id.swipeContainerEventHomeFeed);
+
+        //set a refresh listener for every time a refresh gesture is done from the app
+        this.swipeContainerEventHomeFeed.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                myAdapter.clear();
+                myAdapter.refeshDataSource();
+                swipeContainerEventHomeFeed.setRefreshing(false);
+            }
+        });
 
         this.createEventContainer = getActivity().findViewById(R.id.createEventScreen);
         this.createEventContentContainer = getActivity()
@@ -224,6 +234,8 @@ public class MainActivityHomeFragment extends Fragment {
             MainActivityAddEventFragment fragment = new MainActivityAddEventFragment();
             //pass a reference of the floating action button to the next fragment
             fragment.setAddEventFAB(addEventFAB, fabOriginX, fabOriginY);
+            //pass a reference of Event Home Feed Recycler View to the next fragment
+            fragment.setEventHomeFeedRecyclerView(eventInvitesRecyclerView);
             //replace the fragment container with the new fragment MainActivityAddEventFragment
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.createEventScreen, fragment).commit();
@@ -243,19 +255,11 @@ public class MainActivityHomeFragment extends Fragment {
 
             mRevealFlag = false;
 
+            eventInvitesRecyclerView.setVisibility(View.GONE);
+
         }
     };
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK) {
-//                eventList.add(new Gson().fromJson(data.getStringExtra("newEventJson"), Event.class));
-                Log.d(TAG, "Size of event List: " + eventList.size());
-//                myAdapter.notifyItemInserted(eventList.size()-1);
-                myAdapter.notifyDataSetChanged();
-            }
-        }
-    }
     /**
      * This interface must be implemented by activities that contain this fragment to allow an
      * interaction in this fragment to be communicated to the activity and potentially other fragments
@@ -273,7 +277,7 @@ public class MainActivityHomeFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
 
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Event_withID event, View v);
+        void onListFragmentInteraction(Event_withID event, View v, String adapterType);
     }
 
 

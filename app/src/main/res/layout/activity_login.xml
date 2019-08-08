@@ -21,7 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/activity_horizontal_margin">
+        android:paddingVertical="@dimen/activity_vertical_margin"
+        android:paddingHorizontal="@dimen/margin25dp"
+        >
 
 
         <TextView
@@ -60,7 +62,7 @@
                 android:id="@+id/password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin10dp"
+                android:layout_marginBottom="@dimen/margin4dp"
                 android:hint="@string/hint_password"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
@@ -77,6 +79,8 @@
             android:background="@drawable/bluebutton"
             android:layout_gravity="center_horizontal"
             android:text="@string/btn_login"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMaxTextSize="16sp"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
@@ -94,12 +98,13 @@
             android:textSize="15sp" />
 
         <ProgressBar
-          android:id="@+id/progressBar"
-          android:layout_width="@dimen/progressBarWidth"
-          android:layout_height="@dimen/progressBarHeight"
-          android:layout_gravity="center|bottom"
-          android:indeterminateTint="@color/black"
-          android:visibility="invisible"
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/progressBarWidth"
+            android:layout_height="@dimen/progressBarHeight"
+            android:layout_gravity="center|bottom"
+            android:indeterminateTint="@color/black"
+            android:visibility="invisible"
+            android:layout_marginTop="@dimen/margin16dp"
            />
     </LinearLayout>
 

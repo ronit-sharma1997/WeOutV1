@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -23,27 +24,37 @@ import java.util.List;
  */
 public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRecyclerViewAdapter.ViewHolder> implements SectionIndexer {
 
-    private List<String> friendsList;
+    private List<Friend> friendsList;
     private final OnListFragmentInteractionListener mListener;
     private ArrayList<Integer> mSectionPositions;
 
-
-    public MyFriendRecyclerViewAdapter(List<String> items, OnListFragmentInteractionListener listener) {
+    public MyFriendRecyclerViewAdapter(List<Friend> items, OnListFragmentInteractionListener listener) {
         friendsList = items;
         mListener = listener;
-        Collections.sort(friendsList);
+//        Collections.sort(friendsList);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_friend, parent, false);
+                .inflate(R.layout.event_creation_friend_checkbox_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.friendUsername.setText(friendsList.get(position));
+
+        // Get friend object from arraylist
+        Friend friend = friendsList.get(position);
+
+        // set corresponding info
+        holder.friendUsername.setText(friend.getUserName());
+        holder.friendFullName.setText(friend.getFullName());
+        holder.friendLogo.setText(friend.getLogo());
+
+        // hide the checkbox
+        holder.friendCheckBox.setVisibility(View.GONE);
+
 //        Icon friendLogo = Icon.createWithResource(this,R.drawable.friendaccount);
 //        holder.imgId.setImageResource(R.drawable.friendaccount);
 
@@ -69,7 +80,7 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
         List<String> sections = new ArrayList<>();
         mSectionPositions = new ArrayList<>();
         for (int i = 0, size = friendsList.size(); i < size; i++) {
-            String section = String.valueOf(friendsList.get(i).charAt(0)).toUpperCase();
+            String section = String.valueOf(friendsList.get(i).firstName.charAt(0)).toUpperCase();
             if (!sections.contains(section)) {
                 sections.add(section);
                 mSectionPositions.add(i);
@@ -90,14 +101,22 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final ImageView imgId;
+//        public final ImageView imgId;
+
         public final TextView friendUsername;
+        public final TextView friendFullName;
+        public final TextView friendLogo;
+        public final CheckBox friendCheckBox;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            imgId = view.findViewById(R.id.myFriendLogo);
-            friendUsername = view.findViewById(R.id.myFriendsRecycleViewAdapter);
+//            imgId = view.findViewById(R.id.myFriendLogo);
+
+            friendUsername = view.findViewById(R.id.friendCheckboxItem_username);
+            friendFullName = view.findViewById(R.id.friendCheckboxItem_fullName);
+            friendLogo = view.findViewById(R.id.friendCheckboxItem_Logo);
+            friendCheckBox = view.findViewById(R.id.friendCheckboxItem_checkBox);
         }
 
         @Override

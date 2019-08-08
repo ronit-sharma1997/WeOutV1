@@ -12,7 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.WeOut.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import com.app.WeOut.MainActivityHomeFragment.OnListFragmentInteractionListener;
@@ -83,6 +88,7 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         // Listen for accepted event changes
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
         // Get user's accepted events
         DocumentReference df_acceptedEvents = db
@@ -183,6 +189,8 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                                         notifyDataSetChanged();
                                     }
 
+                                    sortEvents();
+
                                 }
 
                             }
@@ -209,8 +217,8 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                     // notifyDataSetChanged();
 
                 } // End of document snapshot for event ID list
-
             }
+
         }); // end of snapshot listener
     }
 
@@ -249,8 +257,132 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.event_withID_Object, v);
+                    mListener.onListFragmentInteraction(holder.event_withID_Object, v, "acceptedEvents");
                 }
+            }
+        });
+
+    }
+
+    // Clean all elements of the recycler
+    public void clear() {
+        eventsList.clear();
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Method to refresh the Event Home Feed
+     */
+    public void refeshDataSource() {
+        // Get user's accepted events
+        DocumentReference df_acceptedEvents = db
+            .collection("users").document(username)
+            .collection("events").document("accepted");
+
+        df_acceptedEvents.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists() && documentSnapshot != null) {
+                    Set<String> eventID_Set = documentSnapshot.getData().keySet();
+
+                    // For every event in the accepted set
+                    for (String eventID : eventID_Set) {
+
+                        // Create a reference for this current event object
+                        final DocumentReference df_event = db
+                            .collection("events").document(eventID);
+
+                        // Get the event object from the database
+                        df_event.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                if (documentSnapshot.exists() && documentSnapshot != null) {
+
+                                    Log.d(TAG,
+                                        "#" + eventsList.size() + " :" + "Adding Doc ID: " + df_event.getId());
+
+                                    // Add the event object to the events list
+                                    eventsList.add(
+                                        new Event_withID
+                                            (
+                                                documentSnapshot.toObject(Event.class),
+                                                df_event.getId()
+                                            )
+                                    );
+
+                                    sortEvents();
+                                }
+                                notifyDataSetChanged();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "Failed to retrieve " + df_event.getId() + ": " + e.getMessage());
+                            }
+                        });
+
+                    }
+                    notifyDataSetChanged();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Failed to refresh events home feed: " + e.getMessage());
+            }
+        });
+
+
+    }
+
+    /**
+     * Helper method to sort events by ascending date/time
+     */
+    private void sortEvents() {
+        //sort the event list when we add a new event. Pass a comparator to handle what defines
+        //greater than for Java objects
+        Collections.sort(eventsList, new Comparator<Event_withID>() {
+            @Override
+            public int compare(Event_withID event_withID, Event_withID t1) {
+                //sort by event created time
+                int result = 0;
+                try {
+                    result = new SimpleDateFormat("MM-dd-yyyy")
+                        .parse(event_withID.getEvent()
+                            .getEventDate())
+                        .compareTo(new SimpleDateFormat("MM-dd-yyyy")
+                            .parse(t1.getEvent().getEventDate()));
+                    //if the dates are the same break the tie breaker by time
+                    if (result == 0) {
+                        result = new SimpleDateFormat("hh:mm a")
+                            .parse(event_withID.getEvent()
+                                .getEventTime())
+                            .compareTo(new SimpleDateFormat("hh:mm a")
+                                .parse(t1.getEvent().getEventTime()));
+                    }
+                    //break tie by title of event
+                    if (result == 0) {
+                        result = event_withID.getEvent().getTitle().trim()
+                            .compareTo(t1.getEvent().getTitle().trim());
+                    }
+
+                    //break tie by location of event
+                    if (result == 0) {
+                        result = event_withID.getEvent().getLocation().trim()
+                            .compareTo(t1.getEvent().getLocation().trim());
+                    }
+
+                    //last resort break tie by description of event
+                    if (result == 0) {
+                        result = event_withID.getEvent().getDescription().trim()
+                            .compareTo(t1.getEvent().getDescription().trim());
+                    }
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
+                }
+
+                return result;
             }
         });
 

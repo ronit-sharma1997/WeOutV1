@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <InviteFriendsRecyclerViewAdapter.ViewHolder> {
 
@@ -56,6 +57,20 @@ public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <Invi
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 // If there are friends, then store them.
                 if(documentSnapshot.exists() && documentSnapshot != null) {
+
+                    Log.d(TAG, "Get current friends successful.");
+
+//                    inviteFriendsList = new ArrayList<>();
+
+                    for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
+                        inviteFriendsList.add(
+                                new Friend_withCheck(entry.getKey(), entry.getValue().toString()));
+                    }
+
+                    notifyDataSetChanged();
+
+                    /*
+
                     // Store all the current user's friends usernames as an array list
                     final ArrayList <String> friendUsernameList = new ArrayList<>(documentSnapshot.getData().keySet());
 
@@ -88,7 +103,7 @@ public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <Invi
                             }
                         });
 
-                    }
+                    } */
 
                 }
             }

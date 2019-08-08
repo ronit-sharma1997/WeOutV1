@@ -1,6 +1,7 @@
 package com.app.WeOut;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -20,6 +21,8 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import utils.FriendActivityPagerAdapter;
@@ -47,6 +50,8 @@ public class MainActivityMyProfileFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private TextView userLogo, userName, fullName, profileHeader;
+
+    private Button logOutButton;
 
     public MainActivityMyProfileFragment() {
         // Required empty public constructor
@@ -83,13 +88,31 @@ public class MainActivityMyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
+        final View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
 
         // Associate members of this class with the layout views
         this.userLogo = view.findViewById(R.id.userLogo);
         this.userName = view.findViewById(R.id.userName);
         this.fullName = view.findViewById(R.id.fullName);
 
+        this.logOutButton = view.findViewById(R.id.logoutButton);
+
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Display Friend Tabs within the user's profile
+        final TabLayout tabLayout = view.findViewById(R.id.friendToolbar);
+        tabLayout.addTab(tabLayout.newTab().setText("My Friends"));
+        tabLayout.addTab(tabLayout.newTab().setText("Add Friends"));
+        tabLayout.addTab(tabLayout.newTab().setText("Added Me"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        // Get info pertaining to current user
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String username = email.substring(0, email.indexOf("@weout.com"));
 
@@ -115,6 +138,9 @@ public class MainActivityMyProfileFragment extends Fragment {
 
                     // Set User logo to the First and Last letter of persons name
                     userLogo.setText(userInitials);
+
+                    // Set up the view pager (with the user full name as input)
+                    setUpViewPager(view, tabLayout, userFullName);
                 }
             }
         });
@@ -122,20 +148,24 @@ public class MainActivityMyProfileFragment extends Fragment {
         // Set username in profile to specific username
         this.userName.setText(username);
 
-        // Display Friend Tabs within the user's profile
-        TabLayout tabLayout = view.findViewById(R.id.friendToolbar);
-        tabLayout.addTab(tabLayout.newTab().setText("My Friends"));
-        tabLayout.addTab(tabLayout.newTab().setText("Add Friends"));
-        tabLayout.addTab(tabLayout.newTab().setText("Added Me"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
         //set font for Title Section
         this.profileHeader = view.findViewById(R.id.welcomeTitle);
         this.profileHeader.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.lobster));
 
+        return view;
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    private void setUpViewPager(View view, TabLayout tabLayout, String currUserFullName) {
         final ViewPager viewPager = view.findViewById(R.id.myProfilePager);
-        final FriendActivityPagerAdapter myAdapter = new FriendActivityPagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
+        final FriendActivityPagerAdapter myAdapter = new FriendActivityPagerAdapter(
+                getChildFragmentManager(), tabLayout.getTabCount(), currUserFullName);
         viewPager.setAdapter(myAdapter);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -156,14 +186,6 @@ public class MainActivityMyProfileFragment extends Fragment {
 
             }
         });
-        return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package utils;
 
+import android.util.Log;
+
 //TODO: Write documentation
 public class Friend {
 
@@ -17,6 +19,18 @@ public class Friend {
         this.lastName = lastName;
         setLogo();
         setFullName();
+    }
+
+    public Friend(String username, String fullName) {
+        this.userName = username;
+        this.fullName = fullName;
+
+        // Set first and last names from the full name
+        setFirstLastFromFullName();
+
+        // Now you can set the logo (because first and last names have been defined)
+        setLogo();
+
     }
 
     public String getUserName() {
@@ -52,4 +66,18 @@ public class Friend {
     private void setFullName() { fullName = firstName + " " + lastName; }
 
     public String getFullName() { return fullName; }
+
+    private void setFirstLastFromFullName() {
+
+        Log.d("Debugging: ", "Full name: " + this.fullName);
+
+        // Find the index where the space occurs
+        int indexOfSpace = this.fullName.indexOf(" ");
+
+        // Set the first and last names
+        this.firstName = this.fullName.substring(0, indexOfSpace);
+        this.lastName = this.fullName.substring(indexOfSpace+1);
+
+    }
+
 }

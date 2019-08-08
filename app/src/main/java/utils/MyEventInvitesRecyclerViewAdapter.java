@@ -40,6 +40,9 @@ public class MyEventInvitesRecyclerViewAdapter extends
   private OnListFragmentInteractionListener myListener;
   private AcceptRejectButtonListener buttonListener;
 
+  // Text view to display when you dont have any invites
+  private TextView noEventInvitesTextView;
+
   // Variables for database and debugging
   private String username;
   FirebaseFirestore db;
@@ -48,10 +51,12 @@ public class MyEventInvitesRecyclerViewAdapter extends
 
   public MyEventInvitesRecyclerViewAdapter(ArrayList<Event_withID> items,
       OnListFragmentInteractionListener listener,
-      AcceptRejectButtonListener buttonListener) {
+      AcceptRejectButtonListener buttonListener, TextView noEventInvitesTextView) {
+
     this.eventInvites = items;
     this.myListener = listener;
     this.buttonListener = buttonListener;
+    this.noEventInvitesTextView = noEventInvitesTextView;
 
     // Instantiate Database variables
     username = Utilities.getCurrentUsername();
@@ -100,8 +105,8 @@ public class MyEventInvitesRecyclerViewAdapter extends
           // then log this and return.
           if (setOfEventsInvitedTo.size() == 0) {
             Log.d(TAG, "No events invited to");
-            // TODO: Set visibility of textview when you are not invited to any events
             eventInvites.clear();
+            noEventInvitesTextView.setVisibility(View.VISIBLE);
             notifyDataSetChanged();
             return;
           }
@@ -202,6 +207,7 @@ public class MyEventInvitesRecyclerViewAdapter extends
                     Log.d(TAG,
                         "Event Invites Size: " + eventInvites.size() + " -> notifying change");
                     notifyDataSetChanged();
+                    noEventInvitesTextView.setVisibility(View.GONE);
                   }
 
                 }

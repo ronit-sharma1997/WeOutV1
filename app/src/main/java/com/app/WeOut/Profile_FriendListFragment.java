@@ -28,7 +28,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
 
 
 import javax.annotation.Nullable;
@@ -150,28 +152,70 @@ public class Profile_FriendListFragment extends Fragment {
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot mapUsernameToFullName, @Nullable FirebaseFirestoreException e) {
                 if(e != null) {
                     //we have some sort of error
                     Log.d(TAG, e.getMessage());
                     return;
                 }
-                if(documentSnapshot.exists() && documentSnapshot != null) {
+                if(mapUsernameToFullName.exists() && mapUsernameToFullName != null) {
                     // Store the friends in an arraylist
 //                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
 
-                    friendList.clear();
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // Previous way to display friends
+//                    friendList.clear();
+//
+//                    for (Map.Entry <String, Object> entry : mapUsernameToFullName.getData().entrySet()) {
+//                        friendList.add(
+//                                new Friend(entry.getKey(), entry.getValue().toString()));
+//                    }
+                    // end of previous way to display friends
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                    for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
-                        friendList.add(
-                                new Friend(entry.getKey(), entry.getValue().toString()));
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // New Way to display friends
+
+                    // Store all the user's friends in a set.
+                    Set<String> setOfFriendUsernames = mapUsernameToFullName.getData().keySet();
+
+                    // If the user does not have any friends,
+                    if (setOfFriendUsernames.size() == 0) {
+                        friendList.clear();
                     }
+
+                    // Else, if the user does have friends
+                    else {
+
+                        // For every friend that is stored locally,
+                        for (int i = 0; i < friendList.size(); i++) {
+
+                            // Check if this friend exists in the set.
+                            //      If this friend does, then remove this item from the set.
+                            if (setOfFriendUsernames.contains(friendList.get(i).getUserName())) {
+                                setOfFriendUsernames.remove(friendList.get(i).getUserName());
+                            }
+
+                        }
+
+                        // Now you should have a set of friends that the local friends list does not have
+                        for (String usernameToAdd : setOfFriendUsernames) {
+
+                            // Add each one of these friends from the set to the local array list
+                            friendList.add(
+                                    new Friend(usernameToAdd, mapUsernameToFullName.get(usernameToAdd).toString()));
+                        }
+
+                    }
+
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // End of new way to display friends
 
 //                    if (friendList.contains("FakeFriend")) { };
 
                     // For debugging
                     Log.d(TAG, "FriendList Size: " + friendList.size());
-                    Log.d(TAG, "Friends: " + documentSnapshot.getData().keySet());
+                    Log.d(TAG, "Friends: " + mapUsernameToFullName.getData().keySet());
 
                     // Make the empty text visible based on friends list size
                     emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);

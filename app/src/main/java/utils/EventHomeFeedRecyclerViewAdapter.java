@@ -89,7 +89,6 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
         // Listen for accepted event changes
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-
         // Get user's accepted events
         DocumentReference df_acceptedEvents = db
                 .collection("users").document(username)
@@ -134,15 +133,20 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                     // Else if I have an event locally that I do not have on the database
                     // (In other words, if an event was deleted from the database)
                     // Then clear the events list and the code after should re-populate it.
-                    else if (eventsList.size() > eventID_Set.size()) {
-                        Log.d(TAG, "Clearing event list to repopulate.");
-                        eventsList.clear();
-                    }
+//                    else if (eventsList.size() > eventID_Set.size()) {
+//                        Log.d(TAG, "Clearing event list to repopulate.");
+//                        eventsList.clear();
+//                    }
 
-                    // Set the empty list text view as gone
+                    // Set the empty list text view as gone because there must be events that the
+                    // user accepts or owns.
                     emptyListTextView.setVisibility(View.GONE);
 
+                    ArrayList <Integer> eventIndiciesToRemove = new ArrayList<>();
+
                     // Get only the Set of events that the user does NOT have
+                    // AND get an arraylist of indicies of events that the local list contains
+                    //      but that the database does not contain (ie: event deleted).
                     for (int i = 0; i < eventsList.size(); i++) {
                         // Retrieve the event ID in the list at the current index
                         String eventID = eventsList.get(i).getEventID();
@@ -151,12 +155,23 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                         if (eventID_Set.contains(eventID)) {
                             eventID_Set.remove(eventID);
                         }
+                        // Else, add it to the list of indicies to be removed
+                        // Because it exists locally but not in the database
+                        else {
+                            eventIndiciesToRemove.add(i);
+                        }
+                    }
+
+                    // Now, loop through event indicies to remove and remove them
+                    for (int i = 0; i < eventIndiciesToRemove.size(); i++) {
+                        eventsList.remove(eventIndiciesToRemove.get(i));
                     }
 
                     // Calculate expected event list size so I know when to notify the adapter
                     // of a changed data set.
                     final int expectedEventListSize = eventsList.size() + eventID_Set.size();
                     Log.d(TAG, "ExpectedEventListSize: " + expectedEventListSize);
+                    Log.d(TAG, "Current events list size: " + eventsList.size());
                     Log.d(TAG, "EventID_Set Size: " + eventID_Set.size());
 
                     // For every event in the accepted set

@@ -33,6 +33,7 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import utils.AcceptRejectButtonListener;
 import utils.CustomSnackBar;
@@ -242,21 +243,67 @@ public class Profile_FriendRequestsFragment extends Fragment {
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot mapUsernameToFullName, @Nullable FirebaseFirestoreException e) {
                 if(e != null) {
                     //we have some sort of error
                     Log.d(TAG, e.getMessage());
                     return;
                 }
-                if(documentSnapshot.exists() && documentSnapshot != null) {
-                    pendingFriendRequests = new ArrayList<>();
+                if(mapUsernameToFullName.exists() && mapUsernameToFullName != null) {
 
-                    for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
-                        pendingFriendRequests.add(
-                                new Friend(entry.getKey(), entry.getValue().toString()));
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // New way to display friend requests
+
+                    // Store all the user's friend requests in a set.
+                    Set<String> setOfFriendUsernames = mapUsernameToFullName.getData().keySet();
+
+                    // If the user does not have any friend requests
+                    if (setOfFriendUsernames.size() == 0) {
+                        pendingFriendRequests.clear();
                     }
 
+                    // Else, if the user does have friend requests
+                    else {
+
+                        // For every friend that is stored locally,
+                        for (int i = 0; i < pendingFriendRequests.size(); i++) {
+
+                            // Check if this friend exists in the set.
+                            //      If this friend does, then remove this item from the set.
+                            if (setOfFriendUsernames.contains(pendingFriendRequests.get(i).getUserName())) {
+                                setOfFriendUsernames.remove(pendingFriendRequests.get(i).getUserName());
+                            }
+
+                        }
+
+                        // Now you should have a set of friends that the local friends list does not have
+                        for (String usernameToAdd : setOfFriendUsernames) {
+
+                            // Add each one of these friends from the set to the local array list
+                            pendingFriendRequests.add(
+                                    new Friend(usernameToAdd, mapUsernameToFullName.get(usernameToAdd).toString()));
+                        }
+                    }
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // End of new way to display friend requests
+
+
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // Previous way to display friend requests
+
+//                    pendingFriendRequests = new ArrayList<>();
+//
+//                    for (Map.Entry <String, Object> entry : mapUsernameToFullName.getData().entrySet()) {
+//                        pendingFriendRequests.add(
+//                                new Friend(entry.getKey(), entry.getValue().toString()));
+//                    }
+
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
+                    // End of previous way to display friend requests
+
                     emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
+
+                    // TODO: Move below out of this function...
                     myFriendRequestRecyclerViewAdapter = new MyFriendRequestRecyclerViewAdapter(pendingFriendRequests, mListener, acceptRejectButtonListener);
                     myFriendRequestsRecyclerView.setAdapter(myFriendRequestRecyclerViewAdapter);
                 }

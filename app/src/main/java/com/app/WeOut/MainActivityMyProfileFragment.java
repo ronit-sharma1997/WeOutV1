@@ -6,23 +6,19 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.core.content.res.ResourcesCompat;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import utils.FriendActivityPagerAdapter;
@@ -30,12 +26,10 @@ import utils.User;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
+ * A simple {@link Fragment} for the My Profile Tab of the app.
+ * {@link MainActivity} contains this fragment and implements the
  * {@link MainActivityMyProfileFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainActivityMyProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class MainActivityMyProfileFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -88,7 +82,8 @@ public class MainActivityMyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.mainactivity_fragment_tab3, container, false);
+        final View view = inflater.inflate(R.layout.mainactivity_fragment_tab3,
+            container, false);
 
         // Associate members of this class with the layout views
         this.userLogo = view.findViewById(R.id.userLogo);

@@ -45,6 +45,9 @@ import utils.Utilities;
 /**
  * MainActivityAddEventInviteFriendsFragment extends {@link Fragment} subclass and focuses on adding
  * friends to invite to an event created by the user.
+ * {@link MainActivity} contains this fragment and implements the
+ * {@link MainActivityAddEventInviteFriendsFragment.OnListFragmentInteractionListener} interface
+ * to handle interaction events.
  */
 public class MainActivityAddEventInviteFriendsFragment extends Fragment {
 

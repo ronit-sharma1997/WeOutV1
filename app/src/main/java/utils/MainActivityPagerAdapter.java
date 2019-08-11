@@ -8,26 +8,33 @@ import com.app.WeOut.MainActivityHomeFragment;
 import com.app.WeOut.MainActivityMyProfileFragment;
 import com.app.WeOut.MainActivityNotificationsFragment;
 
+/**
+ * Class that extends {@link FragmentStatePagerAdapter} to handle clicking of the tab layout in
+ * {@link com.app.WeOut.MainActivity} and generate correct fragment based on tab selection.
+ */
 public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
 
-    int numberOfSubActivities;
+    private MainActivityHomeFragment tab1;
+    private MainActivityNotificationsFragment tab2;
+    private MainActivityMyProfileFragment tab3;
+    private int numberOfSubActivities;
 
     public MainActivityPagerAdapter(FragmentManager fm, int numberOfSubActivities) {
         super(fm);
         this.numberOfSubActivities = numberOfSubActivities;
+        this.tab1 = new MainActivityHomeFragment();
+        this.tab2 = new MainActivityNotificationsFragment();
+        this.tab3 = new MainActivityMyProfileFragment();
     }
 
     @Override
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                MainActivityHomeFragment tab1 = new MainActivityHomeFragment();
                 return tab1;
             case 1:
-                MainActivityNotificationsFragment tab2 = new MainActivityNotificationsFragment();
                 return tab2;
             case 2:
-                MainActivityMyProfileFragment tab3 = new MainActivityMyProfileFragment();
                 return tab3;
             default:
                 return null;

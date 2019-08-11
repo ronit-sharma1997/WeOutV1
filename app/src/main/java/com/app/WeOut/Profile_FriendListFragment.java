@@ -3,11 +3,9 @@ package com.app.WeOut;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +15,6 @@ import android.widget.TextView;
 
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,8 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -40,10 +34,8 @@ import utils.Friend;
 import utils.MyFriendRecyclerViewAdapter;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * Fragment used to represent a User's Current Friend's list. {@link MainActivity} contains this
+ * fragment and implements the {@link OnListFragmentInteractionListener} interface.
  */
 public class Profile_FriendListFragment extends Fragment {
 
@@ -124,53 +116,20 @@ public class Profile_FriendListFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-//        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if(task.isSuccessful()) {
-//                    DocumentSnapshot documentSnapshot = task.getResult();
-//                    if(documentSnapshot.exists() && documentSnapshot != null) {
-//
-//                        friendList = new ArrayList<>(documentSnapshot.getData().keySet());
-//                        emptyRecyclerView.setVisibility(friendList.size() == 0 ? View.VISIBLE : View.GONE);
-//                    }
-//
-//                }
-//                else {
-//                    emptyRecyclerView.setVisibility(View.VISIBLE);
-//                    Log.d(TAG, "Error with getting current friends");
-//                }
-//                myFriendRecyclerViewAdapter = new MyFriendRecyclerViewAdapter(friendList, mListener);
-//                myFriendsRecyclerView.setAdapter(myFriendRecyclerViewAdapter);
-//
-//            }
-//        });
-
         DocumentReference df = db
                 .collection("users").document(username)
                 .collection("friends").document("current");
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot mapUsernameToFullName, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot mapUsernameToFullName,
+                @Nullable FirebaseFirestoreException e) {
                 if(e != null) {
                     //we have some sort of error
                     Log.d(TAG, e.getMessage());
                     return;
                 }
                 if(mapUsernameToFullName.exists() && mapUsernameToFullName != null) {
-                    // Store the friends in an arraylist
-//                    friendList = new ArrayList<>(documentSnapshot.getData().keySet());
-
-                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
-                    // Previous way to display friends
-//                    friendList.clear();
-//
-//                    for (Map.Entry <String, Object> entry : mapUsernameToFullName.getData().entrySet()) {
-//                        friendList.add(
-//                                new Friend(entry.getKey(), entry.getValue().toString()));
-//                    }
-                    // end of previous way to display friends
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@
 
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -210,8 +169,6 @@ public class Profile_FriendListFragment extends Fragment {
 
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@
                     // End of new way to display friends
-
-//                    if (friendList.contains("FakeFriend")) { };
 
                     // For debugging
                     Log.d(TAG, "FriendList Size: " + friendList.size());

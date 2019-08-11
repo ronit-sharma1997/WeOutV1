@@ -21,18 +21,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.Nullable;
 
+/**
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the user's event invites to display on the
+ * {@link com.app.WeOut.MainActivityNotificationsFragment} screen and makes a call to the specified {@link OnListFragmentInteractionListener}
+ * and {@link AcceptRejectButtonListener}.
+ */
 public class MyEventInvitesRecyclerViewAdapter extends
     RecyclerView.Adapter<MyEventInvitesRecyclerViewAdapter.ViewHolder> {
 
@@ -228,11 +230,6 @@ public class MyEventInvitesRecyclerViewAdapter extends
 
   }
 
-//    public void removeAt(int position) {
-//        this.eventInvites.remove(position);
-//        this.notifyItemRemoved(position);
-//        this.notifyItemRangeChanged(position, this.eventInvites.size());
-//    }
 
   @NonNull
   @Override

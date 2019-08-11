@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.app.WeOut.dummy.DummyContent.DummyItem;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,9 +40,9 @@ import utils.Friend;
 import utils.MyFriendRequestRecyclerViewAdapter;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of Friend Requests a user would receive.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * {@link MainActivity} contains this fragment and implements the {@link OnListFragmentInteractionListener}
  * interface.
  */
 public class Profile_FriendRequestsFragment extends Fragment {
@@ -96,7 +95,6 @@ public class Profile_FriendRequestsFragment extends Fragment {
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-//            Log.d(TAG, "User Full Name: " + getArguments().getString("userFullName"));
         }
 
         this.pendingFriendRequests = new ArrayList<>();
@@ -113,6 +111,7 @@ public class Profile_FriendRequestsFragment extends Fragment {
             @Override
             public void onAccept(int position) {
 
+                //create a batch write. All the following writes must succeed or else none of the writes will happen
                 WriteBatch stepsToAcceptFriendRequest = db.batch();
                 final String friendRequestUsernameToAccept = pendingFriendRequests.get(position).getUserName();
                 Log.d(TAG, "User clicked Accepted Button: " + friendRequestUsernameToAccept);
@@ -120,31 +119,39 @@ public class Profile_FriendRequestsFragment extends Fragment {
                 // Get the friend to add's full name
                 String fullNameOfFriendToAccept = pendingFriendRequests.get(position).getFullName();
 
-
+                //user accepts the friend request, so we can remove it from the document reference that holds friend requests
                 Map<String, Object> receivedFriendRequest = new HashMap<>();
                 receivedFriendRequest.put(friendRequestUsernameToAccept, FieldValue.delete());
 
+                //create document reference for received friend requests for the current user
                 DocumentReference dfReceivedFriendRequest = db
                         .collection("users").document(userName)
                         .collection("friends").document("received");
 
                 stepsToAcceptFriendRequest.update(dfReceivedFriendRequest, new HashMap<>(receivedFriendRequest));
 
+                //create document reference for current friend's list for the current user
                 DocumentReference dfCurrentFriends = db
                         .collection("users").document(userName)
                         .collection("friends").document("current");
 
+                //update the current user's current friend list by placing the friend's username and fullname in the list
                 receivedFriendRequest.put(friendRequestUsernameToAccept, fullNameOfFriendToAccept);
+                //we want to merge the current friend's list with the new friend(SetOptions.merge())
                 stepsToAcceptFriendRequest.set(dfCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
+                //we'll reuse the hashmap from above instead of allocating a new HashMap by just deleting what's in it already
                 receivedFriendRequest.remove(friendRequestUsernameToAccept);
 
+                //create document reference for current friend's list for the user that send the friend request
                 DocumentReference dfAddedFriendCurrentFriends = db
                         .collection("users").document(friendRequestUsernameToAccept)
                         .collection("friends").document("current");
 
+                //we will put the current user's username and full name as a friend in the user that sent the friend request
                 receivedFriendRequest.put(userName, currUserFullName);
                 stepsToAcceptFriendRequest.set(dfAddedFriendCurrentFriends,new HashMap<>(receivedFriendRequest), SetOptions.merge());
 
+                //commit the updates we have set up and add a listener to make sure all the batch writes happen successfully
                 stepsToAcceptFriendRequest.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -165,12 +172,15 @@ public class Profile_FriendRequestsFragment extends Fragment {
                 Log.d(TAG, "User Clicked Rejected Button: " + pendingFriendRequests.get(position));
                 final String usernameOfFriendToReject = pendingFriendRequests.get(position).getUserName();
 
+                //current user rejected the friend request, so we need to delete it from the current user's pending friend request list
                 Map<String, Object> receivedFriendRequest = new HashMap<>();
                 receivedFriendRequest.put(usernameOfFriendToReject, FieldValue.delete());
 
+                //create document reference for current user's received friend requests
                 DocumentReference dfReceivedFriendRequest = db.collection("users").document(userName)
                         .collection("friends").document("received");
 
+                //simply update the friend request and add a listener to see if the task was successful
                 dfReceivedFriendRequest.update(receivedFriendRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -193,6 +203,7 @@ public class Profile_FriendRequestsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend_request_list, container, false);
 
+        //Associate XML Components by ID and assign to variables
         this.myFriendRequestsRecyclerView = view.findViewById(R.id.recyclerViewMyFriendRequests);
         this.emptyRecyclerViewFriendRequests = view.findViewById(R.id.emptyRecyclerViewMyFriendRequests);
         this.myFriendRequestsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -207,39 +218,6 @@ public class Profile_FriendRequestsFragment extends Fragment {
         final DocumentReference df = this.db
                 .collection("users").document(userName)
                 .collection("friends").document("received");
-
-        /*
-        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if(documentSnapshot.exists() && documentSnapshot != null) {
-//                        pendingFriendRequests = new ArrayList<>(documentSnapshot.getData().keySet());
-
-                        pendingFriendRequests = new ArrayList<>();
-
-                        // Adds the username (key) and full name (value) to the pendingFriendRequests list
-                        for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
-                            pendingFriendRequests.add(
-                                    new Friend(entry.getKey(), entry.getValue().toString()));
-                        }
-
-                        emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
-                    }
-
-
-                }
-                else {
-                    emptyRecyclerViewFriendRequests.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "Error with getting friend requests");
-                }
-                myFriendRequestRecyclerViewAdapter = new MyFriendRequestRecyclerViewAdapter(pendingFriendRequests, mListener, acceptRejectButtonListener);
-                myFriendRequestsRecyclerView.setAdapter(myFriendRequestRecyclerViewAdapter);
-
-            }
-        });
-        */
 
         df.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -286,20 +264,6 @@ public class Profile_FriendRequestsFragment extends Fragment {
                     }
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@
                     // End of new way to display friend requests
-
-
-                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
-                    // Previous way to display friend requests
-
-//                    pendingFriendRequests = new ArrayList<>();
-//
-//                    for (Map.Entry <String, Object> entry : mapUsernameToFullName.getData().entrySet()) {
-//                        pendingFriendRequests.add(
-//                                new Friend(entry.getKey(), entry.getValue().toString()));
-//                    }
-
-                    // @@@@@@@@@@@@@@@@@@@@@@@@@@
-                    // End of previous way to display friend requests
 
                     emptyRecyclerViewFriendRequests.setVisibility(pendingFriendRequests.size() == 0 ? View.VISIBLE : View.GONE);
 

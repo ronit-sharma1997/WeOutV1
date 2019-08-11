@@ -1,5 +1,9 @@
 package utils;
 
+/**
+ * Class that represents an Event with a unique ID. This class encompasses an {@link Event} object
+ * and adds additional attributes.
+ */
 public class Event_withID {
 
     private Event event;

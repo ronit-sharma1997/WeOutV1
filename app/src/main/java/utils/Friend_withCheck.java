@@ -1,5 +1,10 @@
 package utils;
 
+/**
+ * Class that extends {@link Friend} and is used on the invite friends screen of the
+ * {@link com.app.WeOut.MainActivityAddEventInviteFriendsFragment}. This class can easily tell us
+ * if a friend has been checked when a user selects or deselects off of the friend's list.
+ */
 public class Friend_withCheck extends Friend {
 
     private boolean checked;

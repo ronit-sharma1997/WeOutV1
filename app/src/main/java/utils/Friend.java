@@ -2,7 +2,9 @@ package utils;
 
 import android.util.Log;
 
-//TODO: Write documentation
+/**
+ * Class that represents a Friend. This includes username, firstname, and lastname.
+ */
 public class Friend {
 
     String userName;

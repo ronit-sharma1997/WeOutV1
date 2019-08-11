@@ -18,9 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the user's current friend list to display on the
+ * {@link com.app.WeOut.Profile_FriendListFragment} screen.
  */
 public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRecyclerViewAdapter.ViewHolder> implements SectionIndexer {
 
@@ -55,19 +54,6 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
         // hide the checkbox
         holder.friendCheckBox.setVisibility(View.GONE);
 
-//        Icon friendLogo = Icon.createWithResource(this,R.drawable.friendaccount);
-//        holder.imgId.setImageResource(R.drawable.friendaccount);
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
-            }
-        });
     }
 
     @Override
@@ -101,7 +87,6 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-//        public final ImageView imgId;
 
         public final TextView friendUsername;
         public final TextView friendFullName;
@@ -111,7 +96,6 @@ public class MyFriendRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRe
         public ViewHolder(View view) {
             super(view);
             mView = view;
-//            imgId = view.findViewById(R.id.myFriendLogo);
 
             friendUsername = view.findViewById(R.id.friendCheckboxItem_username);
             friendFullName = view.findViewById(R.id.friendCheckboxItem_fullName);

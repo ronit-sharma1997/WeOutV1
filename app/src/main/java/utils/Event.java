@@ -2,6 +2,10 @@ package utils;
 
 import java.util.HashMap;
 
+/**
+ * Class to represent the attributes of an Event such as title, location,eventDate, eventTime, dateCreated
+ * description, organizer, and attendess/invitees.
+ */
 public class Event {
 
     // Event attributes

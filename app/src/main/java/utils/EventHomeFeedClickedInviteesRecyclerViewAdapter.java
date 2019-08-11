@@ -7,13 +7,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.app.WeOut.MainActivityAddEventInviteFriendsFragment;
 import com.app.WeOut.R;
-import com.app.WeOut.MainActivityAddEventInviteFriendsFragment.OnListFragmentInteractionListener;
-
 import java.util.List;
 
+/**
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the invitees of an Event to display if a user is attending
+ * when a user clicks on an {@link Event} object on the Home Feed to view more detail.
+ */
 public class EventHomeFeedClickedInviteesRecyclerViewAdapter extends RecyclerView.Adapter<EventHomeFeedClickedInviteesRecyclerViewAdapter.ViewHolder> {
 
     private List<EventDetailsInvitee> friendsList;

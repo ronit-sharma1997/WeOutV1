@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.app.WeOut.dummy.DummyContent;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,13 +25,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import utils.Event;
 import utils.AcceptRejectButtonListener;
 import utils.Event_withID;
 import utils.MyEventInvitesRecyclerViewAdapter;
@@ -41,12 +37,10 @@ import utils.Utilities;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
+ * A simple {@link Fragment} for Event Invites that the user will receive from others.
+ * {@link MainActivity} contains this fragment and implements the
  * {@link MainActivityNotificationsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainActivityNotificationsFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class MainActivityNotificationsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -276,9 +270,6 @@ public class MainActivityNotificationsFragment extends Fragment {
                     }
                 });
 
-//                eventInvites.remove(position);
-//                myAdapter.notifyItemRemoved(position);
-//                myAdapter.notifyItemRangeChanged(position, eventInvites.size());
             }
         };
     }

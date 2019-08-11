@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 
 import com.app.WeOut.MainActivityHomeFragment.OnListFragmentInteractionListener;
@@ -31,10 +30,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import javax.annotation.Nullable;
 
+
 /**
- * {@link RecyclerView.Adapter} that can display a and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the events a user has accepted and is displayed on their home feed
+ * and makes a call to the specified {@link OnListFragmentInteractionListener}.
  */
 public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<EventHomeFeedRecyclerViewAdapter.ViewHolder> {
 
@@ -130,13 +129,6 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                         notifyDataSetChanged();
                         return;
                     }
-                    // Else if I have an event locally that I do not have on the database
-                    // (In other words, if an event was deleted from the database)
-                    // Then clear the events list and the code after should re-populate it.
-//                    else if (eventsList.size() > eventID_Set.size()) {
-//                        Log.d(TAG, "Clearing event list to repopulate.");
-//                        eventsList.clear();
-//                    }
 
                     // Set the empty list text view as gone because there must be events that the
                     // user accepts or owns.
@@ -216,20 +208,11 @@ public class EventHomeFeedRecyclerViewAdapter extends RecyclerView.Adapter<Event
                             }
                         });
 
-//                        if (expectedEventListSize == eventsList.size()) {
-//                            Log.d(TAG, "Event List Size: " + eventsList.size() + " -> notifying change");
-//                            notifyDataSetChanged();
-//                        }
-
                     }  // End of iterating through the event ID list
-
-                    // Set the visibility of the text view if the events list is empty
-//                    emptyListTextView.setVisibility(eventsList.isEmpty() ? View.VISIBLE : View.GONE);
 
                     Log.d(TAG, "Events List Size: " + eventsList.size());
 
-                    // Notify the adapter that the data set has changed
-                    // notifyDataSetChanged();
+
 
                 } // End of document snapshot for event ID list
             }

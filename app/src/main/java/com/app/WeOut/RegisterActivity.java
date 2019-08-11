@@ -12,12 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
@@ -29,9 +27,7 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import io.opencensus.internal.StringUtils;
 import utils.CustomSnackBar;
 import utils.User;
 
@@ -96,6 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String firstName = inputFirstName.getText().toString().trim();
         final String lastName = inputLastName.getText().toString().trim();
 
+        //a list of conditions to make sure that all fields are filled out appropriately before a user could sign up
         if (TextUtils.isEmpty(firstName)) {
           snackBar
               .display(v, getApplicationContext(), "Please enter First Name!", R.color.lightBlue);
@@ -109,6 +106,9 @@ public class RegisterActivity extends AppCompatActivity {
           return;
         } else if (username.contains(" ")) {
           snackBar.display(v, getApplicationContext(), "Username cannot contain spaces!", R.color.lightBlue);
+          return;
+        } else if (!username.toLowerCase().equals(username)) {
+          snackBar.display(v, getApplicationContext(), "Username cannot contain uppercase letters!", R.color.lightBlue);
           return;
         } else if (TextUtils.isEmpty(password)) {
           snackBar.display(v, getApplicationContext(), "Please enter password!", R.color.lightBlue);
@@ -235,20 +235,6 @@ public class RegisterActivity extends AppCompatActivity {
       }
     });
 
-  }
-
-  //checks if a potential email address is valid using regex
-  private boolean ValidEmailAddress(String emailAddress) {
-    String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
-        "[a-zA-Z0-9_+&*-]+)*@" +
-        "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-        "A-Z]{2,7}$";
-
-    Pattern pat = Pattern.compile(emailRegex);
-    if (emailAddress == null) {
-      return false;
-    }
-    return pat.matcher(emailAddress).matches();
   }
 
   @Override

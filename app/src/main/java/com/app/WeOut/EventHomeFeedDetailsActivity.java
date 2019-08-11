@@ -1,35 +1,18 @@
 package com.app.WeOut;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.gms.common.api.Batch;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
 import com.google.gson.Gson;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import utils.CustomSnackBar;
 import utils.Event;
 import utils.EventDetailsInvitee;
 import utils.EventHomeFeedClickedInviteesRecyclerViewAdapter;
@@ -46,16 +29,12 @@ public class EventHomeFeedDetailsActivity extends AppCompatActivity {
     private ImageButton closeScreen, deleteEvent;
     private RecyclerView eventGuests;
     private EventHomeFeedClickedInviteesRecyclerViewAdapter myAdapter;
-    private FirebaseFirestore dbReference;
     private final String TAG = "EventHomeDetailActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home_feed_details);
-
-        //create Firestore Database Reference
-        this.dbReference = FirebaseFirestore.getInstance();
 
         //Assign Views Based on Ids
         this.eventTitle = findViewById(R.id.eventHomeFeedClickedTitle);

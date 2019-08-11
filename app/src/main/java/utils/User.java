@@ -1,9 +1,5 @@
 package utils;
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.ServerTimestamp;
-
-import java.util.Date;
 
 /**
  * Class to represent the properties of An Existing User such as username, first name, and last name.

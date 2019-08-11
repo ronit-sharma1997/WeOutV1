@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -14,10 +13,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.WeOut.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,6 +22,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the user's current friend list to display on the
+ * {@link com.app.WeOut.MainActivityAddEventInviteFriendsFragment} screen.
+ */
 public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <InviteFriendsRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList <Friend_withCheck> inviteFriendsList;
@@ -34,9 +35,6 @@ public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <Invi
         this.inviteFriendsList = inviteFriendsList;
 
         populateFriendsList();
-
-//        this.inviteFriendsList.add(new Friend_withCheck("saif", "Saif", "Billah"));
-//        this.inviteFriendsList.add(new Friend_withCheck("ron", "Ronit", "Shawarma"));
     }
 
     private void populateFriendsList() {
@@ -60,50 +58,12 @@ public class InviteFriendsRecyclerViewAdapter extends RecyclerView.Adapter <Invi
 
                     Log.d(TAG, "Get current friends successful.");
 
-//                    inviteFriendsList = new ArrayList<>();
-
                     for (Map.Entry <String, Object> entry : documentSnapshot.getData().entrySet()) {
                         inviteFriendsList.add(
                                 new Friend_withCheck(entry.getKey(), entry.getValue().toString()));
                     }
 
                     notifyDataSetChanged();
-
-                    /*
-
-                    // Store all the current user's friends usernames as an array list
-                    final ArrayList <String> friendUsernameList = new ArrayList<>(documentSnapshot.getData().keySet());
-
-                    // Go through every single friend in your username array list
-                    // and get their first and last name
-                    for (int i = 0; i < friendUsernameList.size(); i++) {
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        DocumentReference df = db.collection("users").document(friendUsernameList.get(i));
-
-                        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                // Add this user's information to the invite friends list
-                                User user = documentSnapshot.toObject(User.class);
-                                Log.d(TAG, "Adding " + user.getUserName() + " to invite list.");
-
-                                inviteFriendsList.add(new Friend_withCheck(
-                                                user.getUserName(), user.getFirstName(), user.getLastName()));
-
-                                // Update the data when you have finished adding all friends to the list
-                                if (friendUsernameList.size() == inviteFriendsList.size()) {
-                                    notifyDataSetChanged();
-                                }
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Error retrieving user info: " + e.getMessage());
-                            }
-                        });
-
-                    } */
 
                 }
             }

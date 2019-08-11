@@ -8,6 +8,9 @@ import androidx.core.content.ContextCompat;
 import com.app.WeOut.R;
 import com.google.android.material.snackbar.Snackbar;
 
+/**
+ * Class to represent a Snack Bar and to provide customizations such as message displayed and color.
+ */
 public class CustomSnackBar {
 
     public CustomSnackBar() {

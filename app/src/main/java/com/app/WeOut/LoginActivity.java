@@ -50,8 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize snackbar
         snackBar = new CustomSnackBar();
 
-//        auth.signOut();
-
         //if we are already logged in, we can go straight to the Main Activity
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -128,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
                                 }
-//                                progressBar.setVisibility(View.GONE);
                                 finish();
                             }
                         });

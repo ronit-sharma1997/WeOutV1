@@ -15,13 +15,13 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
-import utils.Event;
 import utils.Event_withID;
 import utils.MainActivityPagerAdapter;
 
 /**
  * MainActivity extends {@link AppCompatActivity} and focuses on controlling the flow of the overall
- * flow of the application using a TabLayout and Fragments
+ * flow of the application using a TabLayout and Fragments. This activity implements all the
+ * OnFragmentInteractionListener for the fragments within it.
  */
 public class MainActivity extends AppCompatActivity
     implements MainActivityHomeFragment.OnFragmentInteractionListener,

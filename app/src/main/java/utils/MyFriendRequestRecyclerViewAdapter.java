@@ -1,6 +1,5 @@
 package utils;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -12,22 +11,14 @@ import android.widget.TextView;
 
 import com.app.WeOut.Profile_FriendRequestsFragment.OnListFragmentInteractionListener;
 import com.app.WeOut.R;
-import com.app.WeOut.dummy.DummyContent.DummyItem;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * Class that extends the {@link RecyclerView.Adapter} for configuration with the user's friend requests to display on the
+ * {@link com.app.WeOut.Profile_FriendRequestsFragment} screen and makes a call to the specified {@link OnListFragmentInteractionListener}
+ * and {@link AcceptRejectButtonListener}.
  */
 public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyFriendRequestRecyclerViewAdapter.ViewHolder> {
 
@@ -53,69 +44,12 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        // Extract user full name from the database
-//        final String usernameByPosition = pendingFriendsList.get(position).getUserName();
-
-//        // Get instance of Database
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//
-//        // Reference this user by their username within the "users" collection
-//        DocumentReference dr = db.collection("users").document(usernameByPosition);
-//
-//        // Test what the document id is
-//        Log.d(TAG, "Document ID " + dr.getId());
-//
-//        // Get the data from the current document
-//        dr.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//
-//                // Log successful data retrieval
-//                Log.d(TAG, "Friend Request User Specific Info successfully retrieved.");
-//
-//                // If successful and the snapshot contains data
-//                if(documentSnapshot.exists() && documentSnapshot != null) {
-//                    // Use this data to create a User object, and set holder TextViews accordingly
-//                    User userByPosition = documentSnapshot.toObject(User.class);
-//
-//                    // Create Strings for the full name and initials of the user by position
-//                    String userFullName = userByPosition.getFirstName() + " " + userByPosition.getLastName();
-//                    String userInitials =
-//                                    String.valueOf(Character.toUpperCase(userByPosition.getFirstName().charAt(0))) +
-//                                    String.valueOf(Character.toUpperCase(userByPosition.getLastName().charAt(0)));
-//
-//                    // Set Holder Text Views based on user by position
-//                    holder.fullName.setText(userFullName);
-//                    holder.personLogo.setText(userInitials);
-//                }
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                // Log fail data retrieval
-//                Log.d(TAG, "Friend Request User Specific Info failed to retrieve.");
-//            }
-//        });
-
-        // Set the text of each textView in the viewHolder to initial values
-//        holder.personLogo.setText(String.valueOf(Character.toUpperCase(pendingFriendsList.get(position).charAt(0))));
-
         Friend friend = pendingFriendsList.get(position);
 
         holder.userName.setText(friend.getUserName());
         holder.fullName.setText(friend.getFullName());
         holder.personLogo.setText(friend.getLogo());
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
-            }
-        });
     }
 
     @Override
@@ -167,12 +101,6 @@ public class MyFriendRequestRecyclerViewAdapter extends RecyclerView.Adapter<MyF
         @Override
         public void onClick(View view) {
             Log.d(TAG, "Friend request item clicked");
-
-            // TODO: See if this is necessary
-//            if (pendingFriendsList.get(getLayoutPosition()).equals("demoFriend")){
-//                Log.d(TAG, "demoFriend Button Clicked. No functionality.");
-//                return;
-//            }
 
             switch (view.getId()) {
                 case R.id.acceptButton:

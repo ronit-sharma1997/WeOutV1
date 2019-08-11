@@ -40,6 +40,7 @@ import utils.Utilities;
 /**
  * MainActivityAddEventFragment extends {@link Fragment} subclass and its focus is for displaying
  * textboxes for event information for the user to fill out.
+ * {@link MainActivity} contains this fragment.
  */
 public class MainActivityAddEventFragment extends Fragment {
 
